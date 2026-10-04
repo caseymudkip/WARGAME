@@ -30,7 +30,7 @@ from wargame.core.mathutil import clamp, noisy_or
 from wargame.nation.logistics import LogisticsStockpile
 from wargame.nation.military import OrderOfBattle
 from wargame.nation.national_spirit import NationalSpirit
-from wargame.nation.nuclear import NuclearPosture
+from wargame.nation.nuclear import NuclearPosture, NuclearShockResponse, nuclear_shock_response
 
 if TYPE_CHECKING:
     from wargame.world.province import Province
@@ -61,6 +61,7 @@ class CapitulationTuning:
     w_industry: float = 0.25
     w_supply: float = 0.25
     w_exhaustion: float = 0.50
+    w_nuclear_shock: float = 1.0          # Acute shock of nuclear strikes on a nation that cannot answer.
 
     # Collapse dynamics (per day).
     collapse_base_rate: float = 1.0 / 7.0  # A week just over the line topples the government.
@@ -130,6 +131,8 @@ EVACUATION_LOSS = 0.30           # Share of output permanently lost in transit.
 EVACUATION_DAYS = 45
 
 PEACETIME_TEMPO = 0.2
+NUCLEAR_SHOCK_DAILY_RETENTION = 0.95  # Half-life of about two weeks; the physical damage is permanent.
+PERSONNEL_POWER = 0.001               # Military power per active soldier (equipment dominates).
 
 
 @dataclass
@@ -172,6 +175,12 @@ class Country:
     relocations: list[RelocationOrder] = field(default_factory=list)
     collapse_progress: float = 0.0
     capitulated: bool = False
+    nuclear_shock: float = 0.0
+    nuclear_strikes_suffered: int = 0
+
+    # Government in exile (a "Free <name>" faction that fights on after its government gave up)
+    is_exile: bool = False
+    exile_of: str | None = None
 
     # Post-war treaty state
     overlord: str | None = None
@@ -209,6 +218,11 @@ class Country:
             return 0.0  # Tier 1 vacuum: belligerents are sealed off.
         blockade_loss = self.blockade_interdiction * self.seaborne_import_share
         return clamp((1.0 - blockade_loss) * (1.0 - self.sanction_severity))
+
+    def military_power(self) -> float:
+        """Coarse fighting power: equipment (quality-weighted) plus manpower. Used for strategic comparisons."""
+        equipment = sum(e.effective_strength for e in self.oob.equipment.values())
+        return equipment + PERSONNEL_POWER * self.oob.active_personnel
 
     def mark_prewar_baseline(self, world: World) -> None:
         if self.prewar_industrial_capacity is None:
@@ -265,6 +279,7 @@ class Country:
             "industry": t.w_industry * clamp(industry_loss),
             "supply": t.w_supply * clamp(1.0 - self.logistics.supply_ratio),
             "exhaustion": t.w_exhaustion * self.spirit.war_exhaustion,
+            "nuclear_shock": t.w_nuclear_shock * self.nuclear_shock,
         }
         return noisy_or(components.values()), components
 
@@ -309,6 +324,7 @@ class Country:
             if ctx.existential_threat or self.occupied_fraction(world, ctx.hostile_tags) >= EVACUATION_TRIGGER_LOSS:
                 self._evacuate_threatened_industry(world, ctx)
 
+        self.nuclear_shock *= NUCLEAR_SHOCK_DAILY_RETENTION
         tempo = 1.0 if ctx.at_war else PEACETIME_TEMPO
         self.logistics.tick_day(self.production_factor(world), self.import_factor(ctx.policy), tempo)
 
@@ -321,6 +337,24 @@ class Country:
             occupied_fraction=self.occupied_fraction(world, ctx.hostile_tags) if ctx.at_war else 0.0,
             supply_ratio=self.logistics.supply_ratio,
         )
+
+    def absorb_nuclear_strike(self, world: World, attacker: Country, now_hour: int) -> NuclearShockResponse:
+        """Apply the political shock of a detonation on our soil: collapse, or a rally for revenge."""
+        attacker_pop = sum(p.population for p in world.owned_by(attacker.tag))
+        own_pop = sum(p.population for p in world.owned_by(self.tag))
+        response = nuclear_shock_response(
+            can_retaliate=self.nuclear.is_nuclear_power,
+            population_ratio=own_pop / attacker_pop if attacker_pop else 1.0,
+            stability=self.spirit.effective_stability(now_hour),
+        )
+        self.nuclear_strikes_suffered += 1
+        # Unique id per strike so repeated strikes compound instead of refreshing.
+        self.spirit.apply_shock(
+            f"nuclear_strike_{self.nuclear_strikes_suffered}", now_hour,
+            war_support=response.war_support, stability=response.stability, duration_days=180,
+        )
+        self.nuclear_shock = clamp(self.nuclear_shock + response.capitulation_shock)
+        return response
 
     def on_peace(self) -> None:
         self.collapse_progress = 0.0

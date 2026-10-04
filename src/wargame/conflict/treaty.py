@@ -94,9 +94,10 @@ def draft_treaty(
     if winner == goal.holder and loser == goal.target:
         core: list[TreatyTerm] = []
         if goal.type in PROVINCE_GOALS:
-            # Unless enforced, you can only claim what your troops actually stand on.
-            pids = goal.province_ids if enforced else frozenset(
-                pid for pid in goal.province_ids if world.provinces[pid].controller in winner_side
+            # Only what the loser still owns; unless enforced, only what your troops stand on.
+            pids = frozenset(
+                pid for pid in goal.province_ids
+                if world.provinces[pid].owner == loser and (enforced or world.provinces[pid].controller in winner_side)
             )
             if pids:
                 core.append(_province_term(world, winner, loser, pids, loser_value))
@@ -146,8 +147,8 @@ def draft_treaty(
     return PeaceTreaty(winner, loser, signed_hour, terms, reason)
 
 
-def apply_treaty(world: World, treaty: PeaceTreaty, participants: Collection[str]) -> None:
-    """Enforce terms, then hand every still-occupied province back to its owner."""
+def apply_treaty(world: World, treaty: PeaceTreaty, participants: Collection[str], restore: bool = True) -> None:
+    """Enforce terms, then (unless the war goes on) hand every still-occupied province back to its owner."""
     for term in treaty.terms:
         if term.type is TermType.PROVINCE_TRANSFER:
             for pid in term.province_ids:
@@ -163,6 +164,8 @@ def apply_treaty(world: World, treaty: PeaceTreaty, participants: Collection[str
             debtor = world.country(term.target)
             debtor.reparations_owed[term.beneficiary] = REPARATIONS_SHARE
 
+    if not restore:
+        return
     tags = set(participants)
     for p in list(world.provinces.values()):
         if p.is_occupied and (p.owner in tags or p.controller in tags):

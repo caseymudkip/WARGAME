@@ -82,6 +82,21 @@ def test_regime_change_requires_the_capital():
     assert sim.wars[0].assessments["BOR"].last_stand
 
     sim.run_days(3)
+    war = sim.wars[0]
+    # The regime has changed: the old government signed and became a puppet...
+    assert TermType.PUPPET in [t.type for t in war.settlements[0].terms]
+    assert world.country("BOR").overlord == "ARD"
+    # ...but this nation is too patriotic to quit: Free Borovia fights on from the free provinces.
+    assert "FREE_BOR" in war.participants and not sim.finished
+
+
+def test_regime_change_ends_the_war_when_nobody_is_left_to_fight_on():
+    world = build_world(bor_spirit=unstable_spirit())
+    sim = Simulation(world, scenario(WarGoal(WarGoalType.REGIME_CHANGE, "ARD", "BOR"), Motivation.AGGRESSIVE))
+    sim.register_system(Cadence.DAILY, scripted_offensive(day=2, pids=[1, BOR_CAPITAL]))
+
+    sim.run_days(4)
+
     assert sim.finished
     assert TermType.PUPPET in term_types(sim)
     assert world.country("BOR").overlord == "ARD"
