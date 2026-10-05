@@ -70,10 +70,12 @@ what happened. Checked in `tests/test_land_warfare.py`.
 
 | Benchmark | Real | Model | Source |
 |---|---|---|---|
-| Ground taken, 2025 | 4,336 km2 (11.9/day) | 11.1 km2/day | DeepState, 2 Jan 2026 |
-| Russian casualties, 2025 | ~415,000 (1,137/day) | ~1,170/day | UK Defence Intelligence, 14 Jan 2026 |
-| Ukrainian / Russian casualties | 500–600k vs ~1.2M since 2022 (0.42–0.5) | 0.46 | CSIS, Jan 2026 |
-| Russian-held Ukraine, 31 March 2022 | 163,000–167,000 km2 (from ~43,000) | ~97,000 km2; Kyiv holds | ISW; Statista |
+| Ground taken, 2025 | 4,336 km2 (11.9/day) | 12.0 km2/day | DeepState, 2 Jan 2026 |
+| Russian casualties, 2025 | ~415,000 (1,137/day) | ~1,045/day | UK Defence Intelligence, 14 Jan 2026 |
+| Ukrainian / Russian casualties | 500–600k vs ~1.2M since 2022 (0.42–0.5) | 0.54 | CSIS, Jan 2026 |
+| Russian-held Ukraine, 31 March 2022 | 163,000–167,000 km2 (from ~43,000) | ~78,000 km2; Kyiv holds | ISW; Statista |
+| Russian-held Ukraine after four years, from 2022 | ~116,000 km2 (2025) | ~125,000 km2 | DeepState |
+| NATO air campaign against Serbia | concessions after 78 days (1999) | ~80 days | — |
 | Ukraine's endurance with aid | fighting since 2022 | fighting for years from either start | — |
 | Ukraine's endurance without aid | — | capitulates within ~1 year | model finding |
 | Ukrainian war support | "fight until victory" 73% (2022) → 24% (Jul 2025) | rally, then decline | Gallup, Aug 2025 |
@@ -87,17 +89,19 @@ Known deviations:
 - **2025 split by region.** The model's gains go mostly to Zaporizhzhia and Donetsk, while DeepState
   had about two-thirds in Donetsk. The planner weighs provinces by economic value and has no notion of
   Russia's political priority on Donetsk.
-- **The 2022 opening reaches ~60% of the real gain.** Oblast-sized provinces fall in sequence (left-bank
-  Kherson before Melitopol), while 2022's columns ran down roads through seven oblasts at once.
-- **No autumn 2022 counteroffensives.** The 2022 replay does not recapture Kharkiv and Kherson, so
-  occupation stays near the March peak.
+- **The 2022 opening reaches about half of ISW's figure.** Oblast-sized provinces fall in sequence
+  (left-bank Kherson before Melitopol), while 2022's columns ran down roads through seven oblasts at
+  once; much of that ground was thin road control given up in April.
+- **The 2022 replay is too slow in year one, then catches up.** ~93,000 km2 after a year (real, after
+  the autumn counteroffensives: ~120,000); ~125,000 after four (real: ~116,000).
+- **Ukrainian losses run slightly high** (0.54 of Russia's against CSIS's 0.42–0.5).
 
 ## Curated wartime posture
 
 | File | What | Basis |
 |---|---|---|
 | `curated/fortifications.json` | Lines dug before a war: the 2015–22 Donbas line, the 2026 Ukrainian front, the Korean DMZ, the India–Pakistan LoC, the LAC, Israel's northern borders, the Baltic Defence Line and Poland's East Shield (under construction) | each entry states its basis; levels are judgement |
-| `curated/force_posture.json` | Drone saturation (Ukraine and Russia 2026), wartime mobilisation status, Belarus hosting Russia's 2022 offensive, active share of GFP equipment counts (IISS: Russia 3,417 battle-ready tanks of 12,420 in 2022; ~1,750 of 5,630 in 2025) | IISS via Kyiv Post, SCMP, Rubryka; Kyiv Post, Swissinfo for drones |
+| `curated/force_posture.json` | Drone saturation at the start date (Ukraine and Russia; every belligerent then adapts in war), wartime mobilisation status, Belarus hosting Russia's 2022 offensive, active share of GFP equipment counts (IISS: Russia 3,417 battle-ready tanks of 12,420 in 2022; ~1,750 of 5,630 in 2025) | IISS via Kyiv Post, SCMP, Rubryka; Kyiv Post, Swissinfo for drones |
 | `curated/leadership.json` | Leaders whose wartime conduct shows they will not submit (Zelensky, Putin) | documented conduct; 2021 entries use hindsight |
 
 ## Sources and how much to trust them
@@ -159,7 +163,11 @@ economy size), mobilisable manpower, seaborne import share.
    snapshot (Russia–Ukraine). Needs a curated file.
 4. **Trade dependence** (sanctions exposure) is a flat default; World Bank trade-to-GDP would fix it.
 5. **Military expenditure for 2021–2025** from SIPRI (only 2020 is vendored).
-6. **Reserves/paramilitaries** are inconsistently defined across GFP editions (see notes).
+6. **Reserves/paramilitaries** are inconsistently defined across GFP editions (see notes), and nothing
+   separates ground forces from navies and air forces in the personnel count. The model counts all
+   active personnel as infantry and mobilises from active strength, so reserve armies (Finland: 24,000
+   active, 280,000 wartime) mobilise too slowly and Russia's 2022 ground strength is overstated. IISS
+   Military Balance has both breakdowns.
 
 Most of these are reachable sources that the build environment's network policy blocked
 (Wikipedia, World Bank, SIPRI, OWID, Gallup, IISS); only GitHub was reachable. Allowing those hosts

@@ -1,7 +1,8 @@
 # WARGAME engine architecture
 
-Status: engine with daily and hourly loops and calibrated land warfare on the real
-map. No UI, rendering, air/naval operations or strategic AI yet.
+Status: engine with daily and hourly loops, calibrated land warfare, an air war and a
+strategy layer on the real map, smoke-tested on eleven real-world flashpoints. No UI or
+rendering yet; no fleet battles, conventional missiles or occupation.
 
 ## Layering
 
@@ -27,6 +28,8 @@ a war.
 | 1. Setup / spectator / time | `simulation.ScenarioConfig` (frozen), `Simulation.set_speed` (the only runtime input), `core/clock.py` |
 | 2. Province map, OOB | `world/province.py` (terrain, rivers, infrastructure, tags, `strategic_value()`), `nation/military.py`, `data/world_map.py` |
 | 2/5. Land combat | `conflict/land_warfare.py` (planning, hourly assaults, encirclement, fortification, rivers, amphibious, blockade, attrition) |
+| 2/5. Strategy | `conflict/strategy.py` (posture: offensive, halted, counteroffensive, active defence; withdrawals) |
+| 2/5. Air war | `conflict/air_war.py` (superiority, ground support, strategic strikes, repair, coercion leverage) |
 | 3. Economy, logistics, relocation | `nation/logistics.py`, `Country.production_factor`, `Country.air_sortie_capacity`, `Country._evacuate_threatened_industry` |
 | 4. Escalation tiers | `core/escalation.py` (policy table), consumed by `War` and `Country.import_factor` |
 | 5. Cost/reward, morale, WMD, BMD | `conflict/war.py` (`CampaignLedger`, `MotivationProfile`), `nation/national_spirit.py`, `nation/nuclear.py` |
@@ -171,18 +174,33 @@ for.
    about 2 km/day at R ≈ 2.3, Dupuy's WW2 division average, and up to 40 km/day in exploitation.
    Frontage is the border with the attacker's ground, limited by attacking troops at about 1,500/km
    and widening in pursuit. Conditions decide the pace, not one fitted curve:
+   - **Massing:** planners call off assaults they can't give 1.75:1 and hand the troops to the rest
+     (doctrine asks 3:1 at the point of attack; advance grows with the square of the excess).
+   - **Force-to-space:** a line too thin for its length is bypassed on a broad front: frontage grows as
+     √(300 per km / density), up to ×3 (Ukraine's south, February 2022, held at a tenth of that).
    - **Fieldworks:** dug over months, or curated pre-war lines (the DMZ, the 2015–22 Donbas line).
-   - **Drones:** a defender's drone saturation (curated) cuts depth by up to 88%. With fieldworks,
-     a 2025-like front grinds at Somme pace (CSIS: 15–70 m/day).
-   - **Surprise:** Dupuy's QJM ×1.6 for an unmobilised defender, fading over three days.
-   - **Operational reach:** strength ×0.6 per province beyond rail-restored ground (90 days).
+   - **Drones:** a defender's drone saturation cuts depth by up to 96%. With fieldworks, a 2025-like
+     front grinds at Somme pace (CSIS: 15–70 m/day). Saturation is curated at the start date and grows
+     0.001 a day for every belligerent: from nothing to the 2025 front in ~2.5 years, as Ukraine went
+     from almost no FPV drones in early 2022 to 1.3 million in 2024.
+   - **Surprise:** Dupuy's QJM ×1.6 for an unmobilised defender, fading over three days. It belongs to
+     whoever struck first: a counterattack catches no one napping.
+   - **Operational reach:** strength ×0.6 per province beyond rail-restored ground (90 days), and per
+     150 km inside the province being taken (a neck such as Perekop doesn't make it deeper).
+   - **Bridgeheads fan out:** once through a neck or off a beach, the front widens across the province.
+   - **Pinning:** troops under assault can only slowly be thinned out to reinforce elsewhere.
    - **Basing:** attacking from a host's soil (Belarus, the first 45 days of 2022).
-   - **Peacetime posture:** an unmobilised defender starts manning its existing lines.
+   - **Peacetime posture:** an unmobilised defender starts manning its existing lines; capitals keep
+     a garrison.
 
-   2025 from the 2026 front: 11.1 km²/day, ~1,170 Russian and 0.46× Ukrainian casualties a day.
-   2022 from the 2021 map: ~97,000 km² in 36 days, about 60% of the real gain, because oblast-sized
-   provinces fall in sequence where 2022's columns ran down roads through seven oblasts at once.
-   Kyiv holds in both.
+   Casualties fall on troops in contact only: no more attackers than the front can take. At
+   overwhelming odds they are bounded by what the defence can still shoot, falling as 1/R beyond 3:1.
+
+   2025 from the 2026 front: 12.0 km²/day, ~1,045 Russian and 0.54× Ukrainian casualties a day.
+   2022 from the 2021 map: ~78,000 km² in 36 days (ISW: ~163,000); Kyiv holds. Russia takes left-bank
+   Kherson in days and holds ~93,000 km² after a year (real, after the autumn counteroffensives:
+   ~120,000), ~125,000 after four (real 2025: ~116,000). Oblast-sized provinces fall in sequence where
+   2022's columns ran down roads through seven oblasts at once.
 11. **Rivers matter.** The map marks 965 land borders that run along a major river
    (Natural Earth scalerank ≤ 7). Assaults across them fight at 0.5× (scalerank ≤ 4:
    Dnipro, Rhine, Oder, Danube) or 0.7×, and planners prefer a dry route. Ukraine's
@@ -221,24 +239,82 @@ for.
 17. **Encirclement follows supply, not the capital.** Pockets are ground cut off from the main body
    of held territory and from friendly neutral borders (aid through Poland). A surrounded capital
    is itself the pocket, as Sarajevo was.
+18. **A strategy layer decides when to attack and when to give ground up** (`conflict/strategy.py`).
+   - **Posture:** attackers press with what their motivation allows; halted offensives regroup for at
+     least two weeks (hysteresis), and an all-out invasion's opening campaign runs 30 days before it is
+     reassessed (Russia declared its "first stage" complete on 25 March 2022). Defenders counterattack
+     with a small share, go over to the offensive where a feasible concentration reaches ~2:1 against a
+     thin sector (Kharkiv, September 2022), and only where it would actually move (Ukraine's restraint
+     against drone-watched lines, 2024–25). A defender that outnumbers the invader attacks broadly.
+   - **Defenders' war aims:** this war's losses first (liberation). Ground lost before the war waits
+     (Ukraine offered to set Crimea aside in March 2022), and while the enemy is breaking through
+     anywhere (≥1 km/day into its soil) a defender mounts no side shows: no incursions, no reaching
+     back. Incursions into the aggressor's homeland are limited (Kursk 2024) unless the war is total.
+     Defenders land from the sea only to liberate.
+   - **Withdrawals** (reviewed weekly): ground two hops beyond supply when outgunned 1.5:1 (Kyiv,
+     April 2022), or a bridgehead supplied only across a major river (right-bank Kherson, November 2022).
+     A nation never abandons its own soil.
+19. **Wars can end without a winner, and widen.** 180 quiet days bring an armistice on current lines
+   (a frozen treaty). Peace hands back only what this war took. At Tier 3, patrons committed to the
+   victim intervene; co-belligerents fight from their ally's soil (expeditionary fronts) and never
+   invade a neutral's soil. Opportunists join only the stronger side (Italy, June 1940): a coalition's
+   collapsing member is no opportunity if the coalition would crush the jackal.
+20. **Power projection and amphibious war.** Coasts facing enemy shipping are manned. A navy with
+   naval superiority (1.5×) lands across sea crossings of up to 250 km; one with two or more big decks
+   (carriers, helicopter carriers) anywhere within 2,000 km of a friendly coast, and supplies the
+   lodgement across the ocean. Lift puts 8 troops per unit of naval power ashore a day (PLA: about a
+   division per lift), filling the main beachhead before the next; waves still at sea sail for
+   whichever beach the plan names. The first echelon goes in only once it can win a lodgement at the
+   assault ratio (Dieppe failed piecemeal; Normandy put 156,000 ashore on the first day). The beach is
+   the hard part (×0.35 down to ×0.15 by crossing length); once ashore the fight is on land, supplied
+   over the beach (×0.8), and planners stand by a beachhead they have troops on.
+21. **The air war** (`conflict/air_war.py`). Superiority s = A / (A + A_enemy + G_enemy): air power
+   against the enemy's aircraft and long-range SAM battalions (100 air-power units each: Russia's
+   ~1,500 combat aircraft never won the sky over Ukraine's ~30 battalions) plus every army's organic
+   air defence. Net superiority multiplies ground combat by up to ×1.5 / ×0.67 (contested skies give
+   an edge, dominance is decisive: 1991). A third of air power flies strikes, getting through at s³, on
+   the five most valuable enemy provinces in range of own or allied airfields (Aviano, 1999) or of
+   carriers with command of the sea. Damage cuts output and sorties and is repaired at 1.5% a day; the
+   mean damage of the target's five most valuable provinces is coercion leverage, full at 0.5.
+   Calibration: NATO against Serbia forces concessions in ~80 days (78 in 1999); Russia's strikes
+   degrade Ukraine but cannot cripple it.
+22. **Who dictates the peace.** A conqueror that broke its enemy may take land it never reached. A
+   defender that outlasts an invader keeps what its troops stand on and asks for reparations
+   (Iran–Iraq 1988, Ethiopia–Eritrea 2000). A regime-change war that crushes the government in exile
+   reunifies its land under the installed regime; it is not an annexation.
+23. **Flashpoint sweep** (`tools/scenarios/sweep.py`): eleven real-world wars (Russia–Ukraine 2022,
+   Taiwan with and without the US, Korea, Russia–Estonia under Article 5, Kashmir, Syunik, Eritrea,
+   Venezuela, Israel–Iran, the LAC) run for a year as a smoke test far from the calibration case.
+   Current outcomes: an unaided Taiwan falls in about five months; with the US in, China cannot win
+   the sea and the war stalls; North Korea cannot break the DMZ and is ground down; NATO holds Estonia;
+   limited wars end in small gains or white peace; Venezuela's government falls in about a week.
+
 ## Deliberately stubbed (data recorded, not yet consumed)
 
 - `NationalSpirit.occupation_resistance`: for the occupation/partisan system.
 - `Country.overlord`, `demilitarized`, `reparations_owed`: for post-war systems.
-- `WarGoal.requires_occupation`: for the strategic AI (blockade and strikes instead of invading).
-  Land warfare already gives coercion goals low ground-offensive relevance, and a halted
-  offensive (`WarParticipant.offensive_halted`) commits only 10% of the force to attacks.
-- Air power enters land combat only as an air-superiority modifier (±10%); sorties,
-  strikes on infrastructure and air defence are not simulated.
+- `WarGoal.requires_occupation`: coercion goals are pursued by strikes and blockade; land warfare
+  gives them low ground-offensive relevance. There is no branch choice beyond that yet.
+- Conventional ballistic and cruise missiles, SEAD and strike drones are not simulated (no inventory
+  data); drones appear only as saturation on the ground. Israel's coercion of Iran is therefore slow.
 - Lend-lease does not yet drain the supporter's own stockpile.
 - Governments in exile hosted abroad (Poland 1939–45 style, no free territory) are not modelled;
   only the free-territory variant is.
 
+## Known deviations
+
+- **Casualties in lopsided wars.** Loss rates are calibrated on a peer war. The US conquering
+  Venezuela takes ~50,000 casualties, several times what the 2003 invasion of Iraq cost per day.
+- **Personnel.** Infantry power counts all active personnel, navies and air forces included, and
+  mobilisation grows only from active strength. Reserve armies (Finland, Israel, Estonia) therefore
+  mobilise too slowly, and Russia's 2022 ground strength is overstated. Both need the IISS breakdown
+  of ground forces and organised reserves.
+
 ## Suggested next tasks
 
-1. Strategic AI: theatre planning across several wars, branch choice (invade vs blockade vs strike),
-   operational reserves and timing of offensives.
-2. Naval and air operations: fleet battles and sea control (blockade is a fleet ratio today), sorties,
-   conventional strikes on infrastructure, air defence.
-3. Occupation and partisans; post-war treaty enforcement.
-4. Data: land-cover terrain (forests), drones, per-system equipment quality, non-state actors.
+1. Data: ground-force share of active personnel and organised wartime reserves (IISS), with
+   reserve-based mobilisation.
+2. Naval operations: fleet battles and sea control (blockade and landings use fleet ratios today).
+3. Conventional missiles, SEAD and strike drones; air defence that depletes.
+4. Occupation and partisans; post-war treaty enforcement.
+5. Data: land-cover terrain (forests), per-system equipment quality, non-state actors.

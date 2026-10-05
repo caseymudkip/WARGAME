@@ -218,6 +218,7 @@ class War:
     settlements: list[PeaceTreaty] = field(default_factory=list)  # Surrenders signed while the war goes on.
     treaty: PeaceTreaty | None = None
     prewar_occupation: dict[int, str] = field(default_factory=dict)  # province -> occupier when the war began
+    reunify: dict[str, str] = field(default_factory=dict)  # exile -> the government whose land it returns to
     last_combat_hour: int = 0
     fought_today: bool = False
 
@@ -608,6 +609,9 @@ class War:
         )
         if not treaty.is_white_peace:
             treaty.terms[:0] = self._claim_terms(world, winner_side=self.side_of(winner), already=treaty.transferred_provinces())
+        if loser in self.reunify:  # A regime change: the crushed exile's land goes back under the new regime.
+            treaty.terms = [TreatyTerm(t.type, self.reunify[loser], t.target, t.cost, t.province_ids)
+                            if t.type is TermType.ANNEXATION else t for t in treaty.terms]
         return self._end(world, treaty, now_hour)
 
     def _claim_terms(self, world: World, winner_side: Side, already: set[int]) -> list[TreatyTerm]:
@@ -659,6 +663,8 @@ class War:
         attacker = world.country(holder)
         if self._attacker_pursues(world, exile):
             claimed = self.goal.province_ids & {p.id for p in world.owned_by(exile.tag)}
+            if self.goal.type is WarGoalType.REGIME_CHANGE:
+                self.reunify[exile.tag] = government.tag  # Crush the exile, then reunify under the new regime.
             self.goal = (
                 WarGoal(WarGoalType.TOTAL_CAPITULATION, holder, exile.tag) if self.goal.is_existential
                 else WarGoal(WarGoalType.TERRITORIAL_CONQUEST, holder, exile.tag, frozenset(claimed))
@@ -766,8 +772,11 @@ class War:
                     continue
                 if victim not in world.neighboring_countries(tag):
                     continue
+                side = self.side_of(victim)
+                if self.side_power(world, side.opposite) < self.side_power(world, side):
+                    continue  # Only jackals join the winning side (Italy, June 1940), never a coalition's weak member.
                 if rng.random() < OPPORTUNIST_DAILY_CHANCE:
-                    self._join(world, tag, self.side_of(victim).opposite, ParticipantRole.CO_BELLIGERENT,
+                    self._join(world, tag, side.opposite, ParticipantRole.CO_BELLIGERENT,
                                MOTIVATION_PRESETS[Motivation.CAUTIOUS], now_hour)
                     claim = self._border_claim(world, tag, victim)
                     self.participants[tag].claim = claim

@@ -128,12 +128,15 @@ def draft_treaty(
     if any(t.type is TermType.ANNEXATION for t in terms):
         return PeaceTreaty(winner, loser, signed_hour, terms, reason)
 
-    # 2. Extras: occupied provinces (highest value first), then flat terms.
+    # 2. Extras: occupied provinces (highest value first), then flat terms. A conqueror that broke its enemy
+    # can dictate; a defender that outlasted an invader keeps what its troops stand on and asks for
+    # reparations (Iran-Iraq 1988, Ethiopia-Eritrea 2000), it does not carve up the invader.
+    dictates = loser_country.capitulated and winner == goal.holder
     held = sorted(
         (
             p
             for p in world.owned_by(loser)
-            if p.id not in taken and (loser_country.capitulated or p.controller in winner_side)
+            if p.id not in taken and (dictates or p.controller in winner_side)
         ),
         key=lambda p: p.strategic_value(),
         reverse=True,

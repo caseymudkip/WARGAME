@@ -191,3 +191,34 @@ def test_defenders_liberate_rather_than_invade():
     occupy(world, [2], "ARD")
     assert sim.land._relevance(world, sim.active_wars, "BOR", 2, hops) == 3.0
     del war
+
+
+# --- war aims under pressure ---------------------------------------------------------------------------
+
+
+def _aims(world: World) -> tuple[Simulation, dict[str, dict[int, int]]]:
+    occupy(world, [1], "ARD")   # Lost before this war (Crimea, 2014)...
+    sim = start(world)
+    occupy(world, [2], "ARD")   # ...and in it.
+    return sim, sim.land._capital_hops(world, sim.active_wars)
+
+
+def test_ground_lost_before_the_war_waits_until_this_wars_losses_are_won_back():
+    world = world_with(ard=200_000, bor=200_000)
+    sim, hops = _aims(world)
+    assert sim.land._relevance(world, sim.active_wars, "BOR", 2, hops) == 3.0
+    assert sim.land._relevance(world, sim.active_wars, "BOR", 1, hops) == lw.DEFENDER_PREWAR_LIBERATION
+
+
+def test_while_the_enemy_breaks_through_a_defender_mounts_no_side_shows():
+    world = world_with(ard=200_000, bor=200_000)
+    sim, hops = _aims(world)
+    land, wars = sim.land, sim.active_wars
+    world.contested[3] = ("ARD", 0.2)
+    land._depth_yesterday = {3: lw.BREAKTHROUGH_KM_PER_DAY + 1.0}  # A column racing for the capital.
+    assert land._relevance(world, wars, "BOR", 1, hops) == 0.0    # Not Crimea...
+    assert land._relevance(world, wars, "BOR", 12, hops) == 0.0   # ...not Kursk...
+    assert land._relevance(world, wars, "BOR", 2, hops) == 3.0    # ...but this war's losses, yes.
+    land._depth_yesterday = {3: 0.1}  # The offensive has bogged down into a crawl.
+    assert land._relevance(world, wars, "BOR", 12, hops) == lw.DEFENDER_INCURSION
+

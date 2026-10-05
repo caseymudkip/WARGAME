@@ -4,6 +4,8 @@ from datetime import datetime
 
 from conftest import BOR_CAPITAL, build_world, occupy, patriotic_spirit, unstable_spirit
 
+from wargame.conflict.war import OPENING_CAMPAIGN_DAYS
+from wargame.conflict.treaty import draft_treaty
 from wargame.conflict.war_goal import WarGoal
 from wargame.core.clock import Cadence
 from wargame.core.enums import EscalationTier, Motivation, TermType, WarGoalType
@@ -150,6 +152,24 @@ def test_attacker_halts_then_sues_for_white_peace_when_losses_buy_nothing():
     assert sim.wars[0].treaty.is_white_peace
 
 
+def _halt_day(goal: WarGoal) -> int | None:
+    sim = Simulation(build_world(), scenario(goal, Motivation.AGGRESSIVE))
+    sim.register_system(Cadence.DAILY, bleed({"ARD": 4_000, "BOR": 300}))
+    sim.register_system(Cadence.DAILY, scripted_offensive(day=2, pids=[1]))  # A little ground at a ruinous price.
+    for day in range(1, 61):
+        sim.run_days(1)
+        if sim.wars[0].participants["ARD"].offensive_halted:
+            return day
+    return None
+
+
+def test_an_all_out_invasion_runs_its_opening_campaign_before_it_is_reassessed():
+    invasion = WarGoal(WarGoalType.REGIME_CHANGE, "ARD", "BOR")
+    assert _halt_day(invasion) == OPENING_CAMPAIGN_DAYS  # Russia's "first stage", 24 Feb - 25 Mar 2022.
+    assert (_halt_day(WarGoal(WarGoalType.TERRITORIAL_CONQUEST, "ARD", "BOR", frozenset({1, 2})))
+            < OPENING_CAMPAIGN_DAYS)  # A limited operation is judged as it goes.
+
+
 def test_epic_motivation_bleeds_far_longer_than_realistic():
     _, cautious_days = _bloody_stalemate(Motivation.CAUTIOUS)
     _, aggressive_days = _bloody_stalemate(Motivation.AGGRESSIVE)
@@ -168,3 +188,20 @@ def test_defender_dictates_terms_when_the_attacker_breaks_while_losing():
     treaty = sim.wars[0].treaty
     assert treaty.winner == "BOR"
     assert world.provinces[11].owner == "BOR"
+
+
+def test_a_defender_that_outlasts_an_invader_takes_only_what_it_holds():
+    """Iran-Iraq 1988, Ethiopia-Eritrea 2000: the invader gives up; the defender does not carve it up."""
+    world = build_world()
+    world.country("ARD").capitulated = True
+    goal = WarGoal(WarGoalType.TERRITORIAL_CONQUEST, "ARD", "BOR", frozenset({1}))
+
+    def terms() -> set[int]:
+        treaty = draft_treaty(world=world, goal=goal, winner="BOR", loser="ARD", winner_side={"BOR"}, war_score=100.0,
+                              ambition=1.0, goal_achieved=False, signed_hour=0, reason="test")
+        return set(treaty.transferred_provinces())
+
+    assert terms() == set()
+    occupy(world, [11], "BOR")  # Its counterattack crossed the border.
+    assert terms() == {11}
+

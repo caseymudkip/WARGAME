@@ -99,9 +99,16 @@ def run(fp: Flashpoint, days: int) -> str:
              f"    ground changed: {', '.join(f'{k} {v:,.0f} km2' for k, v in sorted(changed.items(), key=lambda kv: -kv[1])[:4]) or 'none'}",
              f"    casualties {casualties}"]
     del moved
-    notable = [e for e in war.events if e.kind in ("pact_triggered", "nuclear_strike", "withdrawal", "capitulation",
-                                                    "government_in_exile", "offensive_halted", "escalation", "intervention")]
-    for e in notable[:5]:
+    joined_at_start = sum(1 for e in war.events if e.kind == "pact_triggered" and e.hour < 24)
+    if joined_at_start:
+        lines.append(f"    day 0: {joined_at_start} allies honour their pacts")
+    # Late entrants and exits matter most: who widened the war, who left it, and how it ended.
+    notable = [e for e in war.events
+               if e.kind in ("pact_triggered", "patron_intervention", "intervention", "opportunist", "separate_peace",
+                             "nuclear_detonation", "escalation", "capitulation", "government_in_exile", "pursuit",
+                             "offensive_halted", "withdrawal")
+               and not (e.kind == "pact_triggered" and e.hour < 24)]
+    for e in notable[:8]:
         lines.append(f"    day {e.hour // 24}: {e.message[:120]}")
     return "\n".join(lines)
 

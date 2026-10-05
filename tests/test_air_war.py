@@ -143,4 +143,4 @@ def test_a_kosovo_style_air_campaign_forces_concessions_in_weeks_not_days():
         if war_.ended:
             break
     assert war_.ended and war_.treaty is not None and war_.treaty.winner == "USA"
-    assert 40 <= day <= 130  # NATO, 1999: Belgrade gave way after 78 days.
+    assert 60 <= day <= 100  # NATO, 1999: Belgrade gave way after 78 days.

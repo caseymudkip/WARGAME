@@ -6,10 +6,12 @@ toggle and motivation. Then the engine runs the war on its own while you watch
 at the speed you choose.
 
 This repository currently contains the **simulation engine** (data model, daily
-and hourly logic loops and land warfare, in pure Python 3.11+ with no runtime
-dependencies), **real-world data for 140–145 countries** at two start dates,
-every number with its source, and a **3,604-province world map** with the real
-front lines. Land combat is calibrated against the 2025 war in Ukraine. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the
+and hourly logic loops, land warfare, amphibious operations, an air war and a
+strategy layer, in pure Python 3.11+ with no runtime dependencies), **real-world
+data for 140–145 countries** at two start dates, every number with its source,
+and a **3,604-province world map** with the real front lines. Combat is
+calibrated against the war in Ukraine and NATO's 1999 air campaign, and
+smoke-tested on eleven real-world flashpoints. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the
 design and resolved GDD decisions, and [`data/README.md`](data/README.md) for
 sources, cross-checks and known gaps.
 
@@ -20,14 +22,16 @@ src/wargame/
   core/        enums, clock (fixed 1h tick), modifiers, escalation tier rule table
   world/       Province (terrain, infrastructure, strategic tags), World registry
   nation/      Country, NationalSpirit, LogisticsStockpile, OrderOfBattle, NuclearPosture/BMD, exile
-  conflict/    War (escalation, exile pursuit, claims), WarGoal, PeaceTreaty,
-               land warfare (fronts, assaults, encirclement, rivers, blockade, attrition)
+  conflict/    War (escalation, exile pursuit, claims, armistice), WarGoal, PeaceTreaty,
+               land warfare (fronts, assaults, encirclement, rivers, amphibious, blockade, attrition),
+               strategy (posture, counteroffensives, withdrawals), air war (superiority, strikes)
   data/        snapshot loader, real data -> Country (python -m wargame.data RUS UKR), map -> World
   simulation.py  ScenarioConfig + Simulation tick loop
 data/          sources, raw extracts, curated research, built 2021/2026 snapshots, province map
 tools/data/    reproducible extraction and build scripts
 tools/map/     reproducible province map build (Natural Earth, power plants, DeepState front)
 tools/calibration/  land combat against the real 2025 war (python tools/calibration/ukraine_2025.py)
+tools/scenarios/    eleven real-world flashpoints run for a year (python tools/scenarios/sweep.py)
 tests/         behaviour tests (fictional map), real-map tests, dataset integrity tests
 ```
 
@@ -65,13 +69,16 @@ allow. The same rules give an exploitation dash against an empty front, WW2 divi
 in an even fight, and trench war against a fortified, drone-watched line. They are checked
 against both phases of the war in Ukraine (`python tools/calibration/ukraine_2025.py [2022]`):
 
-- **2025, from the 1 January 2026 front.** Russia takes 11.1 km² a day (DeepState: 11.9).
-  It loses about 1,170 soldiers a day (UK MoD: 1,137), and Ukraine loses 0.46 as many
+- **2025, from the 1 January 2026 front.** Russia takes 12.0 km² a day (DeepState: 11.9).
+  It loses about 1,045 soldiers a day (UK MoD: 1,137), and Ukraine loses 0.54 as many
   (CSIS: 0.42–0.5). The attacks fall on the real axes.
-- **2022, from the 2021 map.** Russia more than doubles its hold within five weeks
-  (~97,000 km²; the real figure was ~165,000) but cannot take Kyiv.
+- **2022, from the 2021 map.** Russia takes left-bank Kherson in days and nearly doubles its
+  hold within five weeks (~78,000 km²; the real figure was ~165,000), but cannot take Kyiv.
+  Four years on it holds ~125,000 km² (the real 2025 figure: ~116,000).
 - **Foreign aid decides the long war.** With aid, Ukraine keeps fighting for years from
   either start. If the West walks away, it collapses within about a year.
+- **Elsewhere.** An unaided Taiwan falls in about five months; with the US in, China cannot
+  win the sea. A Kosovo-style air campaign forces concessions in ~80 days (78 in 1999).
 
 Inspect a country's data with sources: `python -m wargame.data RUS UKR --year 2026`.
 

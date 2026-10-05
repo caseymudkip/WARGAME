@@ -84,7 +84,9 @@ def test_strong_attacker_pursues_the_free_state():
     occupy(world, [9, 10], by="ARD")  # Run the Free state to ground.
     run_until(war, world, lambda: war.ended)
     assert war.ended
-    assert all(p.owner == "ARD" for p in world.provinces.values() if p.id in (9, 10))
+    # The war was for a new regime, not for land: the Free state's ground is reunited under the puppet.
+    assert all(p.owner == "BOR" for p in world.provinces.values() if p.id in (9, 10))
+    assert world.country("BOR").overlord == "ARD"
 
 
 def test_exhausted_attacker_settles_and_the_free_state_survives():
@@ -139,3 +141,16 @@ def test_opportunist_claims_border_land_and_keeps_it_at_the_peace():
     run_until(war, world, lambda: war.ended)
     assert world.provinces[6].owner == "DRV"
     assert world.provinces[1].owner == world.provinces[2].owner == "ARD"
+
+
+def test_an_opportunist_never_joins_the_losing_side():
+    """A collapsing victim inside a stronger coalition is no opportunity: the jackal would face them all."""
+    world = build_world(bor_spirit=unstable_spirit())
+    world.country("DRV").relations["BOR"] = -0.9
+    war = declare(world, WarGoal(WarGoalType.BORDER_SKIRMISH, "ARD", "BOR", frozenset({1, 2})),
+                  tier=EscalationTier.UNRESTRICTED, attacker=Motivation.CAUTIOUS)
+    occupy(world, [3, 5], by="ARD")
+    world.country("ARD").oob.active_personnel = 1_000  # Ardania's side is the weaker one.
+    war.on_daily_tick(world, 24, AlwaysRolls())
+    assert "DRV" not in war.participants
+

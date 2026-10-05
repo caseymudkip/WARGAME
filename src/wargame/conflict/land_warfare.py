@@ -16,14 +16,17 @@ picks which enemy provinces to assault; every hour each assaulted province is fo
                rates at R ~2.3, mechanised exploitation at R 7+. It is cut by terrain, fieldworks and,
                most of all, a defender's drone-watched kill zone. Frontage is the border with the
                attacker's ground, limited by the troops attacking (wider in pursuit).
-  casualties   a share of the engaged personnel per day; attackers bleed more when R is low,
-               defenders when it is high, pockets far more.
+  casualties   a share of the troops in contact per day; attackers bleed more when R is low (as
+               1/sqrt(R), then 1/R at overwhelming odds), defenders when it is high, pockets far more.
+  amphibious   lift fills one beachhead at a time; the first echelon lands once it can win a lodgement,
+               then fights on land supplied over the beach. Blue-water navies land within 2,000 km.
 
 The same rules produce both paces of the war in Ukraine (tools/calibration/ukraine_2025.py):
-  2022, from the 2021 map: ~97,000 km2 held after 36 days (real ~165,000), Kyiv holds. Surprise,
-       open borders, an unmobilised defender, attacks from Belarus.
-  2025, from the 2026 front: 11.1 km2/day (DeepState 11.9), ~1,170 Russian casualties/day
-       (UK MoD 1,137), Ukrainian losses 0.46x (CSIS 0.42-0.5). A fortified, drone-saturated front.
+  2022, from the 2021 map: ~78,000 km2 held after 36 days (real ~165,000), Kyiv holds; ~125,000 after
+       four years (real 2025: ~116,000). Surprise, thin lines, an unmobilised defender, attacks from
+       Belarus; then fieldworks and drones as both sides adapt.
+  2025, from the 2026 front: 12.0 km2/day (DeepState 11.9), ~1,045 Russian casualties/day
+       (UK MoD 1,137), Ukrainian losses 0.54x (CSIS 0.42-0.5). A fortified, drone-saturated front.
 
 Also here because they are daily force-level effects: encirclement, fortification of static fronts,
 operational reach, mobilisation, equipment attrition and refurbishment, and naval blockade from
@@ -76,7 +79,11 @@ DEFENDER_PREWAR_LIBERATION = 0.3       # Own soil the enemy already held when th
 # bogged down into a crawl, secondary operations become thinkable again (Kursk, August 2024).
 BREAKTHROUGH_KM_PER_DAY = 1.0
 MAX_TARGETS = 6
-MIN_ASSAULT_RATIO = 1.1                # Planners don't send troops into assaults they expect to lose.
+MIN_ASSAULT_RATIO = 1.75               # Planners mass for local superiority and call off what they can't give it:
+                                       # below ~2:1 attacks rarely gain ground (Dupuy); doctrine asks 3:1 at the point
+                                       # of attack. Advance grows with the square of the excess, so massing pays.
+                                       # Calibrated on the 2022 replay: at 2:1 Russia overruns all of Donetsk in year
+                                       # one; at 1.5:1 it never forms the land bridge.
 
 # --- combat --------------------------------------------------------------------------------------
 # Advance = depth (km/day) x frontage (km). Depth follows the force ratio, on the scale of Dupuy's
@@ -95,8 +102,10 @@ MAX_DEPTH_KM_PER_DAY = 40.0            # Mechanised exploitation (3rd ID to Bagh
 ATTACK_PERSONNEL_PER_KM = 1_500        # Attack frontage: a ~15,000-strong division on ~10 km.
 AMPHIBIOUS_FRONTAGE_KM = 20.0          # A beachhead.
 FORTIFICATION_ADVANCE_DRAG = 2.5       # Dupuy: advance rates vary inversely with fortification.
-DRONE_ADVANCE_DRAG = 0.955             # Full saturation: the 2025 front, slower than the Somme (CSIS).
+DRONE_ADAPTATION_PER_DAY = 0.001      # Saturation gained per day at war: from nothing to the 2025 front in ~2.5 years.
+DRONE_ADVANCE_DRAG = 0.961             # Full saturation: the 2025 front, slower than the Somme (CSIS).
 CASUALTY_RATE = 0.004                  # Share of engaged personnel lost per day at R = 1.
+LOPSIDED_RATIO = 3.0                   # Beyond this, attacker losses fall as 1/R rather than 1/sqrt(R).
 DEFENDER_FRONTAGE = 2.7                # Defenders in contact: at most attackers / 2.5 (holding takes fewer troops).
 ENCIRCLED_DEFENCE = 0.5
 ENCIRCLED_CASUALTIES = 2.0
@@ -130,6 +139,8 @@ NAVAL_SUPERIORITY = 1.5                # Needed for amphibious assaults and sea-
 # amphibious fleet can land about one division, ~20,000 troops, per lift (DoD, as widely reported),
 # against 300,000+ needed for Taiwan. A beachhead builds up wave by wave.
 LIFT_TROOPS_PER_NAVAL_POWER = 8.0
+BEACHHEAD_SUPPLY = 0.8                 # Attack multiplier once ashore: over-the-beach supply.
+BEACHHEAD_COMMITMENT = 2.0             # Planners stand by a beachhead they have troops on (or evacuate it: Gallipoli).
 SEA_THREAT_WEIGHT = 0.3                # A coast facing enemy shipping weighs this much against a land front.
 # Global reach: a navy with at least two big decks (carriers or helicopter carriers) can land anywhere
 # within this range of its own or an ally's coast, if it rules the sea (the US in the Caribbean). Others
@@ -274,6 +285,7 @@ class LandWarfare:
                 self._wars_seen.add(war.id)
                 self._dig_in_prewar_lines(world, war)
         self._mobilise(world, wars)
+        self._adapt_drones(world, enemies)
         self._update_hosts(world, wars, sim.clock.hours_elapsed)
         self._encirclement(world, wars, enemies, allies)
         self._fortify(world, enemies)
@@ -295,19 +307,25 @@ class LandWarfare:
         self._land_waves(world, allies)
 
     def _land_waves(self, world: World, allies: dict[str, set[str]]) -> None:
-        """Each day's lift puts more troops ashore for every amphibious assault still going in."""
+        """Each day's lift puts more troops ashore, one beachhead at a time: the main landing is filled
+        before the next gets a ship (Normandy, then Provence). Waves not yet landed, or taken off an abandoned
+        beachhead (Gallipoli, 1915), sail for whichever beach the plan now names."""
         live = {(tag, t) for tag, d in self.deployments.items() for t, (_, _, km) in d.attacks.items() if km}
+        afloat: dict[str, float] = {}
         for key in list(self.ashore):
             if key not in live:
-                del self.ashore[key]
+                afloat[key[0]] = afloat.get(key[0], 0.0) + self.ashore.pop(key)
         for tag, dep in sorted(self.deployments.items()):
-            targets = sorted(t for t, (_, _, km) in dep.attacks.items() if km)
+            targets = sorted((t for t, (_, _, km) in dep.attacks.items() if km), key=lambda t: (-dep.attacks[t][1], t))
             if not targets or dep.personnel_per_power <= 0:
                 continue
-            lift = LIFT_TROOPS_PER_NAVAL_POWER * world.country(tag).oob.branch_power(Branch.NAVAL) / dep.personnel_per_power
+            lift = afloat.get(tag, 0.0)
+            lift += LIFT_TROOPS_PER_NAVAL_POWER * world.country(tag).oob.branch_power(Branch.NAVAL) / dep.personnel_per_power
             for t in targets:
-                planned = dep.attacks[t][1]
-                self.ashore[(tag, t)] = min(planned, self.ashore.get((tag, t), 0.0) + lift / len(targets))
+                landed = self.ashore.get((tag, t), 0.0)
+                wave = min(lift, max(0.0, dep.attacks[t][1] - landed))
+                self.ashore[(tag, t)] = landed + wave
+                lift -= wave
 
     @staticmethod
     def _front(world: World, tag: str, foes: set[str]) -> list[int]:
@@ -645,13 +663,15 @@ class LandWarfare:
         routes += [(origin, q, float(max(km, 1))) for origin, q, km in amphibious  # 0 would read as a land route.
                    if not defending or world.provinces[q].owner in friends]   # Defenders land only to liberate.
         for origin, q, km in routes:
-            edge = crossing_penalty(world, origin, q, km) * self._reach_factor(tag, origin)  # Dry-shod, well supplied.
+            edge = self._crossing(world, tag, origin, q, km) * self._reach_factor(tag, origin)  # Dry-shod, well supplied.
             if offensive * dep.effectiveness * edge < MIN_ASSAULT_RATIO * self._defence(world, q, foes)[0]:
                 continue  # Out of reach even with every assault unit.
             if not strategy.worth_attacking(self, world, wars, tag, q):
                 continue
             score = world.provinces[q].strategic_value() * self._relevance(world, wars, tag, q, hops) * edge
             score /= 1.0 + defenders_at.get(q, 0.0) / (power + 1.0)
+            if km and self.ashore.get((tag, q), 0.0) > 0:
+                score *= BEACHHEAD_COMMITMENT
             if score > candidates.get(q, (0.0, 0, 0.0))[0]:
                 candidates[q] = (score, origin, km)
         chosen = sorted(candidates.items(), key=lambda kv: (-kv[1][0], kv[0]))[:MAX_TARGETS]
@@ -661,7 +681,7 @@ class LandWarfare:
         while chosen and offensive > 0:
             total = sum(s * s for _, (s, _, _) in chosen)
             alloc = {q: offensive * s * s / total for q, (s, _, _) in chosen}
-            expected = {q: alloc[q] * dep.effectiveness * crossing_penalty(world, origin, q, km) * self._reach_factor(tag, origin, world, q)
+            expected = {q: alloc[q] * dep.effectiveness * self._crossing(world, tag, origin, q, km) * self._reach_factor(tag, origin, world, q)
                         / max(self._defence(world, q, foes)[0], 1e-6) for q, (_, origin, km) in chosen}
             worst = min(chosen, key=lambda kv: (expected[kv[0]], kv[0]))[0]
             if expected[worst] >= MIN_ASSAULT_RATIO:
@@ -741,6 +761,15 @@ class LandWarfare:
                 oob.reserve_personnel -= from_reserve
                 oob.active_personnel += from_reserve + min(pool, want - from_reserve)
 
+    @staticmethod
+    def _adapt_drones(world: World, enemies: dict[str, set[str]]) -> None:
+        """Armies at war learn the drone war: cheap commercial drones are everywhere, and every month of
+        fighting thickens the kill zone (Ukraine: almost no FPV drones in early 2022, 1.3 million in 2024)."""
+        for tag in sorted(enemies):
+            if tag in world.countries:
+                country = world.country(tag)
+                country.drone_saturation = min(1.0, country.drone_saturation + DRONE_ADAPTATION_PER_DAY)
+
     def _operational_reach(self, world: World, enemies: dict[str, set[str]], allies: dict[str, set[str]], now_hour: int) -> None:
         self.reach = {}
         consolidated = now_hour - CONSOLIDATION_DAYS * 24
@@ -759,6 +788,14 @@ class LandWarfare:
                     if p.owner in staging or self._taken_hour.get(p.id, consolidated) <= consolidated]
             hops = {pid: 0 for pid in rear}
             queue = deque(rear)
+            if by_sea and any(t in world.countries and self.blue_water(world.country(t)) for t in staging):
+                # A blue-water navy supplies a lodgement across an ocean (Normandy's Mulberry harbours).
+                ports = [world.provinces[pid] for pid in rear if world.provinces[pid].coastal]
+                for t in sorted(staging):
+                    for p in world.controlled_by(t):
+                        if p.coastal and p.id not in hops and any(p.distance_km(b) <= BLUE_WATER_RANGE_KM for b in ports):
+                            hops[p.id] = 1
+                            queue.append(p.id)
             while queue:
                 pid = queue.popleft()
                 prov = world.provinces[pid]
@@ -876,17 +913,40 @@ class LandWarfare:
                     continue
                 if world.provinces[origin].controller not in self._staging(world, tag, allies):
                     continue
-                if km:  # Only what has been landed so far can fight.
+                if km:  # Only what has been landed so far can fight...
                     power = min(power, self.ashore.get((tag, target), 0.0))
-                    if power <= 0:
+                    if power <= 0 or not self._lodgement(world, tag, target, origin, power, km, allies):
                         continue
                 strength, personnel, beach = assaults.setdefault(target, {}).get(tag, (0.0, 0.0, 0.0))
-                assaults[target][tag] = (strength + power * dep.effectiveness * crossing_penalty(world, origin, target, km)
+                assaults[target][tag] = (strength + power * dep.effectiveness * self._crossing(world, tag, origin, target, km)
                                          * self._reach_factor(tag, origin, world, target),
                                          personnel + power * dep.personnel_per_power,
                                          max(beach, AMPHIBIOUS_FRONTAGE_KM if km else 0.0))
         for target, attackers in sorted(assaults.items()):
             self._fight(world, wars, target, attackers, allies, sim.clock.hours_elapsed)
+
+    @staticmethod
+    def _crossing(world: World, tag: str, origin: int, target: int, km: float) -> float:
+        """Crossing penalty, eased once a landing holds a beachhead: the beach is the hard part; after it the
+        fight is on land, supplied over the beach (Normandy's bocage, June-July 1944)."""
+        penalty = crossing_penalty(world, origin, target, km)
+        if km:
+            attacker, progress = world.contested.get(target, (None, 0.0))
+            if attacker == tag and progress > 0:
+                return max(penalty, BEACHHEAD_SUPPLY)
+        return penalty
+
+    def _lodgement(self, world: World, tag: str, target: int, origin: int, power: float, km: float,
+                   allies: dict[str, set[str]]) -> bool:
+        """...and it goes in only once the first echelon can win a lodgement, or holds one already. A landing
+        made piecemeal is thrown back into the sea (Dieppe, 1942); Normandy's first day put 156,000 ashore."""
+        attacker, progress = world.contested.get(target, (None, 0.0))
+        if attacker == tag and progress > 0:
+            return True
+        dep = self.deployments[tag]
+        strength = power * dep.effectiveness * crossing_penalty(world, origin, target, km) * self._reach_factor(tag, origin)
+        holder = world.provinces[target].controller
+        return strength >= MIN_ASSAULT_RATIO * self._defence(world, target, allies.get(holder, {holder}))[0]
 
     def _surprise(self, world: World, wars: list[War], attacker: str, holder: str, now_hour: int) -> float:
         war = self._war_between(wars, attacker, holder)
@@ -925,19 +985,18 @@ class LandWarfare:
 
         stationed = {tag: s / max(self.deployments[tag].effectiveness, 1e-6) * self.deployments[tag].personnel_per_power
                      for tag, s in defenders.items()}
+        side = self._staging(world, lead, allies)
+        border = sum(prov.border_with(n) for n in prov.neighbors if world.provinces[n].controller in side)
+        beach = max(b for _, _, b in attackers.values())
+        opening = border + beach
+        # Once through a neck or off the beach, the front fans out across the province (Perekop, 2022).
+        gained = world.contested[target][1] if world.contested.get(target, ("", 0.0))[0] == lead else 0.0
+        front = max(opening, min(opening + 2.0 * penetration_km(prov.area_km2, opening, gained), math.sqrt(prov.area_km2)))
         advance = 0.0  # km2/day
         if ratio > 1.0:
             depth = self.depth_km_per_day(world, target, ratio)
-            side = self._staging(world, lead, allies)
-            border = sum(prov.border_with(n) for n in prov.neighbors if world.provinces[n].controller in side)
-            beach = max(b for _, _, b in attackers.values())
-            density = sum(stationed.values()) / max(border + beach, 1.0)
+            density = sum(stationed.values()) / max(opening, 1.0)
             thin = min(THIN_LINE_MAX, max(1.0, DENSITY_TO_HOLD / max(density, 1.0)) ** THIN_LINE_EXPONENT)
-            # Once through a neck or off the beach, the front fans out across the province (Perekop, 2022).
-            gained = world.contested[target][1] if world.contested.get(target, ("", 0.0))[0] == lead else 0.0
-            opening = border + beach
-            width = math.sqrt(prov.area_km2)
-            front = max(opening, min(opening + 2.0 * penetration_km(prov.area_km2, opening, gained), width))
             # A weaker defence lets each formation sweep a wider zone (pursuit frontages).
             frontage = min(front, attacking_personnel / ATTACK_PERSONNEL_PER_KM * max(1.0, ratio - 1.0) * thin)
             advance = depth * frontage
@@ -946,13 +1005,19 @@ class LandWarfare:
         progress += advance / 24.0 / max(prov.area_km2, 1.0)
         world.contested[target] = (lead, min(progress, 1.0))
 
-        # Casualties this hour. Attackers bleed more against strong defences; defenders in contact are
-        # limited by the attackers' frontage and protected by terrain and fortification.
+        # Casualties this hour. Only troops in contact bleed: no more attackers than the front can take (the
+        # rest wait their turn on the beach or in the next echelon). Attackers bleed more against strong
+        # defences; defenders in contact are limited by the attackers' numbers and protected by terrain and works.
         bounded = clamp(ratio, 0.2, 5.0)
         protection = prov.terrain_profile.defense_multiplier * (1.0 + self.fortification.get(target, 0.0))
+        engaged = min(attacking_personnel, front * ATTACK_PERSONNEL_PER_KM)
+        exposure = engaged / max(attacking_personnel, 1.0)
+        # At overwhelming odds the attacker's losses are bounded by what the defence can still shoot (Lanchester):
+        # they fall as 1/R beyond LOPSIDED_RATIO (1991: ~1,000 coalition casualties in 100 hours, ~0.03% a day).
+        odds = math.sqrt(min(ratio, LOPSIDED_RATIO)) * max(1.0, ratio / LOPSIDED_RATIO) if ratio > 0.2 else math.sqrt(0.2)
         for tag, (_, personnel, _) in attackers.items():
-            self._casualties(world, wars, tag, holder, CASUALTY_RATE / 24.0 * personnel / math.sqrt(bounded), offensive=True)
-        in_contact = min(sum(stationed.values()), attacking_personnel / DEFENDER_FRONTAGE)
+            self._casualties(world, wars, tag, holder, CASUALTY_RATE / 24.0 * personnel * exposure / odds, offensive=True)
+        in_contact = min(sum(stationed.values()), engaged / DEFENDER_FRONTAGE)
         total_stationed = sum(stationed.values()) or 1.0
         rate = CASUALTY_RATE / 24.0 * math.sqrt(bounded) / protection * (ENCIRCLED_CASUALTIES if pocket else 1.0)
         for tag, personnel in stationed.items():
