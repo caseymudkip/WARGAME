@@ -185,7 +185,7 @@ class Session:
             "nuclear_strikes": [{"day": s.hour // 24, "user": s.user, "province": s.province_id,
                                  "intercepted": s.intercepted} for s in war.nuclear_strikes],
             "treaty": None if treaty is None else {
-                "reason": treaty.reason, "winner": treaty.winner, "loser": treaty.loser,
+                "reason": treaty.reason, "winner": treaty.winner, "loser": treaty.loser, "frozen": treaty.frozen,
                 "terms": [{"type": t.type.value, "beneficiary": t.beneficiary, "target": t.target,
                            "provinces": len(t.province_ids)} for t in treaty.terms],
             },

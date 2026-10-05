@@ -26,7 +26,10 @@ runs one and prints how it went.
 **In the browser, without installing anything:** `python tools/web/build_site.py OUT_DIR` runs every
 flashpoint for up to two years, records each day, and writes a self-contained page that replays them
 (the same map, panels and diary, with a timeline). Since a spectator only controls time, a replay of a
-flashpoint is the same war as watching it live; custom wars need the engine and stay in the local app.
+flashpoint is the same war as watching it live. Add `--pyodide DIR` (an extracted
+[pyodide-core 0.27.7](https://github.com/pyodide/pyodide/releases/tag/0.27.7)) and the page fights custom
+wars too: the engine itself runs in the browser, compiled to WebAssembly, in a background worker
+(`src/wargame/app/live.py`). The first custom war downloads up to 25 MB and starts in a few seconds.
 
 ## What's here
 

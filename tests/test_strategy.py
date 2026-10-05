@@ -152,6 +152,26 @@ def test_a_war_nobody_fights_freezes_into_an_armistice():
     assert world.provinces[1].controller == "ARD"
 
 
+def test_air_raids_alone_dont_keep_a_frozen_war_going():
+    from wargame.conflict.war import ARMISTICE_QUIET_DAYS
+    world = world_with(ard=40_000, bor=400_000)
+    world.country("ARD").leadership_defiance = 1.0
+    occupy(world, [1], "ARD")
+    sim = start(world, WarGoal(WarGoalType.TERRITORIAL_CONQUEST, "ARD", "BOR", frozenset({2})))
+    world.country("BOR").drone_saturation = 0.0
+    sim.land.fortification[1] = lw.FORTIFICATION_MAX
+    world.country("ARD").drone_saturation = 1.0
+    war = sim.wars[0]
+    for _ in range(ARMISTICE_QUIET_DAYS + 10):
+        war.record_casualties(world, "BOR", 5, offensive=False, ground=False)  # Raids every day...
+        sim.run_days(1)
+    assert war.treaty is not None and war.treaty.frozen  # ...but the front is quiet, and the war freezes.
+    world = world_with(ard=40_000, bor=400_000)
+    coercion = start(world, WarGoal(WarGoalType.COERCION, "ARD", "BOR", frozenset())).wars[0]
+    coercion.record_casualties(world, "BOR", 5, offensive=False, ground=False)
+    assert coercion.fought_today  # In a war of coercion the raids *are* the fighting.
+
+
 def test_peace_returns_only_what_this_war_took():
     from wargame.conflict.treaty import apply_treaty, white_peace
     world = world_with(ard=100_000, bor=100_000)

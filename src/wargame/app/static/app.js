@@ -702,14 +702,20 @@ function member(m, colour) {
 function showPeace(w) {
   S.peaceShown = true;
   const t = w.treaty;
-  $("peace-title").textContent = t && t.winner ? `${S.names[t.winner] || t.winner} prevails` : "The war is over";
+  $("peace-title").textContent = t && t.winner ? `${S.names[t.winner] || t.winner} prevails` : t && t.frozen ? "Armistice" : "The war is over";
   $("peace-reason").textContent = t ? `${t.reason[0].toUpperCase()}${t.reason.slice(1)}.` : "";
-  $("peace-terms").replaceChildren(...(t ? t.terms : []).map((term) => {
+  const terms = new Map();  // One line per kind of term: two cessions to the same winner read as one.
+  for (const term of t ? t.terms : []) {
+    const key = `${term.type}|${term.beneficiary}|${term.target}`;
+    if (terms.has(key)) terms.get(key).provinces += term.provinces; else terms.set(key, { ...term });
+  }
+  $("peace-terms").replaceChildren(...[...terms.values()].map((term) => {
     const li = document.createElement("li");
     const who = `${S.names[term.beneficiary] || term.beneficiary || ""}`;
     const on = `${S.names[term.target] || term.target || ""}`;
     li.textContent = {
-      white_peace: "White peace: everyone goes home.",
+      white_peace: t.frozen ? "The war freezes on the line of contact: ground held stays held."
+        : "White peace: everyone goes home.",
       province_transfer: `${on} cedes ${term.provinces} province${term.provinces === 1 ? "" : "s"} to ${who}.`,
       annexation: `${who} absorbs ${on}.`,
       puppet: `${on} becomes a puppet of ${who}.`,

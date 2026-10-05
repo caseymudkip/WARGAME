@@ -136,6 +136,23 @@ h3.label { font: 600 11px/1 var(--font-body); text-transform: uppercase; letter-
 .peace-card h2 { margin: 0 0 6px; font: 700 24px/1.2 var(--font-display); }
 .actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 
+.tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+.tab { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 6px 14px; cursor: pointer; color: var(--muted); }
+.tab.active { color: var(--text); background: var(--panel-2); }
+form label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); flex: 1 1 200px; min-width: 0; }
+form .row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+form select, form input[type=number] { background: var(--ocean); border: 1px solid var(--line); border-radius: 8px; padding: 8px;
+  color: var(--text); font-size: 14px; width: 100%; }
+form label.check { flex-direction: row; align-items: center; gap: 8px; color: var(--text); font-size: 14px; }
+.hint { font-size: 12px; color: var(--muted); margin: -4px 0 12px; }
+.error { color: var(--danger); font-size: 13px; overflow-wrap: anywhere; }
+#claim-bar { position: fixed; left: 50%; top: calc(12px + env(safe-area-inset-top, 0px)); transform: translateX(-50%);
+  background: var(--panel); border: 1px solid var(--accent); border-radius: 10px; padding: 8px 12px; display: flex; gap: 10px;
+  align-items: center; z-index: 5; max-width: calc(100% - 32px); flex-wrap: wrap; }
+.live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--danger); margin-right: 6px;
+  vertical-align: 1px; }
+.fighting { color: var(--accent); font: 12px var(--font-data); margin-left: 8px; }
+
 @media (max-width: 900px) {
   #app { height: auto; min-height: 100%; }
   main { flex-direction: column; }
@@ -151,7 +168,7 @@ h3.label { font: 600 11px/1 var(--font-body); text-transform: uppercase; letter-
   <header id="topbar">
     <div class="brand">WARGAME<span class="badge" id="version">alpha</span></div>
     <div class="scenario" id="scenario-name">Choose a flashpoint</div>
-    <div class="clock"><span id="date">—</span><span class="day" id="day"></span></div>
+    <div class="clock"><span id="date">—</span><span class="day" id="day"></span><span class="fighting" id="fighting" hidden>fighting…</span></div>
     <div class="controls" id="speeds" role="group" aria-label="Playback">
       <button id="play" title="Play or pause (space)" disabled>❚❚</button>
       <button data-speed="1" title="1 day per second (1)" disabled>1 day/s</button>
@@ -159,7 +176,7 @@ h3.label { font: 600 11px/1 var(--font-body); text-transform: uppercase; letter-
       <button data-speed="7" title="1 week per second (3)" disabled>1 week/s</button>
       <button data-speed="30" title="1 month per second (4)" disabled>1 month/s</button>
     </div>
-    <button class="ghost" id="new-war">Flashpoints</button>
+    <button class="ghost" id="new-war">New war</button>
   </header>
   <div id="timeline">
     <span id="t-start">day 0</span>
@@ -203,14 +220,65 @@ h3.label { font: 600 11px/1 var(--font-body); text-transform: uppercase; letter-
 <div id="setup" class="overlay">
   <div class="card">
     <h1>WARGAME</h1>
-    <p class="lede">Twelve real-world wars, fought by the simulation on today's map with real forces. Pick one and
+    <p class="lede">Real-world wars, fought by the simulation on today's map with real forces. Set one up and
       watch: once it starts, the only thing you control is time.</p>
-    <div class="presets" id="presets"></div>
-    <p class="note">Each war was fought by the WARGAME engine and recorded day by day; you are watching the record.
-      To set up your own war between any two of 145 countries, run the full game on your computer
-      (<a href="https://github.com/caseymudkip/WARGAME" target="_blank" rel="noopener">WARGAME on GitHub</a>, then
-      <code>pip install -e .</code> and <code>wargame</code>).</p>
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="presets" role="tab">Flashpoints</button>
+      <button class="tab" data-tab="custom" role="tab" id="custom-tab" hidden>Custom war</button>
+    </div>
+    <div id="tab-presets">
+      <div class="presets" id="presets"></div>
+      <p class="note">Each flashpoint was fought by the WARGAME engine and recorded day by day, so it opens instantly.</p>
+    </div>
+    <div id="tab-custom" hidden>
+      <form id="custom-form">
+        <div class="row">
+          <label for="f-year">Start <select id="f-year">
+            <option value="2026">1 January 2026</option><option value="2021">24 February 2022 (2021 data)</option></select></label>
+          <label for="f-seed">Seed <input id="f-seed" type="number" value="0" min="0"></label>
+        </div>
+        <div class="row">
+          <label for="f-attacker">Attacker <select id="f-attacker"></select></label>
+          <label for="f-defender">Defender <select id="f-defender"></select></label>
+        </div>
+        <div class="row">
+          <label for="f-goal">War goal <select id="f-goal">
+            <option value="regime_change">Regime change (take the capital, install a puppet)</option>
+            <option value="territorial_conquest">Territorial conquest (claimed provinces)</option>
+            <option value="border_skirmish">Border skirmish (a few border provinces)</option>
+            <option value="total_capitulation">Total capitulation (annexation)</option>
+            <option value="coercion">Coercion (strikes and blockade until concessions)</option></select></label>
+        </div>
+        <p class="hint" id="claim-hint"></p>
+        <div class="row">
+          <label for="f-tier">Escalation <select id="f-tier">
+            <option value="1">Vacuum: nobody else gets involved</option>
+            <option value="2" selected>Proxy war: outsiders send arms, not troops</option>
+            <option value="3">Unrestricted: alliances trigger</option></select></label>
+        </div>
+        <div class="row">
+          <label for="f-amot">Attacker's temper <select id="f-amot">
+            <option value="CAUTIOUS">Realistic (cautious)</option><option value="AGGRESSIVE">Epic (aggressive)</option></select></label>
+          <label for="f-dmot">Defender's temper <select id="f-dmot">
+            <option value="CAUTIOUS">Realistic (cautious)</option><option value="AGGRESSIVE">Epic (aggressive)</option></select></label>
+        </div>
+        <label class="check" for="f-nuclear"><input type="checkbox" id="f-nuclear"> Nuclear weapons enabled</label>
+        <div class="actions">
+          <button type="button" class="ghost" id="pick-claims">Pick claimed provinces on the map</button>
+          <button type="submit" class="primary" id="start-custom">Start the war</button>
+        </div>
+        <p class="note">Custom wars are fought live by the engine, running in your browser. The first one downloads
+          up to 25 MB and takes a few seconds to start.</p>
+      </form>
+    </div>
+    <p class="error" id="setup-error" hidden></p>
   </div>
+</div>
+
+<div id="claim-bar" hidden>
+  <span id="claim-count"></span>
+  <button class="ghost" id="claim-clear">Clear</button>
+  <button class="primary" id="claim-done">Done</button>
 </div>
 
 <div id="peace" class="overlay" hidden>
@@ -239,6 +307,7 @@ const S = {
   meta: null, worlds: {}, world: null, shapes: [], names: {},
   replay: null, control: [], frame: 0, cursor: 0, playing: false, speed: 3,
   hover: null, selected: null, view: { scale: 4, tx: 0, ty: 0 }, peaceShown: false,
+  live: false, fetching: false, picking: false, claims: new Set(), setupSides: null, warSeq: 0,
 };
 
 // --- projection: Miller cylindrical, in degrees ------------------------------------------------
@@ -279,7 +348,10 @@ function hash(tag) {
 function currentFrame() { return S.replay ? S.replay.frames[S.frame] : null; }
 function sides() {
   const f = currentFrame(), out = { attacker: [], defender: [] };
-  if (!f) return out;
+  if (!f) {
+    if (S.setupSides) { out.attacker.push(S.setupSides[0]); out.defender.push(S.setupSides[1]); }
+    return out;
+  }
   f.s[0].forEach((m) => out.attacker.push(S.replay.tags[m[0]]));
   f.s[1].forEach((m) => out.defender.push(S.replay.tags[m[0]]));
   return out;
@@ -374,6 +446,10 @@ function draw() {
       ctx.fillStyle = intercepted ? "rgba(255,255,255,0.25)" : "rgba(255,245,200,0.9)"; ctx.fill();
       ctx.lineWidth = 2 * px; ctx.strokeStyle = "#fff"; ctx.stroke();
     }
+  }
+  if (!f && S.claims.size) {
+    ctx.lineWidth = 1.6 * px; ctx.strokeStyle = "#e3b04b";
+    for (const pid of S.claims) ctx.stroke(S.shapes[pid - 1].path);
   }
   for (const [id, style] of [[S.hover, "rgba(255,255,255,0.7)"], [S.selected, "#fff"]]) {
     if (!id) continue;
@@ -499,6 +575,7 @@ function tooltip(id, e) {
   if (controller !== owner) html += ` · held by ${S.names[controller] || controller}`;
   const f = currentFrame(), c = f && f.k.find((x) => x[0] === id);
   if (c) html += `<br>${Math.round(c[2] / 10)}% taken by ${S.names[S.replay.tags[c[1]]]}`;
+  if (S.picking && owner === $("f-defender").value) html += `<br><i>${S.claims.has(id) ? "Click to drop the claim" : "Click to claim"}</i>`;
   tip.innerHTML = html;
   const r = canvas.getBoundingClientRect();
   tip.style.left = `${Math.min(e.clientX - r.left + 14, r.width - 270)}px`;
@@ -506,6 +583,14 @@ function tooltip(id, e) {
   tip.hidden = false;
 }
 function select(id) {
+  if (S.picking) {
+    if (id && S.control[id - 1][0] === $("f-defender").value) {
+      S.claims.has(id) ? S.claims.delete(id) : S.claims.add(id);
+      updateClaims();
+      redraw();
+    }
+    return;
+  }
   S.selected = id; redraw(); renderProvince();
 }
 function renderProvince() {
@@ -543,10 +628,10 @@ function seek(day) {
   renderClock();
   renderProvince();
   redraw();
-  if (S.frame === last && !S.peaceShown) { S.peaceShown = true; setPlaying(false); showEnd(); }
+  if (S.frame === last && (!S.live || S.replay.ended) && !S.peaceShown) { S.peaceShown = true; setPlaying(false); showEnd(); }
 }
 function setPlaying(on) {
-  S.playing = on && S.replay && S.frame < S.replay.frames.length - 1;
+  S.playing = Boolean(on && S.replay && (S.frame < S.replay.frames.length - 1 || (S.live && !S.replay.ended)));
   $("play").textContent = S.playing ? "❚❚" : "▶";
   $("play").title = S.playing ? "Pause (space)" : "Play (space)";
 }
@@ -560,8 +645,11 @@ function tick(now) {
   const dt = Math.min(0.25, (now - lastTick) / 1000);
   lastTick = now;
   if (S.playing && S.replay) {
-    S.cursor += dt * S.speed;
+    const last = S.replay.frames.length - 1;
+    S.cursor = Math.min(S.cursor + dt * S.speed, S.live && !S.replay.ended ? last + 0.999 : last);
     if (Math.floor(S.cursor) !== S.frame) seek(S.cursor);
+    if (S.live && !S.replay.ended && !S.fetching && last - S.cursor < Math.max(8, S.speed * 2)) fight(Math.round(Math.min(60, Math.max(5, S.speed * 2))));
+    $("fighting").hidden = !(S.live && !S.replay.ended && S.frame >= last);
   }
   requestAnimationFrame(tick);
 }
@@ -655,17 +743,22 @@ function addEvent([day, kind, message]) {
 function showEnd() {
   const t = S.replay.treaty, names = S.names;
   if (t) {
-    $("peace-title").textContent = t.winner ? `${names[t.winner] || t.winner} prevails` : "The war is over";
+    $("peace-title").textContent = t.winner ? `${names[t.winner] || t.winner} prevails` : t.frozen ? "Armistice" : "The war is over";
     $("peace-reason").textContent = `Day ${t.day}: ${t.reason}.`;
     const text = {
-      white_peace: () => "White peace: everyone goes home.",
+      white_peace: () => (t.frozen ? "The war freezes on the line of contact: ground held stays held." : "White peace: everyone goes home."),
       province_transfer: (b, o, n) => `${o} cedes ${n} province${n === 1 ? "" : "s"} to ${b}.`,
       annexation: (b, o) => `${b} absorbs ${o}.`,
       puppet: (b, o) => `${o} becomes a puppet of ${b}.`,
       demilitarization: (b, o) => `${o} is demilitarised.`,
       reparations: (b, o) => `${o} pays reparations to ${b}.`,
     };
-    $("peace-terms").replaceChildren(...t.terms.map(([type, b, o, n]) => {
+    const terms = new Map();  // One line per kind of term: two cessions to the same winner read as one.
+    for (const [type, b, o, n] of t.terms) {
+      const key = `${type}|${b}|${o}`;
+      if (terms.has(key)) terms.get(key)[3] += n; else terms.set(key, [type, b, o, n]);
+    }
+    $("peace-terms").replaceChildren(...[...terms.values()].map(([type, b, o, n]) => {
       const li = document.createElement("li");
       li.textContent = (text[type] || (() => type))(names[b] || b, names[o] || o, n);
       return li;
@@ -685,6 +778,7 @@ async function loadWorld(year) {
   anchors = null;
 }
 async function start(key) {
+  S.warSeq++;
   $("loading").hidden = false;
   $("loading").textContent = "Loading the war…";
   $("setup").hidden = true;
@@ -692,14 +786,18 @@ async function start(key) {
   setPlaying(false);
   const rp = await getJSON(`data/replays/${key}.json`);
   await loadWorld(rp.year);
+  S.live = false;
+  begin(rp);
+}
+function begin(rp) {
   S.replay = rp;
   S.names = Object.assign({}, S.world.countries, rp.names);
   S.control = S.world.provinces.map((p) => [p[1], p[2]]);
   S.frame = -1; S.cursor = 0; S.peaceShown = false; S.selected = null;
   $("scenario-name").textContent = rp.name;
-  $("scrub").max = String(rp.frames.length - 1);
+  S.claims.clear(); S.picking = false; S.setupSides = null;
+  timelineEnd();
   $("scrub").disabled = false;
-  $("t-end").textContent = `day ${rp.frames[rp.frames.length - 1].d}`;
   document.querySelectorAll("#speeds button").forEach((b) => (b.disabled = false));
   seek(0);
   frameWar();
@@ -719,7 +817,7 @@ $("new-war").addEventListener("click", () => { setPlaying(false); $("setup").hid
 $("peace-new").addEventListener("click", () => { $("peace").hidden = true; $("setup").hidden = false; });
 $("peace-close").addEventListener("click", () => { $("peace").hidden = true; });
 window.addEventListener("keydown", (e) => {
-  if (!S.replay || !$("setup").hidden || e.target.closest("input, select, textarea")) return;
+  if (!S.replay || S.picking || !$("setup").hidden || e.target.closest("input, select, textarea")) return;
   const speeds = [1, 3, 7, 30];
   if (e.code === "Space") { e.preventDefault(); $("play").click(); }
   else if (/^Digit[1-4]$/.test(e.code)) setSpeed(speeds[Number(e.code.slice(5)) - 1]);
@@ -736,6 +834,200 @@ function renderPresets() {
     return b;
   }));
 }
+function timelineEnd() {
+  const rp = S.replay, last = rp.frames[rp.frames.length - 1].d;
+  $("scrub").max = String(rp.frames.length - 1);
+  $("t-end").textContent = S.live && !rp.ended ? `day ${last} · live` : `day ${last}`;
+}
+
+// --- the engine, for custom wars: Python in WebAssembly (Pyodide), in a worker if the browser allows ----------
+class WorkerEngine {
+  constructor(onProgress) {
+    this.pending = new Map(); this.seq = 0;
+    this.worker = new Worker("engine-worker.js");
+    this.worker.onmessage = (e) => {
+      const m = e.data;
+      if (m.type === "progress") { onProgress(m.message); return; }
+      const p = this.pending.get(m.id);
+      if (!p) return;
+      this.pending.delete(m.id);
+      m.error ? p.reject(new Error(m.error)) : p.resolve(m.result);
+    };
+    this.worker.onerror = (e) => {
+      for (const p of this.pending.values()) p.reject(new Error(e.message || "the engine worker failed to start"));
+      this.pending.clear();
+    };
+  }
+  call(cmd, arg) {
+    return new Promise((resolve, reject) => {
+      const id = ++this.seq;
+      this.pending.set(id, { resolve, reject });
+      this.worker.postMessage({ id, cmd, arg });
+    });
+  }
+}
+class PageEngine {  // Fallback when workers can't load the runtime: the same engine on the page itself.
+  constructor(onProgress) { this.onProgress = onProgress; this.war = null; }
+  async call(cmd, arg) {
+    if (cmd === "boot") {
+      if (this.LiveWar) return null;
+      for (const src of ["pyodide/pyodide.js", "engine-boot.js"]) {
+        await new Promise((resolve, reject) => {
+          const el = document.createElement("script");
+          el.src = src; el.onload = resolve;
+          el.onerror = () => reject(new Error(`the page could not load ${src}`));
+          document.head.appendChild(el);
+        });
+      }
+      this.LiveWar = await bootWargame(new URL(".", location.href).href, this.onProgress);
+      return null;
+    }
+    if (cmd === "start") { if (this.war) this.war.destroy(); this.war = this.LiveWar(arg); return this.war.header(); }
+    return this.war.advance(arg);
+  }
+}
+let engine = null;
+async function bootEngine(onProgress) {
+  if (engine) return engine;
+  const problems = [];
+  for (const make of [() => new WorkerEngine(onProgress), () => new PageEngine(onProgress)]) {
+    try {
+      const candidate = make();
+      await candidate.call("boot");
+      engine = candidate;
+      return engine;
+    } catch (e) {
+      problems.push(e.message || String(e));
+    }
+  }
+  throw new Error(`the engine could not start in this browser (${problems.join("; ")})`);
+}
+
+async function startCustom() {
+  const setup = {
+    year: Number($("f-year").value), attacker: $("f-attacker").value, defender: $("f-defender").value,
+    goal: $("f-goal").value, tier: Number($("f-tier").value), nuclear: $("f-nuclear").checked,
+    attacker_motivation: $("f-amot").value, defender_motivation: $("f-dmot").value,
+    provinces: [...S.claims], seed: Number($("f-seed").value) || 0,
+  };
+  if (setup.attacker === setup.defender) { showSetupError("Pick two different countries."); return; }
+  $("setup-error").hidden = true;
+  $("setup").hidden = true;
+  $("peace").hidden = true;
+  setPlaying(false);
+  const say = (m) => { $("loading").hidden = false; $("loading").textContent = m; };
+  try {
+    say("Starting the engine…");
+    const eng = await bootEngine(say);
+    say("Building the world and mobilising the armies…");
+    S.warSeq++;
+    const rp = JSON.parse(await eng.call("start", JSON.stringify(setup)));
+    await loadWorld(rp.year);
+    S.live = true;
+    S.fetching = false;
+    begin(rp);
+  } catch (e) {
+    $("loading").hidden = true;
+    $("setup").hidden = false;
+    showSetupError(`Custom war failed: ${e.message}. The flashpoints still work.`);
+  }
+}
+async function fight(days) {
+  S.fetching = true;
+  const seq = S.warSeq;
+  try {
+    const u = JSON.parse(await engine.call("advance", days));
+    const rp = S.replay;
+    if (!S.live || seq !== S.warSeq) return;  // A reply for a war that has since been replaced.
+    rp.frames.push(...u.frames);
+    rp.tags = u.tags; rp.drivers = u.drivers; rp.events = u.events; rp.nukes = u.nukes;
+    rp.ended = u.ended; rp.treaty = u.treaty;
+    Object.assign(S.names, u.names);
+    timelineEnd();
+  } catch (e) {
+    S.live = false;
+    setPlaying(false);
+    $("fighting").hidden = true;
+    showSetupError(`The engine stopped: ${e.message}`);
+    $("setup").hidden = false;
+  } finally {
+    S.fetching = false;
+  }
+}
+function showSetupError(message) { $("setup-error").textContent = message; $("setup-error").hidden = false; }
+
+// --- custom war setup ----------------------------------------------------------------------------
+function fillCountries() {
+  for (const [id, fallback] of [["f-attacker", "RUS"], ["f-defender", "UKR"]]) {
+    const sel = $(id), prev = sel.value || fallback;
+    sel.replaceChildren(...Object.entries(S.world.countries).sort((a, b) => a[1].localeCompare(b[1])).map(([tag, name]) => {
+      const o = document.createElement("option"); o.value = tag; o.textContent = name; return o;
+    }));
+    sel.value = S.world.countries[prev] ? prev : fallback;
+  }
+  sidesChanged();
+}
+function sidesChanged() {
+  S.setupSides = [$("f-attacker").value, $("f-defender").value];
+  for (const id of [...S.claims]) if (S.control[id - 1][0] !== S.setupSides[1]) S.claims.delete(id);
+  updateClaims();
+  redraw();
+}
+function updateClaims() {
+  const n = S.claims.size, provinceGoal = ["border_skirmish", "territorial_conquest"].includes($("f-goal").value);
+  $("claim-hint").textContent = provinceGoal
+    ? (n ? `${n} claimed province${n === 1 ? "" : "s"}.` : "No provinces picked: the most valuable border provinces will be claimed.")
+    : (n ? `${n} province${n === 1 ? "" : "s"} demanded on top of the goal.` : "");
+  $("claim-count").textContent = `${n} province${n === 1 ? "" : "s"} of ${S.world.countries[$("f-defender").value]} claimed`;
+}
+async function showSetupWorld() {
+  await loadWorld(Number($("f-year").value));
+  S.replay = null; S.live = false; S.frame = 0; S.selected = null;
+  S.control = S.world.provinces.map((p) => [p[1], p[2]]);
+  $("war-panel").hidden = true; $("province-panel").hidden = true; $("feed").replaceChildren(); $("fighting").hidden = true;
+  $("scenario-name").textContent = "Custom war"; $("date").textContent = "—"; $("day").textContent = "";
+  $("scrub").disabled = true; $("t-end").textContent = "";
+  S.names = Object.assign({}, S.world.countries);
+  fillCountries();
+}
+function frameCountries(tags) {
+  const ids = [];
+  S.world.provinces.forEach((p, i) => { if (tags.includes(p[1])) ids.push(i + 1); });
+  if (!ids.length) return;
+  const pts = ids.map(centroid), xs = pts.map((p) => p[0]).sort((a, b) => a - b), ys = pts.map((p) => p[1]).sort((a, b) => a - b);
+  const mx = xs[xs.length >> 1], my = ys[ys.length >> 1];
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const id of ids) {
+    const [x, y] = centroid(id);
+    if (Math.abs(x - mx) > 35 || Math.abs(y - my) > 25) continue;
+    const b = S.shapes[id - 1].bbox;
+    x0 = Math.min(x0, b[0]); y0 = Math.min(y0, b[1]); x1 = Math.max(x1, b[2]); y1 = Math.max(y1, b[3]);
+  }
+  const r = canvas.getBoundingClientRect(), cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  const scale = Math.max(1.2, Math.min(r.width / ((x1 - x0) * 1.3 + 2), r.height / ((y1 - y0) * 1.3 + 2), 80));
+  S.view = { scale, tx: r.width / 2 - scale * cx, ty: r.height / 2 - scale * cy };
+  redraw();
+}
+document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", async () => {
+  document.querySelectorAll(".tab").forEach((x) => x.classList.toggle("active", x === t));
+  $("tab-presets").hidden = t.dataset.tab !== "presets";
+  $("tab-custom").hidden = t.dataset.tab !== "custom";
+  if (t.dataset.tab === "custom" && !$("f-attacker").options.length) await showSetupWorld();
+}));
+$("f-year").addEventListener("change", async () => { S.claims.clear(); await showSetupWorld(); });
+for (const id of ["f-attacker", "f-defender"]) $(id).addEventListener("change", sidesChanged);
+$("f-goal").addEventListener("change", updateClaims);
+$("pick-claims").addEventListener("click", async () => {
+  if (S.replay) await showSetupWorld();
+  sidesChanged();
+  S.picking = true;
+  $("setup").hidden = true; $("claim-bar").hidden = false;
+  frameCountries(S.setupSides);
+});
+$("claim-clear").addEventListener("click", () => { S.claims.clear(); updateClaims(); redraw(); });
+$("claim-done").addEventListener("click", () => { S.picking = false; $("claim-bar").hidden = true; $("setup").hidden = false; });
+$("custom-form").addEventListener("submit", (e) => { e.preventDefault(); startCustom(); });
+
 function fail(e) { $("loading").hidden = false; $("loading").textContent = `Could not load: ${e.message}`; }
 
 async function boot() {
@@ -743,6 +1035,7 @@ async function boot() {
   resize();
   S.meta = await getJSON("data/meta.json");
   renderPresets();
+  $("custom-tab").hidden = !S.meta.engine;
   const [geometry] = await Promise.all([getJSON("data/geometry.json"), loadWorld(2026)]);
   buildShapes(geometry);
   S.names = Object.assign({}, S.world.countries);

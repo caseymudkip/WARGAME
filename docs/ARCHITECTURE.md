@@ -263,9 +263,11 @@ for.
    - **Withdrawals** (reviewed weekly): ground two hops beyond supply when outgunned 1.5:1 (Kyiv,
      April 2022), or a bridgehead supplied only across a major river (right-bank Kherson, November 2022).
      A nation never abandons its own soil.
-19. **Wars can end without a winner, and widen.** 180 quiet days bring an armistice on current lines
-   (a frozen treaty). Peace hands back only what this war took. At Tier 3, patrons committed to the
-   victim intervene; co-belligerents fight from their ally's soil (expeditionary fronts) and never
+19. **Wars can end without a winner, and widen.** 180 days without ground fighting bring an armistice
+   on current lines (a frozen treaty). Air raids alone don't keep a war going (a frozen front under
+   bombardment used to grind the bombed side into a capitulation after a year or more), except in a war
+   of coercion, where the raids are the war. Peace hands back only what this war took. At Tier 3, patrons
+   committed to the victim intervene; co-belligerents fight from their ally's soil (expeditionary fronts) and never
    invade a neutral's soil. Opportunists join only the stronger side (Italy, June 1940): a coalition's
    collapsing member is no opportunity if the coalition would crush the jackal.
 20. **Power projection and amphibious war.** Coasts facing enemy shipping are manned. A navy with
@@ -323,6 +325,11 @@ for.
 
 ## Known deviations
 
+- **Some invasions never start.** Planners order no assault they expect to go in below 1.75:1, and no
+  landing without 1.5× naval superiority. North Korea's army is about a tenth of what holds the DMZ (local
+  ratios of 0.1), and China can't out-sail the US Navy, so both wars freeze into an armistice after 180
+  days. Real regimes have launched hopeless offensives, and defenders have counter-invaded (Korea, 1950),
+  but here defenders fight only to restore their own borders.
 - **Reservists fight like regulars.** Taiwan's 260,000 first-response reservists count as fully as its
   active army, although their readiness is widely doubted.
 

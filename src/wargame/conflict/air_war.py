@@ -154,7 +154,8 @@ class AirWar:
         victim = targets[0].controller
         for war in wars:
             if victim in war.participants and any(t in war.participants for t in friends):
-                war.record_casualties(world, victim, max(1, round(STRIKE_CASUALTIES_PER_POWER * power)), offensive=False)
+                war.record_casualties(world, victim, max(1, round(STRIKE_CASUALTIES_PER_POWER * power)),
+                                     offensive=False, ground=False)
                 break
 
     @staticmethod

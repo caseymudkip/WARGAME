@@ -439,11 +439,12 @@ class War:
 
     # --- inputs from other systems --------------------------------------------
 
-    def record_casualties(self, world: World, tag: str, count: int, offensive: bool = True) -> None:
-        """Called by the combat system. Only losses taken attacking count against an offensive's
-        cost/reward; holding ground against counterattacks is not an offensive failing."""
+    def record_casualties(self, world: World, tag: str, count: int, offensive: bool = True, ground: bool = True) -> None:
+        """Called by the combat systems. Only losses taken attacking count against an offensive's
+        cost/reward; holding ground against counterattacks is not an offensive failing. Air raids alone
+        don't keep a war from freezing into an armistice, unless raids are how it is fought (coercion)."""
         ledger = self.participants[tag].ledger
-        if count > 0:
+        if count > 0 and (ground or self.goal.type is WarGoalType.COERCION):
             self.fought_today = True
         if offensive:
             ledger.casualties_today += count
@@ -576,8 +577,8 @@ class War:
             return self._conclude(world, now_hour, holder, target, self.war_score, True, "war goal secured")
 
         if now_hour - self.last_combat_hour >= ARMISTICE_QUIET_DAYS * 24:
-            # Nobody has fired a shot for months: the war freezes on the line of contact (Korea 1953,
-            # Karabakh 1994, Donbas 2015). Ground held stays held.
+            # Nobody has fought on the ground for months: the war freezes on the line of contact (Korea 1953,
+            # Karabakh 1994, Donbas 2015), whatever the air forces still do. Ground held stays held.
             armistice = white_peace(now_hour, f"armistice after {ARMISTICE_QUIET_DAYS} quiet days")
             armistice.frozen = True
             return self._end(world, armistice, now_hour)

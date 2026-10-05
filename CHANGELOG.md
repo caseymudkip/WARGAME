@@ -30,7 +30,8 @@ control once it starts is time.
 - Playback from paused to a month per second (space pauses, 1–5 pick a speed).
 - `wargame run <flashpoint>` runs a war without the viewer and prints how it went.
 - A browser edition (`tools/web/build_site.py`): the flashpoints recorded day by day and replayed in the
-  same viewer, with a timeline, so they can be watched without installing anything.
+  same viewer, with a timeline, so they can be watched without installing anything. With `--pyodide`
+  it fights custom wars as well, running the engine in the browser (Python on WebAssembly, in a worker).
 
 ### Engine
 - A 3,604-province world map with the real fronts of 1 January 2026, rivers, coasts, sea crossings,
@@ -53,7 +54,8 @@ control once it starts is time.
   - lend-lease coalitions, alliances, patron intervention and opportunists;
   - nuclear hesitation, MAD and BMD;
   - governments in exile;
-  - armistices and peace treaties.
+  - armistices (180 days without ground fighting; air raids alone don't keep a war going, except a
+    war of coercion) and peace treaties.
 - Calibrated against the war in Ukraine (2022 and 2025) and NATO's 1999 air campaign; smoke-tested
   on twelve flashpoints.
 
@@ -61,4 +63,8 @@ control once it starts is time.
 - No fleet battles, conventional missiles or occupation/partisans yet.
 - The 2022 opening reaches about 40% of the real March 2022 gain (oblast-sized provinces), and the 2022 replay holds ~99,000 km² after four years (real 2025: ~116,000).
 - Reservists fight like regulars once called up (Taiwan's reserve readiness is widely doubted).
+- Some invasions never start, and the war freezes into an armistice after 180 days. North Korea's army
+  has about a tenth of the combat power holding the DMZ against it. China lacks the naval superiority to
+  land on Taiwan once the US Navy is in. Hopeless attacks are never ordered, and defenders don't
+  counter-invade (as the UN did in 1950), so nobody moves.
 - Runs from a source checkout (`pip install -e .`); the data files live in `data/`.

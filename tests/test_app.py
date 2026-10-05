@@ -11,7 +11,8 @@ import urllib.request
 import pytest
 
 from wargame import __main__ as cli
-from wargame import scenarios
+from wargame import replay, scenarios
+from wargame.app.live import LiveWar
 from wargame.app.server import make_server
 from wargame.app.session import Session, Setup
 from wargame.core.enums import EscalationTier, WarGoalType
@@ -42,6 +43,38 @@ def test_bad_setups_are_refused():
         Setup(year=2026, attacker="RUS", defender="RUS").build()
     with pytest.raises(ValueError):
         Setup(year=1999, attacker="RUS", defender="UKR").build()
+
+
+def test_a_live_war_streams_the_same_frames_as_a_recording():
+    """The browser fights custom wars through LiveWar; a war fought in chunks is the war recorded in one go."""
+    setup = {"year": 2026, "attacker": "AZE", "defender": "ARM", "goal": "border_skirmish", "tier": 1, "seed": 3}
+    live = LiveWar(json.dumps(setup))
+    head = json.loads(live.header())
+    assert head["key"] == "custom" and head["year"] == 2026 and len(head["frames"]) == 1
+    frames = list(head["frames"])
+    for days in (5, 1, 9):
+        update = json.loads(live.advance(days))
+        assert len(update["frames"]) == days and update["ended"] is False
+        frames += update["frames"]
+    recorded = replay.record(Setup.from_json(setup).build(), "custom", 2026, max_days=15)
+    assert [f["d"] for f in frames] == list(range(16))
+    assert frames == json.loads(json.dumps(recorded["frames"]))
+    assert update["tags"] == recorded["tags"] and update["events"] == recorded["events"]
+
+
+def test_a_live_war_over_unreachable_claims_freezes_into_an_armistice():
+    """Azerbaijan claims two Armenian provinces it doesn't border: the front goes quiet and the war freezes,
+    although the air forces never stop raiding."""
+    live = LiveWar(json.dumps({"year": 2026, "attacker": "AZE", "defender": "ARM", "goal": "border_skirmish",
+                               "tier": 1, "provinces": [105, 107]}))
+    update: dict = {"ended": False}
+    for _ in range(12):
+        update = json.loads(live.advance(60))
+        if update["ended"]:
+            break
+    treaty = update["treaty"]
+    assert update["ended"] and treaty["frozen"] and treaty["winner"] is None
+    assert "armistice" in treaty["reason"]
 
 
 def test_a_session_runs_only_when_unpaused():
