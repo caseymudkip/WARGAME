@@ -39,7 +39,7 @@ from wargame.world.world import World
 class MotivationProfile:
     name: str
     initial_resolve: float     # 0..1 will to keep the offensive going.
-    casualty_tolerance: float  # Casualties per point of strategic value gained that still feel "worth it".
+    casualty_tolerance: float  # Share of own manpower worth losing per share of the enemy's value taken.
     resolve_decay: float       # Resolve lost per day per unit of cost overshoot.
     resolve_recovery: float    # Resolve regained per day when gains are cheap.
     halt_ratio: float          # Cost overshoot at which offensives pause to consolidate.
@@ -47,13 +47,16 @@ class MotivationProfile:
     morale_bonus: float        # Flat combat morale modifier ("epic" armies fight harder).
 
 
+# Calibration: in 2025 Russia lost ~415,000 men (UK MoD), ~7% of its mobilisable manpower, to take
+# 4,336 km2 (DeepState), ~0.7% of Ukraine's value: an exchange of ~10. An aggressive attacker
+# tolerates that; a cautious one stops at ~3.
 MOTIVATION_PRESETS: dict[Motivation, MotivationProfile] = {
     Motivation.CAUTIOUS: MotivationProfile(
-        name="realistic_cautious", initial_resolve=0.70, casualty_tolerance=2_000.0,
+        name="realistic_cautious", initial_resolve=0.70, casualty_tolerance=3.0,
         resolve_decay=0.03, resolve_recovery=0.010, halt_ratio=1.5, ambition=0.10, morale_bonus=0.0,
     ),
     Motivation.AGGRESSIVE: MotivationProfile(
-        name="epic_aggressive", initial_resolve=0.95, casualty_tolerance=8_000.0,
+        name="epic_aggressive", initial_resolve=0.95, casualty_tolerance=15.0,
         resolve_decay=0.012, resolve_recovery=0.020, halt_ratio=4.0, ambition=0.60, morale_bonus=0.10,
     ),
 }
@@ -66,11 +69,13 @@ RESOLVE_WAR_SUPPORT_HEADROOM = 0.25  # An army can't stay keener than its public
 
 @dataclass
 class CampaignLedger:
-    """Rolling record of blood spent vs strategic value gained."""
+    """Rolling record of blood spent vs strategic value gained, in scale-free terms."""
 
     casualties_total: int = 0
     casualties_today: int = 0
     value_held_yesterday: float = 0.0
+    manpower_scale: float = 1.0   # Own mobilisable manpower at entry.
+    value_scale: float = 1.0      # The enemy's total strategic value at entry.
     window: deque[tuple[int, float]] = field(default_factory=lambda: deque(maxlen=LEDGER_WINDOW_DAYS))
 
     def roll(self, value_held_now: float) -> None:
@@ -79,14 +84,17 @@ class CampaignLedger:
         self.value_held_yesterday = value_held_now
 
     def cost_overshoot(self, tolerance: float) -> float | None:
-        """(casualties per value gained) / tolerance over the window. None = too little fighting to judge."""
+        """(share of manpower lost / share of enemy value gained) / tolerance over the window.
+
+        None means too little fighting to judge.
+        """
         casualties = sum(c for c, _ in self.window)
         if casualties < MIN_CASUALTIES_TO_JUDGE:
             return None
         gained = sum(g for _, g in self.window)
         if gained <= 0:
             return math.inf
-        return (casualties / gained) / tolerance
+        return ((casualties / self.manpower_scale) / (gained / self.value_scale)) / tolerance
 
 
 @dataclass
@@ -150,6 +158,7 @@ DEFENDER_MIN_SCORE_FOR_TERMS = 10.0
 LEND_LEASE_MIN_RELATION = 0.5
 LEND_LEASE_MAX_ENEMY_RELATION = -0.2
 LEND_LEASE_SHARE = 0.15
+OVERLAND_SUPPLY_EXPOSURE = 0.2
 
 AGGRESSION_FRIEND_MIN = 0.3          # States at least this friendly to the victim react to the attack...
 AGGRESSION_VICTIM_SHIFT = 0.2        # ...by warming to the victim...
@@ -249,11 +258,17 @@ class War:
 
     def _join(self, world: World, tag: str, side: Side, role: ParticipantRole,
               motivation: MotivationProfile, now_hour: int) -> None:
-        world.country(tag).mark_prewar_baseline(world)
+        country = world.country(tag)
+        country.mark_prewar_baseline(world)
+        enemy = self.goal.target if side is Side.ATTACKER else self.goal.holder
         self.participants[tag] = WarParticipant(
             tag=tag, side=side, role=role, joined_hour=now_hour, motivation=motivation,
             resolve=motivation.initial_resolve,
-            ledger=CampaignLedger(value_held_yesterday=self._controlled_value(world, tag)),
+            ledger=CampaignLedger(
+                value_held_yesterday=self._held_value(world, tag),
+                manpower_scale=max(1.0, float(country.oob.mobilizable_manpower)),
+                value_scale=max(1.0, world.owned_value(enemy)),
+            ),
         )
 
     def _trigger_defensive_pacts(self, world: World, now_hour: int) -> None:
@@ -297,6 +312,11 @@ class War:
     @staticmethod
     def _controlled_value(world: World, tag: str) -> float:
         return sum(p.strategic_value() for p in world.controlled_by(tag))
+
+    @classmethod
+    def _held_value(cls, world: World, tag: str) -> float:
+        """Controlled value plus ground taken inside provinces still being fought over."""
+        return cls._controlled_value(world, tag) + world.partial_gains(tag)
 
     @staticmethod
     def _occupation_share(world: World, owners: frozenset[str], holders: frozenset[str]) -> float:
@@ -394,7 +414,7 @@ class War:
             return
         self._deliver_external_support(world)
         for p in self.participants.values():
-            p.ledger.roll(self._controlled_value(world, p.tag))
+            p.ledger.roll(self._held_value(world, p.tag))
         self._update_war_score(world, now_hour)
         self._update_resolve(world, now_hour)
         self._assess_capitulations(world, now_hour)
@@ -638,9 +658,21 @@ class War:
     def _deliver_external_support(self, world: World) -> None:
         for flow in self.external_support:
             recipient = world.country(flow.recipient)
-            delivered = 1.0 - recipient.blockade_interdiction * recipient.seaborne_import_share
+            exposure = recipient.seaborne_import_share
+            if self._overland_route(world, flow.recipient):
+                exposure *= OVERLAND_SUPPLY_EXPOSURE  # e.g. aid to Ukraine through Poland and Romania.
+            delivered = 1.0 - recipient.blockade_interdiction * exposure
             for s, amt in flow.daily.items():
                 recipient.logistics.lend_lease_inbound[s] += amt * delivered
+
+    def _overland_route(self, world: World, recipient: str) -> bool:
+        """A friendly, non-belligerent land neighbour can carry supplies past any naval blockade."""
+        enemies = self.enemies_of(recipient)
+        for tag in world.neighboring_countries(recipient):
+            friend = world.countries.get(tag)
+            if friend and tag not in enemies and friend.relations.get(recipient, 0.0) >= LEND_LEASE_MIN_RELATION:
+                return True
+        return False
 
     # --- opportunistic entry (Tier 3) ----------------------------------------------
 

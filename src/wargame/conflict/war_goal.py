@@ -19,7 +19,7 @@ class WarGoal:
     type: WarGoalType
     holder: str                               # Who pursues the goal (the primary attacker).
     target: str                               # Who it is pursued against.
-    province_ids: frozenset[int] = frozenset()
+    province_ids: frozenset[int] = frozenset()  # The objective; for existential goals, demands made on top.
 
     def __post_init__(self) -> None:
         if self.type in PROVINCE_GOALS and not self.province_ids:

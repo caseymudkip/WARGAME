@@ -15,7 +15,7 @@ START = datetime(2026, 1, 1)
 def scenario(goal: WarGoal, attacker: Motivation = Motivation.CAUTIOUS,
              tier: EscalationTier = EscalationTier.VACUUM) -> ScenarioConfig:
     return ScenarioConfig(name="test", start=START, war_goal=goal, escalation_tier=tier,
-                          attacker_motivation=attacker)
+                          attacker_motivation=attacker, land_combat=False)  # Fronts are scripted here.
 
 
 def scripted_offensive(day: int, pids: list[int], by: str = "ARD"):
@@ -100,6 +100,20 @@ def test_regime_change_ends_the_war_when_nobody_is_left_to_fight_on():
     assert sim.finished
     assert TermType.PUPPET in term_types(sim)
     assert world.country("BOR").overlord == "ARD"
+
+
+def test_regime_change_with_territorial_demands_takes_both():
+    world = build_world(bor_spirit=unstable_spirit())
+    goal = WarGoal(WarGoalType.REGIME_CHANGE, "ARD", "BOR", frozenset({1, 2}))  # A puppet, and these two annexed.
+    sim = Simulation(world, scenario(goal, Motivation.AGGRESSIVE))
+    sim.register_system(Cadence.DAILY, scripted_offensive(day=2, pids=[1, BOR_CAPITAL]))
+
+    sim.run_days(4)
+
+    assert sim.finished
+    assert {TermType.PUPPET, TermType.PROVINCE_TRANSFER} <= set(term_types(sim))
+    assert world.country("BOR").overlord == "ARD"
+    assert world.provinces[1].owner == world.provinces[2].owner == "ARD"  # 2 was never even taken.
 
 
 def test_total_capitulation_ends_in_annexation():

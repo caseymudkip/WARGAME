@@ -64,7 +64,9 @@ class Province:
     tags: frozenset[ProvinceTag] = frozenset()
     neighbors: tuple[int, ...] = ()                 # Land borders.
     sea_links: tuple[tuple[int, int], ...] = ()     # (province id, crossing length in km).
+    river_borders: tuple[tuple[int, int], ...] = () # (neighbour id, Natural Earth river scalerank: 1 = largest).
     coastal: bool = False
+    area_km2: float = 5_000.0          # Land combat progress is measured as share of this area taken.
     damage: float = 0.0                # 0..1 from bombing/fighting; degrades output.
     extra: dict[str, float] = field(default_factory=dict)  # Scenario-specific data hooks.
 
@@ -75,6 +77,10 @@ class Province:
     @property
     def terrain_profile(self) -> TerrainProfile:
         return TERRAIN[self.terrain]
+
+    def river_rank(self, neighbor: int) -> int | None:
+        """Scalerank of the major river along the border with `neighbor`, if there is one."""
+        return next((rank for pid, rank in self.river_borders if pid == neighbor), None)
 
     @property
     def effective_industry(self) -> float:

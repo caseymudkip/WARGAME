@@ -109,6 +109,9 @@ def draft_treaty(
             capital_held = world.provinces[loser_country.capital_province_id].controller in winner_side
             if enforced or capital_held:
                 core.append(_flat(TermType.PUPPET, winner, loser))
+                demanded = frozenset(pid for pid in goal.province_ids if world.provinces[pid].owner == loser)
+                if demanded:  # ...and annex what was demanded on top.
+                    core.append(_province_term(world, winner, loser, demanded, loser_value))
         for term in core:
             if enforced:
                 terms.append(term)

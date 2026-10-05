@@ -36,6 +36,9 @@ shapely, pyproj, pyshp; inputs are downloaded pinned and sha256-checked) from:
   North Macedonia, Malta, Uganda). Duplicate names are disambiguated ("Washington (Federal District)").
 - **Adjacency** from shared borders, **coast** from borders not shared with another province, and
   **sea crossings** up to 250 km with their length (Kerch Strait 3 km, Taiwan Strait 126–142 km, Kinmen 8 km).
+- **River borders**: a land border is a river crossing when at least half of it runs within ~10 km of a
+  Natural Earth river or lake centreline of scalerank ≤ 7 (965 borders; the Dnipro between the two halves
+  of Kherson, the Rhine, the Danube, the Dniester...). Short coastline fragments of a border are ignored.
 - **Terrain** from Natural Earth physical regions (mountain ranges, deserts, plateaus, wetlands), latitude
   where no region applies, and urban terrain for dense city provinces. Coarse: forests outside the boreal
   belt are not detected yet (needs land-cover data).
@@ -44,7 +47,9 @@ shapely, pyproj, pyshp; inputs are downloaded pinned and sha256-checked) from:
 - **Control at each start date** (`curated/map_control.json`): ownership is de jure, control de facto.
   Crimea and Sevastopol are Ukrainian and Russian-held in both snapshots. For 2026, Donetsk, Luhansk,
   Zaporizhzhia, Kherson and Kharkiv are split along **DeepStateMap's real front line of 1 January 2026**
-  (116,219 km2 occupied, ~19%). For 2021, Donetsk and Luhansk are split along the 2015–2022 line of contact
+  (116,219 km2 occupied, ~19%). Where DeepState's and Natural Earth's coastlines disagree, the split leaves
+  thin strips and specks (a Ukrainian-held sliver of the occupied left bank); these move to the piece they
+  lie against, so right-bank Kherson touches the occupied left bank only across the Dnipro. For 2021, Donetsk and Luhansk are split along the 2015–2022 line of contact
   (approximated from front-line settlements, ±10 km). Abkhazia and Transnistria are Russian-controlled;
   Stepanakert, Khojaly and Khojavend are Armenian-backed in 2021 and Azerbaijani in 2026.
 - Dependencies belong to their sovereign state (Guam and Puerto Rico to the US, Greenland to Denmark,
@@ -57,6 +62,22 @@ INDUSTRIAL / FARMLAND tags depend on the snapshot and are modelled by `wargame.d
 Not modelled yet (listed in `map_control.json`): the Golan Heights and South Ossetia (not separable in
 Natural Earth), and territory held by non-state actors (Houthis, RSF, Myanmar's resistance, Hamas), since
 the engine has no non-state actors.
+
+## Calibration benchmarks (land combat)
+
+`tools/calibration/ukraine_2025.py` runs Russia against Ukraine from the 1 January 2026 front for a year
+and compares with 2025. Checked in `tests/test_land_warfare.py::test_calibrated_to_the_2025_war`.
+
+| Benchmark | Real 2025 | Model (365 days) | Source |
+|---|---|---|---|
+| Ground taken | 4,336 km2 (11.9/day) | 11.9 km2/day | DeepState, 2 Jan 2026 |
+| Russian casualties | ~415,000 (1,137/day) | ~1,200/day | UK Defence Intelligence, 14 Jan 2026 |
+| Ukrainian / Russian casualties | 500–600k vs ~1.2M since 2022 (0.42–0.5) | 0.45 | CSIS, Jan 2026 |
+| Ukrainian war support | "fight until victory" 73% (2022) → 24% (Jul 2025) | still fighting after a year | Gallup, Aug 2025 |
+
+Known deviation: the model's gains split 59% Zaporizhzhia / 41% Donetsk, where DeepState had about
+two-thirds in Donetsk (+10.6 points of the oblast) and some in Zaporizhzhia (+2.1) and Kharkiv (+1.3).
+The planner weighs provinces by economic value and has no notion of Russia's political priority on Donetsk.
 
 ## Sources and how much to trust them
 
@@ -71,7 +92,7 @@ the engine has no non-state actors.
 | Willingness to fight (used as patriotism) | Gallup International End of Year 2023 | Oct–Dec 2023 | medium/low |
 | Missile defence deployments and Pk | official announcements and press (curated) | Jan 2026 / Jan 2021 | low |
 | Defensive pacts | treaty texts | Jan 2026 / Jan 2021 | high |
-| Province geography, cities, ports, airports | Natural Earth 5.1.2 | 2022 release | high |
+| Province geography, rivers, cities, ports, airports | Natural Earth 5.1.2 | 2022 release | high |
 | Power plants | WRI Global Power Plant Database 1.3 | ~2020 | high |
 | Front line in Ukraine | DeepStateMap.Live via cyterat/deepstate-map-data | 1 Jan 2026 | high |
 | 2015–2022 Donbas line, other de facto control, naval bases | curated | — | low–medium |

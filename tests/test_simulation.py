@@ -18,7 +18,7 @@ def make_sim() -> Simulation:
     world.country("CAL").relations.update({"BOR": 0.8, "ARD": -0.5})
     goal = WarGoal(WarGoalType.TERRITORIAL_CONQUEST, "ARD", "BOR", frozenset({1, 2, 3, 4}))
     sim = Simulation(world, ScenarioConfig("determinism", datetime(2026, 1, 1), goal, EscalationTier.PROXY_WAR,
-                                           attacker_motivation=Motivation.AGGRESSIVE, seed=42))
+                                           attacker_motivation=Motivation.AGGRESSIVE, seed=42, land_combat=False))
 
     def front(s: Simulation) -> None:  # Advance one province every 6 days, bleeding as we go.
         war = s.wars[0]

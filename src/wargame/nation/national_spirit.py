@@ -38,7 +38,7 @@ LAST_STAND_MIN_STABILITY = 0.50
 
 # Daily dynamics tuning.
 EXHAUSTION_PER_CASUALTY_RATIO = 3.0  # x (casualties today / mobilizable manpower).
-EXHAUSTION_PER_OCCUPIED_FRACTION = 0.01
+EXHAUSTION_PER_OCCUPIED_FRACTION = 0.005  # Ukraine ~19% occupied: "fight until victory" 73% (2022) -> 24% (2025), Gallup.
 EXHAUSTION_PER_SHORTAGE = 0.005
 EXHAUSTION_PEACE_RECOVERY = 0.01
 WAR_SUPPORT_DRIFT = 0.03             # Fraction of the gap to target closed per day.

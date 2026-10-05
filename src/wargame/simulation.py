@@ -12,6 +12,7 @@ from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from datetime import datetime
 
+from wargame.conflict.land_warfare import LandWarfare
 from wargame.conflict.war import War, WarEvent
 from wargame.conflict.war_goal import WarGoal
 from wargame.core.clock import Cadence, SimClock, SpeedController, TimeScale
@@ -35,6 +36,7 @@ class ScenarioConfig:
     attacker_motivation: Motivation = Motivation.CAUTIOUS
     defender_motivation: Motivation = Motivation.CAUTIOUS
     seed: int = 0
+    land_combat: bool = True  # False for scripted scenarios that move fronts themselves.
 
 
 class Simulation:
@@ -55,12 +57,16 @@ class Simulation:
                 now_hour=0,
             )
         ]
-        # Combat/movement/air systems register at HOURLY as they are built.
         self._systems: dict[Cadence, list[System]] = {
             Cadence.HOURLY: [],
             Cadence.DAILY: [Simulation._countries_daily, Simulation._wars_daily],
             Cadence.WEEKLY: [Simulation._diplomacy_weekly],
         }
+        self.land = LandWarfare()
+        if scenario.land_combat:
+            self._systems[Cadence.HOURLY].append(lambda sim: sim.land.hourly(sim))
+            self._systems[Cadence.DAILY].append(lambda sim: sim.land.daily(sim))
+            self.land.daily(self)  # Forces start deployed.
 
     # --- spectator controls -------------------------------------------------
 

@@ -22,6 +22,9 @@ if TYPE_CHECKING:
 class World:
     provinces: dict[int, Province] = field(default_factory=dict)
     countries: dict[str, Country] = field(default_factory=dict)
+    # Provinces under assault: id -> (leading attacker, progress 0..1 ~ share of the province taken).
+    # Written by the land warfare system; read by war ledgers so grinding advances count as gains.
+    contested: dict[int, tuple[str, float]] = field(default_factory=dict)
     _by_owner: dict[str, set[int]] = field(default_factory=dict, repr=False)
     _by_controller: dict[str, set[int]] = field(default_factory=dict, repr=False)
 
@@ -52,6 +55,11 @@ class World:
 
     def owned_value(self, tag: str) -> float:
         return sum(p.strategic_value() for p in self.owned_by(tag))
+
+    def partial_gains(self, tag: str) -> float:
+        """Strategic value of the ground `tag` has taken inside provinces it has not yet captured."""
+        return sum(progress * self.provinces[pid].strategic_value()
+                   for pid, (attacker, progress) in self.contested.items() if attacker == tag)
 
     def neighboring_countries(self, tag: str) -> set[str]:
         out: set[str] = set()
@@ -86,6 +94,7 @@ class World:
 
     def set_controller(self, pid: int, tag: str) -> None:
         p = self.provinces[pid]
+        self.contested.pop(pid, None)
         if p.controller == tag:
             return
         self._by_controller[p.controller].discard(pid)

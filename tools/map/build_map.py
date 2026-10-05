@@ -6,7 +6,7 @@
 Inputs are pinned and hash-checked; downloads are cached (default ~/.cache/wargame-map):
 
   Natural Earth 5.1.2, public domain (github.com/nvkelso/natural-earth-vector @ NE_COMMIT)
-      admin-1 states/provinces, populated places, ports, airports, physical geography regions
+      admin-1 states/provinces, populated places, ports, airports, physical geography regions, rivers
   WRI Global Power Plant Database 1.3, CC BY 4.0 (github.com/wri/global-power-plant-database @ GPPD_COMMIT)
   DeepStateMap occupied territory of Ukraine on 2026-01-01 (vendored: data/raw/map/deepstate_20260101.geojson,
       from github.com/cyterat/deepstate-map-data @ de86af1, GPL-3.0 archive of DeepStateMap.Live)
@@ -32,9 +32,9 @@ from typing import Any
 import shapefile
 from pyproj import Geod
 from shapely import STRtree, dwithin, make_valid, unary_union
-from shapely.geometry import LineString, Point, box, shape
+from shapely.geometry import LineString, MultiLineString, Point, box, shape
 from shapely.geometry.base import BaseGeometry
-from shapely.ops import nearest_points, split
+from shapely.ops import linemerge, nearest_points, split
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "data" / "map" / "world_map.json"
@@ -49,6 +49,7 @@ NE_LAYERS = {
     "ne_10m_ports": "10m_cultural",
     "ne_10m_airports": "10m_cultural",
     "ne_10m_geography_regions_polys": "10m_physical",
+    "ne_10m_rivers_lake_centerlines": "10m_physical",
 }
 SHA256 = {
     "ne_10m_admin_1_states_provinces.shp": "c6f5c8b4b1320d9417033762419c6df1eb423989cd880fba78ea0b1e3522cbe4",
@@ -66,6 +67,9 @@ SHA256 = {
     "ne_10m_geography_regions_polys.shp": "d7468f7967368ae2180a9d4cd4ed5de302ee53fb3615268a212ffeb3a33bf042",
     "ne_10m_geography_regions_polys.shx": "9235923e01fa16cff375e3c0baf0ecb6d253346c006a5ba3b1ab41f9fe52d2f0",
     "ne_10m_geography_regions_polys.dbf": "142d853c15315e6c553ac9ca7665e65be80a1cbc821774688b143d4d4acf8801",
+    "ne_10m_rivers_lake_centerlines.shp": "f9a1cf6d9f58c0a6f182a7f25771a03e0a48026253d4484aab782b2586354d78",
+    "ne_10m_rivers_lake_centerlines.shx": "ab7b792de019d3a49ab1dd9960249c367cc94e43b8d5f577732892ec6107a3b2",
+    "ne_10m_rivers_lake_centerlines.dbf": "68079fde5fde6167d0c7c4f03e498164badcc3b687a93c436278ade83882b564",
     "global_power_plant_database.csv": "4b1f93e0fd93664f18684d9b05d0a52ed9658c6a8cf0d21ff2520791379ba7fc",
 }
 
@@ -78,6 +82,13 @@ MERGE_MAX_MEAN_KM2 = 3_000
 # Splitting a province along an occupation line: pieces smaller than this stay with their neighbour.
 MIN_PIECE_KM2 = 300
 MIN_PIECE_SHARE = 0.03
+# Where two sources' coastlines disagree, a split leaves thin strips and specks (a left-bank shore
+# "held" by Ukraine). Fragments cut off from a piece's main body, and strips that vanish under a
+# ~1 km opening and lie along another piece, move to the piece they touch most.
+SLIVER_OPENING_DEG = 0.01
+SLIVER_MIN_KM2 = 0.01
+SLIVER_MIN_CONTACT = 0.3           # Share of the strip's perimeter shared with the piece it joins.
+SLIVER_MAX_DETACHED_SHARE = 0.05   # Bigger detached parts are real (an exclave), not specks.
 
 ADJACENCY_TOLERANCE_DEG = 1e-5
 COAST_EXPOSED_MIN_DEG = 0.02       # Boundary not shared with another province => coast (or lake shore).
@@ -85,6 +96,13 @@ SEA_LINK_MAX_KM = 250             # Crossings for amphibious and naval movement 
 SEA_LINK_SEARCH_DEG = 2.4
 SEA_LINKS_PER_PROVINCE = 8
 POINT_SNAP_DEG = 0.15              # Coastal points (ports, harbour cities) can sit just offshore.
+
+# A land border is a river crossing when most of it runs along a major river (Natural Earth
+# scalerank 1-7: the Dnipro is 4, the Siverskyi Donets 7; smaller streams don't stop armies).
+RIVER_MAX_SCALERANK = 7
+RIVER_BORDER_BUFFER_DEG = 0.1      # ~8-11 km: centrelines are generalised and reservoirs wide; borders follow a bank.
+RIVER_BORDER_MIN_SHARE = 0.5
+RIVER_BORDER_MIN_SEGMENT_DEG = 0.1  # Shorter fragments of a longer border are coastline debris, not front.
 
 URBAN_CENTER_MIN_METRO = 1_000_000
 ENERGY_MIN_MW = 2_000
@@ -205,6 +223,29 @@ def donbas_2015(units: list[Unit], control: dict[str, Any], z26: BaseGeometry) -
     return valid(unary_union(held)).intersection(z26)  # Clipped: the 2014 zone lies inside the 2026 one.
 
 
+def reassign_slivers(pieces: dict[str, BaseGeometry]) -> dict[str, BaseGeometry]:
+    """Thin strips, and fragments cut off from a piece's main body, join the piece they lie against."""
+    out = dict(pieces)
+    for key in sorted(pieces):
+        geom = out[key]
+        parts = sorted(getattr(geom, "geoms", [geom]), key=lambda g: -g.area)
+        detached = [p for p in parts[1:] if p.area < SLIVER_MAX_DETACHED_SHARE * parts[0].area]
+        core = geom.buffer(-SLIVER_OPENING_DEG).buffer(SLIVER_OPENING_DEG).intersection(geom)
+        thin = polygonal(geom.difference(core))
+        for part, min_contact in [(p, 0.0) for p in detached] + [(p, SLIVER_MIN_CONTACT) for p in getattr(thin, "geoms", [thin])]:
+            part = polygonal(part.intersection(out[key]))
+            if part.is_empty or part.geom_type not in ("Polygon", "MultiPolygon") or km2(part) < SLIVER_MIN_KM2:
+                continue
+            contact = {k: part.boundary.intersection(g.buffer(1e-4)).length for k, g in out.items() if k != key}
+            best = max(sorted(contact), key=lambda k: contact[k], default=None)
+            if min_contact == 0.0 and best is not None and contact[best] == 0.0:
+                best = min(sorted(contact), key=lambda k: part.distance(out[k]))  # A speck offshore: nearest piece.
+            if best is not None and contact[best] >= min_contact * part.boundary.length:
+                out[key] = polygonal(valid(out[key].difference(part)))
+                out[best] = polygonal(valid(unary_union([out[best], part])))
+    return out
+
+
 def split_occupied(units: list[Unit], zones: dict[str, BaseGeometry], owner: str, controller: str) -> list[Unit]:
     """Split owner's provinces along the occupation zones of every snapshot."""
     labels = {"2021": "occupied since 2014", "2026": "occupied since 2022"}
@@ -234,10 +275,10 @@ def split_occupied(units: list[Unit], zones: dict[str, BaseGeometry], owner: str
             continue
         biggest = max(keep, key=lambda k: sizes[k])
         leftovers = [candidates[k] for k in candidates if k not in keep and sizes[k] > 0]
+        pieces = {k: valid(unary_union([candidates[k], *leftovers])) if k == biggest and leftovers else candidates[k] for k in keep}
+        pieces = reassign_slivers(pieces)
         for key in keep:
-            geom = candidates[key]
-            if key == biggest and leftovers:
-                geom = valid(unary_union([geom, *leftovers]))
+            geom = pieces[key]
             piece = Unit(u.codes[0], u.name, u.iso, u.region, geom)
             piece.codes = list(u.codes)
             piece.piece = key
@@ -352,6 +393,33 @@ def build(cache: Path) -> dict[str, Any]:
         for j, dist_km in list(sea_links[i].items()):
             sea_links[j].setdefault(i, dist_km)
 
+    # River borders: (neighbour, river, scalerank) where most of the shared border follows a major river.
+    rivers = [(r.record["name"] or r.record["name_en"] or "river", int(r.record["scalerank"]), shape(r.shape.__geo_interface__))
+              for r in shapefile.Reader(str(cache / "ne_10m_rivers_lake_centerlines")).iterShapeRecords()
+              if r.record["featurecla"] in ("River", "Lake Centerline") and int(r.record["scalerank"]) <= RIVER_MAX_SCALERANK]
+    river_tree = STRtree([g for _, _, g in rivers])
+    river_borders: list[dict[int, tuple[str, int]]] = [{} for _ in range(n)]
+    for i in range(n):
+        for j in neighbors[i]:
+            if j < i:
+                continue
+            border = geoms[i].boundary.intersection(geoms[j].buffer(ADJACENCY_TOLERANCE_DEG * 10))
+            if border.geom_type == "MultiLineString":
+                border = linemerge(border)
+            if border.geom_type == "MultiLineString":
+                long = [g for g in border.geoms if g.length >= RIVER_BORDER_MIN_SEGMENT_DEG]
+                border = MultiLineString(long) if long else border
+            if border.geom_type not in ("LineString", "MultiLineString") or border.length <= 0:
+                continue
+            near = [int(k) for k in river_tree.query(border, predicate="dwithin", distance=RIVER_BORDER_BUFFER_DEG)]
+            if not near:
+                continue
+            zone = unary_union([rivers[k][2] for k in near]).buffer(RIVER_BORDER_BUFFER_DEG)
+            if border.intersection(zone).length >= RIVER_BORDER_MIN_SHARE * border.length:
+                name, rank = min(((rivers[k][0], rivers[k][1]) for k in near), key=lambda nr: (nr[1], nr[0]))
+                river_borders[i][j] = river_borders[j][i] = (name, rank)
+    print(f"{sum(map(len, river_borders)) // 2} river borders")
+
     # Terrain.
     regions = [(r.record["FEATURECLA"], valid(shape(r.shape.__geo_interface__)))
                for r in shapefile.Reader(str(cache / "ne_10m_geography_regions_polys")).iterShapeRecords()
@@ -445,6 +513,7 @@ def build(cache: Path) -> dict[str, Any]:
             "coastal": coastal[i],
             "neighbors": sorted(j + 1 for j in neighbors[i]),
             "sea_links": [[j + 1, km] for j, km in sorted(sea_links[i].items())],
+            "river_borders": [[j + 1, name, rank] for j, (name, rank) in sorted(river_borders[i].items())],
             "urban_population": urban[i],
             "largest_city": biggest[i][1] or None,
             "largest_metro_population": biggest[i][0],

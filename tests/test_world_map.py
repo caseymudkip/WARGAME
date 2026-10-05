@@ -104,6 +104,28 @@ def test_key_sea_crossings_exist(raw_map):
     assert link_km("Fujian", "Changhua") <= 160                              # Taiwan Strait
 
 
+def test_major_rivers_separate_provinces(raw_map):
+    def river(a, b):
+        pa, pb = by_name(raw_map, a), by_name(raw_map, b)
+        assert pb["id"] in pa["neighbors"]
+        return next(((name, rank) for j, name, rank in pa["river_borders"] if j == pb["id"]), None)
+    assert river("Kherson (Ukrainian-held)", "Kherson (occupied since 2022)") == ("Dnipro", 4)
+    assert river("Baden-Württemberg", "Haut-Rhin")[1] <= 4                   # Rhine
+    assert river("Donetsk (Ukrainian-held)", "Donetsk (occupied since 2022)") is None  # A land front.
+    for p in raw_map["provinces"]:
+        for j, _, _ in p["river_borders"]:
+            assert j in p["neighbors"]
+
+
+def test_occupation_split_leaves_no_stray_fragments(raw_map):
+    """Coastline mismatches between DeepState and Natural Earth must not leave Ukrainian 'islands'
+    behind the front: right-bank Kherson touches the occupied left bank only across the Dnipro."""
+    kherson = by_name(raw_map, "Kherson (Ukrainian-held)")
+    occupied = {by_name(raw_map, n)["id"] for n in ("Zaporizhzhia (occupied since 2022)", "Autonomous Republic of Crimea")}
+    assert not occupied & set(kherson["neighbors"])
+    assert "Rostov" not in {p["name"] for p in raw_map["provinces"] if p["id"] in by_name(raw_map, "Donetsk (Ukrainian-held)")["neighbors"]}
+
+
 def test_dependencies_belong_to_their_sovereign(raw_map):
     owners = {p["name"]: p["owner"] for p in raw_map["provinces"]}
     assert owners["Guam"] == "USA"

@@ -1,7 +1,7 @@
 # WARGAME engine architecture
 
-Status: foundation layer (data model + daily logic loops). No UI, rendering,
-combat resolution or strategic AI yet.
+Status: engine with daily and hourly loops and calibrated land warfare on the real
+map. No UI, rendering, air/naval operations or strategic AI yet.
 
 ## Layering
 
@@ -25,7 +25,8 @@ a war.
 | GDD pillar | Where it lives |
 |---|---|
 | 1. Setup / spectator / time | `simulation.ScenarioConfig` (frozen), `Simulation.set_speed` (the only runtime input), `core/clock.py` |
-| 2. Province map, OOB | `world/province.py` (terrain, infrastructure, tags, `strategic_value()`), `nation/military.py` |
+| 2. Province map, OOB | `world/province.py` (terrain, rivers, infrastructure, tags, `strategic_value()`), `nation/military.py`, `data/world_map.py` |
+| 2/5. Land combat | `conflict/land_warfare.py` (planning, hourly assaults, encirclement, fortification, rivers, amphibious, blockade, attrition) |
 | 3. Economy, logistics, relocation | `nation/logistics.py`, `Country.production_factor`, `Country.air_sortie_capacity`, `Country._evacuate_threatened_industry` |
 | 4. Escalation tiers | `core/escalation.py` (policy table), consumed by `War` and `Country.import_factor` |
 | 5. Cost/reward, morale, WMD, BMD | `conflict/war.py` (`CampaignLedger`, `MotivationProfile`), `nation/national_spirit.py`, `nation/nuclear.py` |
@@ -161,29 +162,54 @@ for.
    1 January 2026 front in Ukraine). `wargame.data.world_map.build_real_world`
    combines it with a snapshot into a World; a daily tick of a real war costs
    about 4 ms.
-9. **Performance budget** (open). A simulated year is 8,760 ticks. Daily
-   systems are fine in Python. Hourly combat over a global map of thousands of
-   provinces is not. Everything is keyed by plain IDs so hot loops can later
-   move to NumPy arrays or a native core.
+9. **Performance budget.** A simulated year is 8,760 ticks. Hourly combat only
+   touches provinces under assault, so a year of the real Russia–Ukraine war
+   runs in about 3 s. Everything is keyed by plain IDs so hot loops can later
+   move to NumPy arrays or a native core if global wars need it.
+10. **Land warfare is calibrated to the 2025 war in Ukraine** (`conflict/land_warfare.py`,
+   `tools/calibration/ukraine_2025.py`). Forces are pools of combat power; each day a
+   planner holds the line and picks assaults; each hour assaulted provinces are fought
+   over and a progress bar (share of area taken) fills. Armies don't attack where they
+   expect to lose (expected ratio < 1.1); they concentrate instead. Advance is
+   3.2 × (R − 1)² km²/day: a grind at R ≈ 2, a collapse at R ≈ 10. That curve, the
+   casualty rates and the defenders' frontage were fitted so that a year from the real
+   1 January 2026 front reproduces 2025: 11.9 km²/day taken (DeepState: 4,336 km²),
+   ~1,200 Russian casualties/day (UK MoD/CSIS: ~415,000) and Ukrainian losses 0.45×
+   Russia's (CSIS: 500–600k vs ~1.2M since 2022). The attacks land on the real axes
+   (Donetsk, Zaporizhzhia, Kupiansk) without being scripted.
+11. **Rivers matter.** The map marks 965 land borders that run along a major river
+   (Natural Earth scalerank ≤ 7). Assaults across them fight at 0.5× (scalerank ≤ 4:
+   Dnipro, Rhine, Oder, Danube) or 0.7×, and planners prefer a dry route. Ukraine's
+   Krynky bridgehead (Oct 2023 – Jul 2024) is why the Dnipro front stays quiet.
+12. **War goals can carry demands.** A regime-change or total-capitulation goal may
+   list provinces (`WarGoal.province_ids`): the attacker prioritises them, and they are
+   annexed alongside the puppet government at the peace table (Russia's claim to the
+   four oblasts it declared annexed in September 2022).
+13. **War exhaustion from occupation is calibrated to Ukraine.** Each day a country
+   gains 0.005 × its occupied fraction in exhaustion. At Ukraine's ~19%, war support
+   falls by about as much per year as Gallup measured: "fight until victory" went
+   from 73% (2022) to 24% (July 2025). At the 2025 rate the model's Ukraine is still
+   fighting after a year; its government collapses around month 14 if nothing else
+   changes.
 
 ## Deliberately stubbed (data recorded, not yet consumed)
 
 - `NationalSpirit.occupation_resistance`: for the occupation/partisan system.
 - `Country.overlord`, `demilitarized`, `reparations_owed`: for post-war systems.
-- `MotivationProfile.morale_bonus`, `LogisticsStockpile.combat_effectiveness()`,
-  `OrderOfBattle.branch_power()`: for combat.
-- `WarGoal.requires_occupation`, `WarParticipant.offensive_halted`: for the strategic AI
-  (blockade instead of invading, pausing offensives).
+- `WarGoal.requires_occupation`: for the strategic AI (blockade and strikes instead of invading).
+  Land warfare already gives coercion goals low ground-offensive relevance, and a halted
+  offensive (`WarParticipant.offensive_halted`) commits only 10% of the force to attacks.
+- Air power enters land combat only as an air-superiority modifier (±10%); sorties,
+  strikes on infrastructure and air defence are not simulated.
 - Lend-lease does not yet drain the supporter's own stockpile.
 - Governments in exile hosted abroad (Poland 1939–45 style, no free territory) are not modelled;
   only the free-territory variant is.
 
 ## Suggested next tasks
 
-1. Hourly combat and movement: frontlines on the real province graph (terrain, supply effectiveness,
-   quality exponent), so wars on the real map actually move.
-2. Strategic AI: theatre planning from `strategic_value`, branch superiority
-   (invade vs blockade vs strike), `offensive_halted` consolidation, amphibious use of `sea_links`.
-3. Naval and air: write `blockade_interdiction`, consume sorties, conventional strikes on infrastructure.
-4. Occupation and partisans; post-war treaty enforcement.
-5. Data: land-cover terrain, drones, per-system equipment quality, non-state actors.
+1. Strategic AI: theatre planning across several wars, branch choice (invade vs blockade vs strike),
+   operational reserves and timing of offensives.
+2. Naval and air operations: fleet battles and sea control (blockade is a fleet ratio today), sorties,
+   conventional strikes on infrastructure, air defence.
+3. Occupation and partisans; post-war treaty enforcement.
+4. Data: land-cover terrain (forests), drones, per-system equipment quality, non-state actors.
