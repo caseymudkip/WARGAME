@@ -4,7 +4,7 @@
  "generated_by": "tools/data/build_dataset.py",
  "inputs": {
   "curated/alliances.json": "97466b2277e46732993b1127427ce154ef662b2c9c643896c069da9612f3cbda",
-  "curated/force_posture.json": "66496805b104c88b96e2c3ca2b9a1f6cecfff86a2077bdf9b6e0c550554e3366",
+  "curated/force_posture.json": "231c1d49fba0eaa23b731204377cea7b33eaed25f00a9aa6f2cbff4f4febf245",
   "curated/fortifications.json": "1465e0f870f803ddc7db639c9815ef431066055ef037b0762e6c2931009ae4a3",
   "curated/leadership.json": "ca57a3b9f802119ff9b630ee56927dc97befe66c1e39f2e96f49cc59bb5bb194",
   "curated/map_control.json": "cf9ace3ede2323f8e92f43eec930c6171ac30d3d8743cb5b7d846962bacb1d6e",

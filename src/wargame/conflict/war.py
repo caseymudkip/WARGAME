@@ -251,7 +251,7 @@ class War:
         attacker, defender = world.country(goal.holder), world.country(goal.target)
         defender.spirit.apply_shock("rally_round_the_flag", now_hour, war_support=0.15, duration_days=60)
         war._log(now_hour, "declaration",
-                 f"{attacker.name} declares war on {defender.name}: {goal.type.value}, escalation tier {int(tier)}.")
+                 f"{attacker.name} declares war on {defender.name}: {goal.type.value.replace('_', ' ')}, escalation tier {int(tier)}.")
         if war.policy.alliances_trigger:
             war._trigger_defensive_pacts(world, now_hour)
             war._patrons_intervene(world, now_hour)
@@ -542,9 +542,9 @@ class War:
             if assessment.capitulates and p.role is ParticipantRole.CO_BELLIGERENT:
                 self._separate_peace(world, tag, now_hour)
             elif assessment.capitulates:
-                self._log(now_hour, "capitulation", assessment.narrative())
+                self._log(now_hour, "capitulation", assessment.narrative(country.name))
             elif assessment.collapse_progress > 0 and (previous is None or previous.collapse_progress == 0):
-                self._log(now_hour, "collapse_begins", assessment.narrative())
+                self._log(now_hour, "collapse_begins", assessment.narrative(country.name))
 
     def _separate_peace(self, world: World, tag: str, now_hour: int) -> None:
         """A capitulated co-belligerent leaves; its own occupied land stays occupied until the main peace."""

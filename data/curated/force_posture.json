@@ -1,5 +1,5 @@
 {
-  "_doc": "Wartime force posture the equipment counts don't show. drone_saturation (0..1): how densely a country's front is watched and struck by small drones (1 = millions a year, the 2025 Ukrainian front's 'kill zone'). An attacker advancing into such a front slows by up to DRONE_ADVANCE_DRAG (conflict/land_warfare.py). mobilised: already on a war footing at the start date, so no further wartime expansion beyond replacing losses. hosts: belligerents this country lets attack from its territory without itself joining the war, for hosting_days after the war starts. active_share: share of a GFP land-equipment count that is with units rather than in long-term storage (GFP counts both; stored equipment fights only once refurbished). Countries not listed: no drone saturation, not mobilised, host no one.",
+  "_doc": "Wartime force posture the equipment counts don't show. drone_saturation (0..1): how densely a country's front is watched and struck by small drones (1 = millions a year, the 2025 Ukrainian front's 'kill zone'). An attacker advancing into such a front slows by up to DRONE_ADVANCE_DRAG (conflict/land_warfare.py). mobilised: already on a war footing at the start date, so no further wartime expansion beyond replacing losses. hosts: belligerents this country lets attack from its territory without itself joining the war, for hosting_days after the war starts. active_share: share of a GFP land-equipment count that is with units rather than in long-term storage (GFP counts both; stored equipment fights only once refurbished). Countries not listed: no drone saturation, not mobilised, host no one. reach_per_hop: supply reach per 150 km beyond consolidated ground, for armies whose logistics are not rail-bound (default 0.6).",
   "_source": "curated_force_posture",
   "2021": {
     "UKR": {
@@ -29,6 +29,16 @@
       ],
       "basis": "~30,000 Russian troops in Belarus for the 'Allied Resolve' exercise in February 2022; the offensive on Kyiv was launched from Belarusian territory (UN General Assembly resolution ES-11/1, 2 March 2022, deplored Belarus's involvement). The arrangement covered that opening offensive: Russian forces left the Belarus-launched axes by 6 April 2022 and did not attack from Belarus again.",
       "hosting_days": 45
+    },
+    "USA": {
+      "reach_per_hop": 0.85,
+      "basis": "Truck- and air-borne logistics: in 2003 the 3rd Infantry Division drove ~300-350 miles from Kuwait to Baghdad in 14-17 days of combat, supplied by convoys (about 200 tanker loads of fuel a day) though with stretched supply lines. Rail-bound armies keep the default 0.6 per 150 km (Russia: Vershinin, 'Feeding the Bear', War on the Rocks, Nov 2021). At 0.85, ~500 km of advance leaves ~57% of strength, against ~18% for a rail-bound army.",
+      "sources": [
+        "https://www.qgdigitalpublishing.com/article/Battling+For+Baghdad/3034912/482033/article.html",
+        "https://www.globalsecurity.org/org/news/2003/030325-war01.htm",
+        "https://www.strategypage.com/htmw/htlog/articles/20030325.aspx",
+        "https://www.stripes.com/theaters/europe/2022-03-31/why-russia-military-bogged-down-logistics-ukraine-5542010.html"
+      ]
     }
   },
   "2026": {
@@ -50,6 +60,16 @@
         "https://rubryka.com/en/2025/02/14/isw-vtracheni-u-2024-rotsi-tanky-rosiya-kompensuvala-prote-mozhe-zitknutysya-z-problemamy-u-majbutnomu"
       ],
       "active_share": 0.31
+    },
+    "USA": {
+      "reach_per_hop": 0.85,
+      "basis": "Truck- and air-borne logistics: in 2003 the 3rd Infantry Division drove ~300-350 miles from Kuwait to Baghdad in 14-17 days of combat, supplied by convoys (about 200 tanker loads of fuel a day) though with stretched supply lines. Rail-bound armies keep the default 0.6 per 150 km (Russia: Vershinin, 'Feeding the Bear', War on the Rocks, Nov 2021). At 0.85, ~500 km of advance leaves ~57% of strength, against ~18% for a rail-bound army.",
+      "sources": [
+        "https://www.qgdigitalpublishing.com/article/Battling+For+Baghdad/3034912/482033/article.html",
+        "https://www.globalsecurity.org/org/news/2003/030325-war01.htm",
+        "https://www.strategypage.com/htmw/htlog/articles/20030325.aspx",
+        "https://www.stripes.com/theaters/europe/2022-03-31/why-russia-military-bogged-down-logistics-ukraine-5542010.html"
+      ]
     }
   }
 }

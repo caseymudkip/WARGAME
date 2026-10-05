@@ -7,4 +7,9 @@ Layering (imports only ever point downward):
     nation      Country and its components (spirit, logistics, military, nuclear)
     conflict    War, war goals, peace treaties
     simulation  the tick loop that drives everything
+    scenarios   ready-made flashpoints and custom scenarios on the real map
+    app         the spectator app (local web server and browser viewer)
 """
+
+__version__ = "0.1.0a1"
+

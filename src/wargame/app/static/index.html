@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WARGAME</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header id="topbar">
+    <div class="brand">WARGAME <span class="badge" id="version">alpha</span></div>
+    <div class="scenario" id="scenario-name">Set up a war</div>
+    <div class="clock"><span id="date">—</span><span class="day" id="day"></span></div>
+    <div class="speeds" id="speeds" role="group" aria-label="Playback speed"></div>
+    <button class="ghost" id="new-war">New war</button>
+  </header>
+
+  <main>
+    <div id="map-wrap">
+      <canvas id="map"></canvas>
+      <div id="tooltip" hidden></div>
+      <div id="legend">
+        <span><i class="sw attacker"></i>Attacker side</span>
+        <span><i class="sw defender"></i>Defender side</span>
+        <span><i class="sw occupied"></i>Occupied</span>
+        <span><i class="sw contested"></i>Being taken</span>
+        <span><i class="sw goal"></i>War goal</span>
+      </div>
+      <div id="loading">Loading the world…</div>
+    </div>
+
+    <aside id="sidebar">
+      <section id="war-panel" hidden>
+        <div class="goal-line"><span id="goal-text"></span><span class="tier" id="tier-text"></span></div>
+        <div class="score">
+          <div class="score-labels"><span>Defender</span><span>War score</span><span>Attacker</span></div>
+          <div class="score-bar"><div id="score-fill"></div><div class="score-mid"></div></div>
+          <div class="score-value" id="score-value"></div>
+        </div>
+        <div class="side" id="side-attacker"></div>
+        <div class="side" id="side-defender"></div>
+        <div class="supporters" id="supporters"></div>
+      </section>
+      <section id="province-panel" hidden></section>
+      <section id="feed-panel">
+        <h3>War diary</h3>
+        <ol id="feed"></ol>
+      </section>
+    </aside>
+  </main>
+
+  <div id="setup" class="overlay">
+    <div class="setup-card">
+      <h1>WARGAME</h1>
+      <p class="lede">Set up the war, then watch. Once it starts, the only thing you control is time.</p>
+      <div class="tabs">
+        <button class="tab active" data-tab="presets">Flashpoints</button>
+        <button class="tab" data-tab="custom">Custom war</button>
+      </div>
+      <div class="tab-body" id="tab-presets">
+        <div class="preset-grid" id="preset-grid"></div>
+      </div>
+      <div class="tab-body" id="tab-custom" hidden>
+        <form id="custom-form">
+          <div class="row">
+            <label>Start
+              <select name="year" id="f-year"></select>
+            </label>
+            <label>Seed
+              <input name="seed" id="f-seed" type="number" value="0" min="0">
+            </label>
+          </div>
+          <div class="row">
+            <label>Attacker <select name="attacker" id="f-attacker"></select></label>
+            <label>Defender <select name="defender" id="f-defender"></select></label>
+          </div>
+          <label>War goal <select name="goal" id="f-goal"></select></label>
+          <p class="hint" id="claim-hint"></p>
+          <label>Escalation <select name="tier" id="f-tier"></select></label>
+          <div class="row">
+            <label>Attacker's temper <select name="attacker_motivation" id="f-amot"></select></label>
+            <label>Defender's temper <select name="defender_motivation" id="f-dmot"></select></label>
+          </div>
+          <label class="check"><input type="checkbox" name="nuclear" id="f-nuclear"> Nuclear weapons enabled</label>
+          <div class="actions">
+            <button type="button" class="ghost" id="pick-claims">Pick claimed provinces on the map</button>
+            <button type="submit" class="primary">Start the war</button>
+          </div>
+        </form>
+      </div>
+      <p class="error" id="setup-error" hidden></p>
+    </div>
+  </div>
+
+  <div id="claim-bar" hidden>
+    <span id="claim-count"></span>
+    <button class="ghost" id="claim-clear">Clear</button>
+    <button class="primary" id="claim-done">Done</button>
+  </div>
+
+  <div id="peace" class="overlay" hidden>
+    <div class="setup-card peace-card">
+      <h2 id="peace-title">Peace</h2>
+      <p id="peace-reason"></p>
+      <ul id="peace-terms"></ul>
+      <div class="actions">
+        <button class="ghost" id="peace-close">Look at the map</button>
+        <button class="primary" id="peace-new">New war</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -4,16 +4,22 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "wargame"
-version = "0.1.0"
-description = "Autonomous modern-era grand strategy war simulation engine (spectator / scenario-architect)."
+version = "0.1.0a1"
+description = "WARGAME: an autonomous modern-era war simulator. Set up the war, then watch."
 requires-python = ">=3.11"
 dependencies = []
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
 
+[project.scripts]
+wargame = "wargame.__main__:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"wargame.app" = ["static/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

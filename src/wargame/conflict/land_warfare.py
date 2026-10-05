@@ -168,7 +168,8 @@ REACTIVATION_PER_DAY = 0.0005          # Stored equipment refurbished per day at
 # Armies run on supply lines. Russia's 2022 columns, tied to railheads, culminated ~100 km in. An assault
 # launched from ground taken less than CONSOLIDATION_DAYS ago (rail not yet restored) loses strength per
 # province of distance from the consolidated rear: owned soil, a host's soil, or ground held long enough.
-REACH_PER_HOP = 0.6
+REACH_PER_HOP = 0.6                    # Rail-bound armies (Russia: Vershinin, "Feeding the Bear", 2021). Armies with
+                                       # truck- and air-borne logistics are curated higher (Country.reach_per_hop).
 CONSOLIDATION_DAYS = 90
 REACH_CUT_OFF_HOPS = 3                 # Ground with no traceable line back (supplied, if at all, by air or truck).
 KM_PER_HOP = 150.0                     # Depth inside a province counts too: every 150 km of advance is one more hop
@@ -231,6 +232,7 @@ class LandWarfare:
         self._last_review_hour = -strategy.REVIEW_DAYS * 24
         self._blockaded: set[str] = set()
         self.depth_today: dict[int, float] = {}          # province -> fastest advance into it today (km/day)
+        self._per_hop: dict[str, float] = {}             # tag -> its supply reach per hop, where curated
         self._depth_yesterday: dict[int, float] = {}
 
     # --- relationships -------------------------------------------------------------------------
@@ -284,6 +286,7 @@ class LandWarfare:
             if war.id not in self._wars_seen:
                 self._wars_seen.add(war.id)
                 self._dig_in_prewar_lines(world, war)
+        self._per_hop = {t: c.reach_per_hop for t, c in world.countries.items() if c.reach_per_hop is not None}
         self._mobilise(world, wars)
         self._adapt_drones(world, enemies)
         self._update_hosts(world, wars, sim.clock.hours_elapsed)
@@ -813,7 +816,8 @@ class LandWarfare:
             if attacker == tag:
                 prov = world.provinces[target]
                 hops += penetration_km(prov.area_km2, prov.border_with(origin), progress) / KM_PER_HOP
-        return math.pow(REACH_PER_HOP, hops)
+        per_hop = self._per_hop.get(tag, REACH_PER_HOP)
+        return math.pow(per_hop, hops)
 
     def _encirclement(self, world: World, wars: list[War], enemies: dict[str, set[str]], allies: dict[str, set[str]]) -> None:
         """A pocket is ground cut off from the country's main body and from friendly borders.
@@ -1026,6 +1030,10 @@ class LandWarfare:
         if progress >= 1.0:
             world.set_controller(target, lead)
             self._taken_hour[target] = now_hour
+            war = self._war_between(wars, lead, holder)
+            if war is not None and lead in world.countries:
+                verb = "liberates" if prov.owner == lead else "takes"
+                war.note(now_hour, "province_taken", f"{world.country(lead).name} {verb} {prov.name}.")
             self.fortification[target] = 0.0
             prov.damage = min(1.0, prov.damage + (CAPTURE_DAMAGE_URBAN if ProvinceTag.URBAN_CENTER in prov.tags else CAPTURE_DAMAGE))
             for tag in defenders:

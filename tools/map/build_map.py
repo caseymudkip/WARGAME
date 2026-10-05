@@ -38,6 +38,7 @@ from shapely.ops import linemerge, nearest_points, split
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "data" / "map" / "world_map.json"
+GEOMETRY_OUT = ROOT / "data" / "map" / "geometry.json"
 CONTROL = ROOT / "data" / "curated" / "map_control.json"
 DEEPSTATE = ROOT / "data" / "raw" / "map" / "deepstate_20260101.geojson"
 
@@ -74,6 +75,7 @@ SHA256 = {
 }
 
 GEOD = Geod(ellps="WGS84")
+DISPLAY_GEOMETRY: list[list[list[list[int]]]] = []
 
 # Over-fragmented countries (many tiny units) are merged to Natural Earth's 'region' field.
 MERGE_MIN_UNITS = 60
@@ -91,6 +93,12 @@ SLIVER_MIN_CONTACT = 0.3           # Share of the strip's perimeter shared with 
 SLIVER_MAX_DETACHED_SHARE = 0.05   # Bigger detached parts are real (an exclave), not specks.
 
 ADJACENCY_TOLERANCE_DEG = 1e-5
+# Display geometry for the spectator map (not read by the engine): simplified to ~2 km, coordinates as
+# integers in 1/GEOMETRY_SCALE degree, delta-encoded within each ring; islets under ~10x10 km are dropped
+# unless they are all a province has.
+GEOMETRY_TOLERANCE_DEG = 0.02
+GEOMETRY_SCALE = 100
+GEOMETRY_MIN_POLYGON_DEG2 = 0.01
 COAST_EXPOSED_MIN_DEG = 0.02       # Boundary not shared with another province => coast (or lake shore).
 SEA_LINK_MAX_KM = 250             # Crossings for amphibious and naval movement (Taiwan Strait 130-180 km).
 SEA_LINK_SEARCH_DEG = 2.4
@@ -331,6 +339,30 @@ def terrain_for(geom: BaseGeometry, lat: float, regions: list[tuple[str, BaseGeo
     return "plains", "default"
 
 
+def display_geometry(geom: BaseGeometry) -> list[list[list[int]]]:
+    """Polygons -> rings -> [x0, y0, dx1, dy1, ...] in 1/GEOMETRY_SCALE degree (even-odd fill)."""
+    simple = geom.simplify(GEOMETRY_TOLERANCE_DEG, preserve_topology=True)
+    polys = [g for g in getattr(simple, "geoms", [simple]) if g.geom_type == "Polygon" and not g.is_empty]
+    keep = [g for g in polys if g.area >= GEOMETRY_MIN_POLYGON_DEG2] or sorted(polys, key=lambda g: g.area)[-1:]
+    out = []
+    for poly in keep:
+        rings = []
+        for ring in [poly.exterior, *poly.interiors]:
+            flat: list[int] = []
+            px = py = 0
+            for i, (x, y) in enumerate(ring.coords[:-1]):
+                ix, iy = round(x * GEOMETRY_SCALE), round(y * GEOMETRY_SCALE)
+                if i and ix == px and iy == py:
+                    continue
+                flat += [ix, iy] if i == 0 else [ix - px, iy - py]
+                px, py = ix, iy
+            if len(flat) >= 6:
+                rings.append(flat)
+        if rings:
+            out.append(rings)
+    return out
+
+
 def build(cache: Path) -> dict[str, Any]:
     control = json.loads(CONTROL.read_text())
     units = load_units(cache, control)
@@ -538,6 +570,8 @@ def build(cache: Path) -> dict[str, Any]:
     control_out = {snap: {str(i + 1): {"controller": u.control[snap], "basis": u.control_basis.get(snap, "")}
                           for i, u in enumerate(units) if snap in u.control}
                    for snap in ("2021", "2026")}
+    global DISPLAY_GEOMETRY
+    DISPLAY_GEOMETRY = [display_geometry(g) for g in geoms]
     return {
         "generated_by": "tools/map/build_map.py",
         "inputs": {
@@ -562,6 +596,10 @@ def main() -> None:
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(data, separators=(",", ":"), ensure_ascii=False) + "\n")
     print(f"{OUT.relative_to(ROOT)}: {len(data['provinces'])} provinces, {OUT.stat().st_size / 1e6:.1f} MB")
+    geometry = {"generated_by": "tools/map/build_map.py (display layer; the engine does not read it)",
+                "scale": GEOMETRY_SCALE, "tolerance_deg": GEOMETRY_TOLERANCE_DEG, "provinces": DISPLAY_GEOMETRY}
+    GEOMETRY_OUT.write_text(json.dumps(geometry, separators=(",", ":")) + "\n")
+    print(f"{GEOMETRY_OUT.relative_to(ROOT)}: {GEOMETRY_OUT.stat().st_size / 1e6:.1f} MB")
 
 
 if __name__ == "__main__":

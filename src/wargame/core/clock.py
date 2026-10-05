@@ -32,8 +32,10 @@ class TimeScale(Enum):
 
     PAUSED = 0.0
     HOUR_BY_HOUR = 1.0
+    SIX_HOURS = 6.0
     DAY_BY_DAY = float(HOURS_PER_DAY)
     WEEK_BY_WEEK = float(HOURS_PER_WEEK)
+    MONTH_BY_MONTH = float(30 * HOURS_PER_DAY)
 
 
 @dataclass

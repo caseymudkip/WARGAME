@@ -98,15 +98,16 @@ class CapitulationAssessment:
         """pressure / threshold; >=1 means the nation is actively collapsing."""
         return self.pressure / self.threshold if self.threshold > 0 else 1.0
 
-    def narrative(self) -> str:
-        top = max(self.components, key=self.components.__getitem__) if self.components else "none"
+    def narrative(self, name: str | None = None) -> str:
+        who = name or self.tag
+        top = (max(self.components, key=self.components.__getitem__) if self.components else "none").replace("_", " ")
         if self.capitulates:
-            return f"{self.tag} capitulates (pressure {self.pressure:.2f} vs threshold {self.threshold:.2f}; main driver: {top})."
+            return f"{who} capitulates (pressure {self.pressure:.2f} vs threshold {self.threshold:.2f}; main driver: {top})."
         if self.last_stand:
-            return f"{self.tag} vows to fight to the last; only total occupation will end its resistance."
+            return f"{who} vows to fight to the last; only total occupation will end its resistance."
         if self.collapse_progress > 0:
-            return f"{self.tag}'s government is collapsing ({self.collapse_progress:.0%}); main driver: {top}."
-        return f"{self.tag} holds firm (pressure {self.pressure:.2f} of {self.threshold:.2f})."
+            return f"{who}'s government is collapsing ({self.collapse_progress:.0%}); main driver: {top}."
+        return f"{who} holds firm (pressure {self.pressure:.2f} of {self.threshold:.2f})."
 
 
 @dataclass(frozen=True)
@@ -176,6 +177,7 @@ class Country:
 
     # Wartime posture (curated: data/curated/force_posture.json, leadership.json)
     drone_saturation: float = 0.0          # 0..1: how densely small drones watch and strike its front.
+    reach_per_hop: float | None = None     # Supply reach per province beyond the railhead (None: the default).
     mobilised: bool = False                # Already on a war footing at the start date.
     leadership_defiance: float = 0.0       # 0..1: a leader who has shown he will not submit.
     hosts: frozenset[str] = frozenset()    # Belligerents allowed to attack from our soil (Belarus 2022)...

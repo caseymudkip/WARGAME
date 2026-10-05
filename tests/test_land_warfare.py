@@ -94,7 +94,7 @@ def _war_from(year: int, aid: bool, days: int):
 
 def test_without_aid_ukraine_breaks_within_a_year():
     sim = _war_from(2026, aid=False, days=450)
-    assert sim.finished and any(e.kind == "capitulation" and "UKR" in e.message for e in sim.events())
+    assert sim.finished and any(e.kind == "capitulation" and "Ukraine" in e.message for e in sim.events())
     assert sim.clock.hours_elapsed / 24 < 400
 
 
@@ -577,6 +577,20 @@ def test_assaults_from_freshly_taken_ground_are_weaker():
     assert sim.land.reach["ARD"][11] == 0            # Owned soil: the rail runs there.
     assert sim.land.reach["ARD"][1] == 1             # Just taken: supply by truck.
     assert sim.land._reach_factor("ARD", 1) == pytest.approx(lw.REACH_PER_HOP)
+
+
+def test_armies_that_are_not_rail_bound_reach_further():
+    sim = start(world_with())
+    for _ in range(60):
+        sim.run_days(1)
+        if sim.world.provinces[1].controller == "ARD":
+            break
+    sim.run_days(1)
+    assert sim.land._reach_factor("ARD", 1) == pytest.approx(lw.REACH_PER_HOP)  # Russia, 2022: tied to its railheads.
+    sim.world.country("ARD").reach_per_hop = 0.85                               # The US, 2003: trucks and airlift.
+    sim.run_days(1)
+    assert sim.land.hops_from_rear("ARD", 1) == 1
+    assert sim.land._reach_factor("ARD", 1) == pytest.approx(0.85)
 
 
 def test_hosting_ends_after_the_agreed_window():

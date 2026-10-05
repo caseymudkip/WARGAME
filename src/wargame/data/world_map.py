@@ -185,8 +185,10 @@ def _apply_curated_posture(world: World, year: int, root: Path | None) -> None:
         world.fortified_lines.append(FortifiedLine((a, b), frozenset(line["fortify"]), float(line["level"]), provinces))
     for tag, posture in _curated("force_posture.json", root).get(str(year), {}).items():
         if tag in world.countries:
-            world.countries[tag].drone_saturation = float(posture["drone_saturation"])
-            world.countries[tag].mobilised = bool(posture["mobilised"])
+            world.countries[tag].drone_saturation = float(posture.get("drone_saturation", 0.0))
+            world.countries[tag].mobilised = bool(posture.get("mobilised", False))
+            if "reach_per_hop" in posture:
+                world.countries[tag].reach_per_hop = float(posture["reach_per_hop"])
             world.countries[tag].hosts = frozenset(posture.get("hosts", []))
             world.countries[tag].hosting_days = posture.get("hosting_days")
             share = posture.get("active_share")
