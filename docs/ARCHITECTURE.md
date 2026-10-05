@@ -1,8 +1,8 @@
 # WARGAME engine architecture
 
 Status: engine with daily and hourly loops, calibrated land warfare, an air war and a
-strategy layer on the real map, smoke-tested on eleven real-world flashpoints. No UI or
-rendering yet; no fleet battles, conventional missiles or occupation.
+strategy layer on the real map, smoke-tested on twelve real-world flashpoints, and a spectator
+app (`wargame`) to set wars up and watch them. No fleet battles, conventional missiles or occupation yet.
 
 ## Layering
 
@@ -13,6 +13,8 @@ nation/      Country + NationalSpirit, Logistics, OOB, Nuclear       (core, worl
 conflict/    War, WarGoal, PeaceTreaty                               (core, world, nation)
 data/        real-world snapshots + province map -> World            (core, world, nation)
 simulation   tick loop, ScenarioConfig                               (everything)
+scenarios    flashpoints and custom scenarios on the real map        (simulation, data)
+app/         spectator app: local HTTP server, session thread, viewer (scenarios)
 ```
 
 Runtime imports only point downward. `Country` never imports `War`. Whatever
@@ -25,7 +27,7 @@ a war.
 
 | GDD pillar | Where it lives |
 |---|---|
-| 1. Setup / spectator / time | `simulation.ScenarioConfig` (frozen), `Simulation.set_speed` (the only runtime input), `core/clock.py` |
+| 1. Setup / spectator / time | `simulation.ScenarioConfig` (frozen), `Simulation.set_speed` (the only runtime input), `core/clock.py`, `app/` (setup screen, live map, speed control) |
 | 2. Province map, OOB | `world/province.py` (terrain, rivers, infrastructure, tags, `strategic_value()`), `nation/military.py`, `data/world_map.py` |
 | 2/5. Land combat | `conflict/land_warfare.py` (planning, hourly assaults, encirclement, fortification, rivers, amphibious, blockade, attrition) |
 | 2/5. Strategy | `conflict/strategy.py` (posture: offensive, halted, counteroffensive, active defence; withdrawals) |
@@ -196,10 +198,10 @@ for.
    Casualties fall on troops in contact only: no more attackers than the front can take. At
    overwhelming odds they are bounded by what the defence can still shoot, falling as 1/R beyond 3:1.
 
-   2025 from the 2026 front: 12.0 km²/day, ~1,045 Russian and 0.54× Ukrainian casualties a day.
-   2022 from the 2021 map: ~78,000 km² in 36 days (ISW: ~163,000); Kyiv holds. Russia takes left-bank
-   Kherson in days and holds ~93,000 km² after a year (real, after the autumn counteroffensives:
-   ~120,000), ~125,000 after four (real 2025: ~116,000). Oblast-sized provinces fall in sequence where
+   2025 from the 2026 front: 11.9 km²/day, ~980 Russian and 0.44× Ukrainian casualties a day.
+   2022 from the 2021 map: ~68,000 km² in 36 days (ISW: ~163,000); Kyiv holds. Russia takes left-bank
+   Kherson in days and holds ~75,000 km² after a year (real, after the autumn counteroffensives:
+   ~120,000), ~99,000 after four (real 2025: ~116,000). Oblast-sized provinces fall in sequence where
    2022's columns ran down roads through seven oblasts at once.
 11. **Rivers matter.** The map marks 965 land borders that run along a major river
    (Natural Earth scalerank ≤ 7). Assaults across them fight at 0.5× (scalerank ≤ 4:
@@ -231,9 +233,16 @@ for.
    - **Defiant leaders** (curated: Zelensky, Putin) raise the capitulation threshold by 0.15. As
      attackers they never let resolve fall below 0.4: they halt, mobilise and try again, as Russia
      did in 2022–23. Only offensive losses count against an offensive.
-16. **Mobilisation and storage.** A nation fighting for survival calls up 2% of its pre-war strength
-   a day, up to 3.5× (Ukraine: ~250,000 to ~700,000 by May 2022); others 0.3% a day, up to 1.3×.
-   Countries already on a war footing (curated) only replace losses. GFP's equipment counts include
+16. **Personnel, mobilisation and storage.** Only ground troops count as infantry: the ground share of
+   active personnel is curated from the IISS Military Balance for 45 countries (`curated/personnel.json`:
+   Russia 2021 40%, the US 48%, Ukraine 2026 93%; the median, 71%, elsewhere), and everyone called up
+   since the start date fights on the ground. A nation fighting for survival, or with the enemy on its
+   soil, calls up 2% of its pre-war strength a day, up to 3.5× (Ukraine: ~250,000 to ~700,000 by May
+   2022); others 0.3% a day, up to 1.3×. Reserve armies with a standing wartime structure field it
+   first, over the days a source states (Israel 2023: ~300,000 in 48 hours) or 14 (Finland: 280,000
+   against ~24,000 active), never faster than 3; paper reserves (Ukraine's 234,000 registered in 2021)
+   only raise the ceiling. Allies next door to the aggressor defend their own border with their whole
+   army, not an expeditionary share. Countries already on a war footing (curated) only replace losses. GFP's equipment counts include
    storage. IISS has Russia going to war with 3,417 battle-ready tanks of 12,420, so the curated
    active share sets what fights; stored equipment is refurbished at 0.05% a day.
 17. **Encirclement follows supply, not the capital.** Pockets are ground cut off from the main body
@@ -282,12 +291,23 @@ for.
    defender that outlasts an invader keeps what its troops stand on and asks for reparations
    (Iran–Iraq 1988, Ethiopia–Eritrea 2000). A regime-change war that crushes the government in exile
    reunifies its land under the installed regime; it is not an annexation.
-23. **Flashpoint sweep** (`tools/scenarios/sweep.py`): eleven real-world wars (Russia–Ukraine 2022,
-   Taiwan with and without the US, Korea, Russia–Estonia under Article 5, Kashmir, Syunik, Eritrea,
-   Venezuela, Israel–Iran, the LAC) run for a year as a smoke test far from the calibration case.
-   Current outcomes: an unaided Taiwan falls in about five months; with the US in, China cannot win
-   the sea and the war stalls; North Korea cannot break the DMZ and is ground down; NATO holds Estonia;
-   limited wars end in small gains or white peace; Venezuela's government falls in about a week.
+23. **Supply reach is national.** Operational reach falls ×0.6 per 150 km beyond consolidated ground
+   for rail-bound armies (Russia: Vershinin, 2021), ×0.85 for the US, whose truck- and air-borne
+   logistics carried the 3rd Infantry Division ~300–350 miles to Baghdad in 14–17 days of combat
+   (`curated/force_posture.json`). A US regime change in Venezuela costs ~4,000 US casualties.
+24. **The spectator app** (`app/`, `wargame`). A standard-library HTTP server runs one war at a time
+   in a background thread; the browser polls a JSON view (province control only when it changed)
+   and draws the map from `data/map/geometry.json`, a display layer written by the map build and
+   never read by the engine. Setup is the only place the scenario can be changed; afterwards the
+   viewer can only change the speed, as the GDD's spectator contract requires.
+25. **Flashpoint sweep** (`tools/scenarios/sweep.py`, the presets in `wargame/scenarios.py`): twelve
+   real-world wars (Russia–Ukraine from 2022 and from 2026, Taiwan with and without the US, Korea,
+   Russia–Estonia under Article 5, Kashmir, Syunik, Eritrea, Venezuela, Israel–Iran, the LAC) run for
+   a year as a smoke test far from the calibration case. Current outcomes: an unaided Taiwan falls in
+   about six months; with the US in, China cannot win the sea and the war stalls; North Korea cannot
+   break the DMZ and is ground down; NATO holds Estonia, though Russia keeps the Finnish border regions it
+   grabs before Finland's reservists arrive; limited wars end in small gains or white
+   peace; Venezuela's government falls in about a week and the war is over in about forty days.
 
 ## Deliberately stubbed (data recorded, not yet consumed)
 
@@ -303,18 +323,12 @@ for.
 
 ## Known deviations
 
-- **Casualties in lopsided wars.** Loss rates are calibrated on a peer war. The US conquering
-  Venezuela takes ~50,000 casualties, several times what the 2003 invasion of Iraq cost per day.
-- **Personnel.** Infantry power counts all active personnel, navies and air forces included, and
-  mobilisation grows only from active strength. Reserve armies (Finland, Israel, Estonia) therefore
-  mobilise too slowly, and Russia's 2022 ground strength is overstated. Both need the IISS breakdown
-  of ground forces and organised reserves.
+- **Reservists fight like regulars.** Taiwan's 260,000 first-response reservists count as fully as its
+  active army, although their readiness is widely doubted.
 
 ## Suggested next tasks
 
-1. Data: ground-force share of active personnel and organised wartime reserves (IISS), with
-   reserve-based mobilisation.
-2. Naval operations: fleet battles and sea control (blockade and landings use fleet ratios today).
-3. Conventional missiles, SEAD and strike drones; air defence that depletes.
-4. Occupation and partisans; post-war treaty enforcement.
-5. Data: land-cover terrain (forests), per-system equipment quality, non-state actors.
+1. Naval operations: fleet battles and sea control (blockade and landings use fleet ratios today).
+2. Conventional missiles, SEAD and strike drones; air defence that depletes.
+3. Occupation and partisans; post-war treaty enforcement.
+4. Data: land-cover terrain (forests), per-system equipment quality, non-state actors.

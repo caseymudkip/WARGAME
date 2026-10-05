@@ -61,10 +61,14 @@ class Setup:
             return scenarios.from_preset(scenarios.PRESETS[self.preset], seed=self.seed)
         if self.year not in scenarios.START_DATES:
             raise ValueError("the start year must be 2021 or 2026")
+        motivations = {m.name: m for m in Motivation}
+        for name in (self.attacker_motivation, self.defender_motivation):
+            if name not in motivations:
+                raise ValueError(f"unknown motivation {name}")
         return scenarios.custom(
             self.year, self.attacker, self.defender, WarGoalType(self.goal), EscalationTier(self.tier),
-            nuclear=self.nuclear, attacker_motivation=Motivation[self.attacker_motivation],
-            defender_motivation=Motivation[self.defender_motivation],
+            nuclear=self.nuclear, attacker_motivation=motivations[self.attacker_motivation],
+            defender_motivation=motivations[self.defender_motivation],
             provinces=frozenset(self.provinces), seed=self.seed,
         )
 

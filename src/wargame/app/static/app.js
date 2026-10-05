@@ -517,7 +517,7 @@ function setupMeta() {
   $("speeds").replaceChildren(...m.speeds.map((s) => {
     const b = document.createElement("button");
     b.textContent = s.value === "PAUSED" ? "❚❚" : s.label;
-    b.title = s.label;
+    b.title = s.value === "PAUSED" ? "Pause (space)" : `${s.label} (${m.speeds.filter((x) => x.value !== "PAUSED").findIndex((x) => x.value === s.value) + 1})`;
     b.dataset.speed = s.value;
     b.disabled = true;
     b.addEventListener("click", () => setSpeed(s.value));
@@ -724,6 +724,22 @@ function showPeace(w) {
 // ---------------------------------------------------------------------------------------------
 // Boot
 // ---------------------------------------------------------------------------------------------
+
+// Keyboard: space pauses or resumes, 1-5 pick a speed.
+let lastSpeed = "DAY_BY_DAY";
+window.addEventListener("keydown", (e) => {
+  if (!S.running || e.target.closest("input, select, textarea") || !$("setup").hidden) return;
+  const speeds = S.meta.speeds.map((s) => s.value).filter((v) => v !== "PAUSED");
+  if (e.code === "Space") {
+    e.preventDefault();
+    const now = S.war ? S.war.speed : "PAUSED";
+    if (now !== "PAUSED") lastSpeed = now;
+    setSpeed(now === "PAUSED" ? lastSpeed : "PAUSED");
+  } else if (/^Digit[1-9]$/.test(e.code)) {
+    const pick = speeds[Number(e.code.slice(5)) - 1];
+    if (pick) setSpeed(pick);
+  }
+});
 
 async function boot() {
   window.addEventListener("resize", resize);

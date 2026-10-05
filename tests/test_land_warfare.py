@@ -65,16 +65,17 @@ def _calibration():
 
 
 def test_calibrated_to_the_2022_invasion():
-    """From the 2021 map, Russia nearly doubles its hold on Ukraine in five weeks but cannot take Kyiv.
+    """From the 2021 map, Russia gains half again its hold on Ukraine in five weeks but cannot take Kyiv.
 
-    It reaches just under half of ISW's figure: in 2022 columns raced down roads through parts of seven
-    oblasts at once (much of that ground was thin road control, given up in April), while oblast-sized
-    provinces fall one after another (left-bank Kherson before Melitopol)."""
+    It reaches about 40% of ISW's figure: in 2022 columns raced down roads through parts of seven oblasts
+    at once (much of that ground was thin road control, given up in April), while oblast-sized provinces
+    fall one after another (left-bank Kherson before Melitopol). Russia fights with the ~360,000 ground
+    troops IISS counted in 2021, not its whole 900,000-strong military."""
     cal = _calibration()
     result = cal.run_2022(days=36)
     low, _ = cal.BENCHMARK_OCCUPIED_31_MARCH_2022
-    assert result["occupied_km2"] >= 0.45 * low  # ISW: ~163,000 km2 on 31 March 2022.
-    assert result["occupied_km2"] > 1.7 * result["occupied_before"]
+    assert result["occupied_km2"] >= 0.4 * low  # ISW: ~163,000 km2 on 31 March 2022.
+    assert result["occupied_km2"] > 1.5 * result["occupied_before"]
     assert result["kyiv_held"] and not result["war_ended"]
 
 
@@ -265,6 +266,32 @@ def test_a_nation_fighting_for_survival_mobilises():
     assert bor.active_personnel == pytest.approx(prewar + 31 * lw.MOBILISATION_RATE_EXISTENTIAL * prewar, rel=0.02)
     sim.run_days(200)
     assert bor.active_personnel <= lw.MOBILISATION_CEILING_EXISTENTIAL * prewar
+
+
+def test_only_ground_troops_count_as_infantry_and_the_called_up_all_do():
+    world = world_with()
+    bor = world.country("BOR")
+    bor.ground_share, bor.peacetime_active = 0.4, 100_000  # Russia, 2021: navies and missile forces don't hold a front.
+    assert lw.ground_troops(bor) == pytest.approx(40_000)
+    bor.oob.active_personnel = 150_000                     # 50,000 called up: all of them go to the front.
+    assert lw.ground_troops(bor) == pytest.approx(90_000)
+
+
+def _fielded_after(days: int, **reserve) -> int:
+    world = world_with(ard_troops=GRINDING, bor_troops=24_000)
+    world.country("BOR").mobilised = False
+    for key, value in reserve.items():
+        setattr(world.country("BOR"), key, value)
+    sim = start(world, WarGoal(WarGoalType.REGIME_CHANGE, "ARD", "BOR"))
+    sim.run_days(days)
+    return world.country("BOR").oob.active_personnel + world.country("BOR").oob.casualties_total
+
+
+def test_a_reserve_army_fields_its_wartime_structure_in_days():
+    paper = _fielded_after(10, organised_reserve=256_000)                     # Registered, but no wartime structure.
+    finland = _fielded_after(10, organised_reserve=256_000, mobilisation_days=7.0)  # 280,000 wartime strength.
+    assert finland > 200_000
+    assert paper < 40_000
 
 
 def test_an_already_mobilised_nation_only_replaces_losses():

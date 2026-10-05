@@ -13,7 +13,9 @@
 from __future__ import annotations
 
 import json
+import sys
 import threading
+import traceback
 import webbrowser
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -46,6 +48,10 @@ TIER_LABELS = {
 }
 SPEED_LABELS = {"PAUSED": "Pause", "HOUR_BY_HOUR": "1 hour/s", "SIX_HOURS": "6 hours/s", "DAY_BY_DAY": "1 day/s",
                 "WEEK_BY_WEEK": "1 week/s", "MONTH_BY_MONTH": "1 month/s"}
+
+
+class NotFound(Exception):
+    pass
 
 
 class App:
@@ -97,8 +103,14 @@ class App:
 
     def current(self) -> Session:
         if self.session is None:
-            raise LookupError("no war is running")
+            raise NotFound("no war is running")
         return self.session
+
+    def province(self, pid: int) -> dict[str, Any]:
+        try:
+            return self.current().province(pid)
+        except KeyError:
+            raise NotFound(f"no province {pid}") from None
 
 
 def handler_for(app: App) -> type[BaseHTTPRequestHandler]:
@@ -125,13 +137,15 @@ def handler_for(app: App) -> type[BaseHTTPRequestHandler]:
                 elif url.path == "/api/state":
                     self._json(app.current().state(int(query.get("since", 0)), int(query.get("map", -1))))
                 elif url.path.startswith("/api/province/"):
-                    self._json(app.current().province(int(url.path.rsplit("/", 1)[1])))
+                    self._json(app.province(int(url.path.rsplit("/", 1)[1])))
                 else:
                     self._error(HTTPStatus.NOT_FOUND, "not found")
-            except LookupError as e:
+            except NotFound as e:
                 self._error(HTTPStatus.NOT_FOUND, str(e))
             except ValueError as e:
                 self._error(HTTPStatus.BAD_REQUEST, str(e))
+            except Exception as e:  # A bug: say so, rather than hiding it as a missing page.
+                self._internal(e)
 
         def do_POST(self) -> None:
             url = urlparse(self.path)
@@ -146,10 +160,16 @@ def handler_for(app: App) -> type[BaseHTTPRequestHandler]:
                     self._json({"speed": body.get("speed")})
                 else:
                     self._error(HTTPStatus.NOT_FOUND, "not found")
-            except LookupError as e:
+            except NotFound as e:
                 self._error(HTTPStatus.NOT_FOUND, str(e))
-            except (ValueError, KeyError, json.JSONDecodeError) as e:
+            except ValueError as e:  # Includes malformed JSON and unknown countries, goals or speeds.
                 self._error(HTTPStatus.BAD_REQUEST, str(e))
+            except Exception as e:
+                self._internal(e)
+
+        def _internal(self, e: Exception) -> None:
+            traceback.print_exc(file=sys.stderr)
+            self._error(HTTPStatus.INTERNAL_SERVER_ERROR, f"internal error: {type(e).__name__}: {e}")
 
         def _file(self, path: Path) -> None:
             if not path.is_file() or path.parent != STATIC:

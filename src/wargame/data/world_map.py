@@ -173,7 +173,7 @@ def _curated(name: str, root: Path | None) -> dict[str, Any]:
 
 
 def _apply_curated_posture(world: World, year: int, root: Path | None) -> None:
-    """Fortified lines, drone saturation, mobilisation and leadership at the start date."""
+    """Fortified lines, drone saturation, mobilisation, personnel and leadership at the start date."""
     by_name: dict[str, int] = {}
     for p in world.provinces.values():
         by_name.setdefault(p.name, p.id)
@@ -198,6 +198,17 @@ def _apply_curated_posture(world: World, year: int, root: Path | None) -> None:
                         total = stock.quantity + stock.stored
                         stock.quantity = round(total * float(share))
                         stock.stored = total - stock.quantity
+    personnel = _curated("personnel.json", root)
+    for tag, country in world.countries.items():
+        entry = personnel.get(str(year), {}).get(tag) or personnel["countries"].get(tag) or {}
+        if entry.get("ground_share") is not None:
+            country.ground_share = float(entry["ground_share"])
+        country.organised_reserve = int(entry.get("organised_reserve") or 0)
+        days = entry.get("mobilisation_days")
+        if days is None and entry.get("wartime_strength"):  # A standing wartime structure, but no stated timing.
+            days = personnel["default_mobilisation_days"]
+        country.mobilisation_days = float(days) if days is not None else None
+        country.peacetime_active = country.oob.active_personnel
     for tag, leader in _curated("leadership.json", root).get(str(year), {}).items():
         if tag in world.countries:
             world.countries[tag].leadership_defiance = float(leader["defiance"])

@@ -5,13 +5,33 @@ You set up the scenario: belligerents, war goal, escalation tier, nuclear
 toggle and motivation. Then the engine runs the war on its own while you watch
 at the speed you choose.
 
-This repository currently contains the **simulation engine** (data model, daily
+**Alpha V1 (0.1.0a1).** See [`CHANGELOG.md`](CHANGELOG.md).
+
+## Play
+
+```
+pip install -e .        # Python 3.11+, no dependencies
+wargame                 # opens the spectator app at http://127.0.0.1:8765/
+```
+
+Pick a flashpoint, or set up your own war: attacker, defender, war goal, escalation tier, nuclear
+toggle and each side's temper, with claimed provinces picked on the map. Then watch. Pause with
+space, or pick a speed with 1–5 (an hour to a month per second). Hover a province for who holds
+it; click it for the forces there, its fieldworks and its war damage. The war diary on the right
+narrates the war, and the peace terms appear when it ends.
+
+Without the viewer: `wargame presets` lists the flashpoints, and `wargame run taiwan --days 365`
+runs one and prints how it went.
+
+## What's here
+
+This repository contains the **simulation engine** (data model, daily
 and hourly logic loops, land warfare, amphibious operations, an air war and a
 strategy layer, in pure Python 3.11+ with no runtime dependencies), **real-world
 data for 140–145 countries** at two start dates, every number with its source,
 and a **3,604-province world map** with the real front lines. Combat is
 calibrated against the war in Ukraine and NATO's 1999 air campaign, and
-smoke-tested on eleven real-world flashpoints. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the
+smoke-tested on twelve real-world flashpoints. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the
 design and resolved GDD decisions, and [`data/README.md`](data/README.md) for
 sources, cross-checks and known gaps.
 
@@ -26,12 +46,14 @@ src/wargame/
                land warfare (fronts, assaults, encirclement, rivers, amphibious, blockade, attrition),
                strategy (posture, counteroffensives, withdrawals), air war (superiority, strikes)
   data/        snapshot loader, real data -> Country (python -m wargame.data RUS UKR), map -> World
+  app/         spectator app: local web server (session thread, JSON API) and the browser viewer
+  scenarios.py   the flashpoints and custom scenarios
   simulation.py  ScenarioConfig + Simulation tick loop
 data/          sources, raw extracts, curated research, built 2021/2026 snapshots, province map
 tools/data/    reproducible extraction and build scripts
 tools/map/     reproducible province map build (Natural Earth, power plants, DeepState front)
 tools/calibration/  land combat against the real 2025 war (python tools/calibration/ukraine_2025.py)
-tools/scenarios/    eleven real-world flashpoints run for a year (python tools/scenarios/sweep.py)
+tools/scenarios/    the flashpoints run for a year as a smoke test (python tools/scenarios/sweep.py)
 tests/         behaviour tests (fictional map), real-map tests, dataset integrity tests
 ```
 
@@ -69,12 +91,12 @@ allow. The same rules give an exploitation dash against an empty front, WW2 divi
 in an even fight, and trench war against a fortified, drone-watched line. They are checked
 against both phases of the war in Ukraine (`python tools/calibration/ukraine_2025.py [2022]`):
 
-- **2025, from the 1 January 2026 front.** Russia takes 12.0 km² a day (DeepState: 11.9).
-  It loses about 1,045 soldiers a day (UK MoD: 1,137), and Ukraine loses 0.54 as many
+- **2025, from the 1 January 2026 front.** Russia takes 11.9 km² a day (DeepState: 11.9).
+  It loses about 980 soldiers a day (UK MoD: 1,137), and Ukraine loses 0.44 as many
   (CSIS: 0.42–0.5). The attacks fall on the real axes.
-- **2022, from the 2021 map.** Russia takes left-bank Kherson in days and nearly doubles its
-  hold within five weeks (~78,000 km²; the real figure was ~165,000), but cannot take Kyiv.
-  Four years on it holds ~125,000 km² (the real 2025 figure: ~116,000).
+- **2022, from the 2021 map.** Russia takes left-bank Kherson in days and grows its
+  hold by half within five weeks (~68,000 km²; the real figure was ~165,000), but cannot take Kyiv.
+  Four years on it holds ~99,000 km² (the real 2025 figure: ~116,000).
 - **Foreign aid decides the long war.** With aid, Ukraine keeps fighting for years from
   either start. If the West walks away, it collapses within about a year.
 - **Elsewhere.** An unaided Taiwan falls in about five months; with the US in, China cannot

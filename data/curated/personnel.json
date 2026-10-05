@@ -1,0 +1,911 @@
+{
+  "_doc": "Personnel the GFP totals do not break down. ground_share: share of active personnel in ground combat forces (army, marines/naval infantry, airborne, ground special forces), used to count infantry; countries not listed use default_ground_share, the median of those that are. organised_reserve: reservists trained and assigned to wartime units, callable within weeks (not paper reserve totals); a nation fighting for survival calls them up over mobilisation_days (default_mobilisation_days when no source states it; never fewer than MIN_MOBILISATION_DAYS in conflict/land_warfare.py). Every entry keeps the totals it was derived from, its sources and the fields its researcher flagged as uncertain. Researched from search-result snippets quoting the IISS Military Balance (mostly via the Norwegian encyclopedia snl.no) and official national figures.",
+  "_source": "curated_personnel",
+  "default_ground_share": 0.71,
+  "default_mobilisation_days": 14,
+  "countries": {
+    "ARM": {
+      "ground_share": 0.934,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 44800,
+      "ground_active": 41850,
+      "wartime_strength": null,
+      "iiss_reserve": 210000,
+      "year": "IISS Military Balance 2019 (later editions ~42,900-44,800)",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Armed_Forces_of_Armenia",
+        "https://www.statista.com/statistics/1416085/armenia-azerbaijan-military-comparison"
+      ],
+      "notes": "Active 44,800: Army 41,850 (0.93), Air/AD aviation 1,100, other AD 1,850. IISS reserve 210,000 (served within 15 yrs; organisation unclear) -> organised null.",
+      "uncertain_fields": []
+    },
+    "AUS": {
+      "ground_share": 0.492,
+      "organised_reserve": 29750,
+      "mobilisation_days": null,
+      "total_active": 59800,
+      "ground_active": 29400,
+      "wartime_strength": null,
+      "iiss_reserve": 29750,
+      "year": "IISS Military Balance 2023 (via SNL)",
+      "sources": [
+        "https://snl.no/Australias_forsvar"
+      ],
+      "notes": "Active 59,800: Army 29,400 (0.49), Navy 15,500, RAAF 14,900. IISS reserve 29,750 (active reserve) used as organised_reserve (flag).",
+      "uncertain_fields": [
+        "organised_reserve"
+      ]
+    },
+    "AZE": {
+      "ground_share": 0.888,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 64050,
+      "ground_active": 56850,
+      "wartime_strength": null,
+      "iiss_reserve": 300000,
+      "year": "IISS Military Balance 2024/2025 total; Army figure from MB2019",
+      "sources": [
+        "https://www.statista.com/statistics/1416085/armenia-azerbaijan-military-comparison",
+        "https://fip.am/wp-content/uploads/2020/11/Military-Balance-2019.-Azerbaijan.pdf",
+        "https://www.globalmilitary.net/compare/armies/aze-vs-arm/"
+      ],
+      "notes": "Active 64,050; Army 56,850 (MB2019 when total was 66,950) -> 0.89 (0.85 on MB2019 totals). IISS reserve 300,000 (ex-conscripts). Some sources (GFP-type) give 126,400 active. No sourced organised-reserve figure.",
+      "uncertain_fields": [
+        "ground_share (army figure from older edition)"
+      ]
+    },
+    "BLR": {
+      "ground_share": 0.497,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 48600,
+      "ground_active": 24150,
+      "wartime_strength": null,
+      "iiss_reserve": 289500,
+      "year": "IISS Military Balance 2025 total; branch split from other sources",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Armed_Forces_of_Belarus",
+        "https://en.wikipedia.org/wiki/Belarusian_Ground_Forces",
+        "https://news.err.ee/1609334292/propastop-looks-at-the-state-of-belarusia-s-military-in-2024",
+        "https://kyivindependent.com/regional/Does-Belarus-military-have-the-capacity-to-attack-Ukraine"
+      ],
+      "notes": "IISS 2025: 48,600 active (other count 45,350). Ground = Ground Forces ~18,000 (2024) + Special Operations Forces ~6,150 (MB2022) = 24,150 -> 0.50 ESTIMATE (mixed sources). IISS reserve 289,500 (served within last 5 years). Territorial-defence/people's-militia plans are paper -> organised null.",
+      "uncertain_fields": [
+        "ground_share (estimate)"
+      ]
+    },
+    "BRA": {
+      "ground_share": 0.628,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 366500,
+      "ground_active": 230000,
+      "wartime_strength": null,
+      "iiss_reserve": 1340000,
+      "year": "IISS Military Balance 2023/2024 (via SNL)",
+      "sources": [
+        "https://snl.no/Brasils_forsvar"
+      ],
+      "notes": "Active 366,500: Army 214,000 (112,000 conscripts) + Marines 16,000 = 230,000 (0.63); Navy 85,000 incl. marines, AF 67,500. IISS reserve 1,340,000 (paper).",
+      "uncertain_fields": []
+    },
+    "CAN": {
+      "ground_share": 0.338,
+      "organised_reserve": 34400,
+      "mobilisation_days": null,
+      "total_active": 66500,
+      "ground_active": 22500,
+      "wartime_strength": null,
+      "iiss_reserve": 34400,
+      "year": "IISS Military Balance 2023/2024 (via SNL)",
+      "sources": [
+        "https://snl.no/Canadas_forsvar"
+      ],
+      "notes": "Active 66,500: Army 22,500 (0.34), Navy 12,600, RCAF 12,100, remainder joint/SOF/support. IISS reserve 34,400 (Primary Reserve, unit-based part-timers) used as organised_reserve (flag).",
+      "uncertain_fields": [
+        "organised_reserve"
+      ]
+    },
+    "CHE": {
+      "ground_share": null,
+      "organised_reserve": 147000,
+      "mobilisation_days": 10,
+      "total_active": 19550,
+      "ground_active": null,
+      "wartime_strength": null,
+      "iiss_reserve": 123450,
+      "year": "IISS Military Balance 2023 (via SNL); Swiss Army headcount Mar 2024",
+      "sources": [
+        "https://snl.no/Sveits'_forsvar",
+        "https://www.bluewin.ch/en/news/swiss-armed-forces-have-around-147000-members-2439022.html",
+        "https://www.swissinfo.ch/eng/politics/cabinet-pushes-for-overhaul-of-armed-forces/40587560"
+      ],
+      "notes": "IISS 'active' 19,550 (16,450 conscripts in training) is a joint figure with no army/air split -> ground_share null (land component clearly dominant; air force militia squadrons stood down). Militia army headcount ~147,000 (1 Mar 2024; regulated strength 100,000, legal ceiling 140,000) = organised_reserve. IISS reserve 123,450. WEA reform: 35,000 troops deployable within 10 days -> mobilisation_days 10 (for that first echelon).",
+      "uncertain_fields": [
+        "ground_share (null)"
+      ]
+    },
+    "CHN": {
+      "ground_share": 0.491,
+      "organised_reserve": 510000,
+      "mobilisation_days": null,
+      "total_active": 2035000,
+      "ground_active": 1000000,
+      "wartime_strength": null,
+      "iiss_reserve": 510000,
+      "year": "IISS Military Balance 2023-2025 (figures unchanged across editions)",
+      "sources": [
+        "https://snl.no/Kinas_forsvar",
+        "https://www.everycrsreport.com/files/2025-09-04_IF11719_e466902930d35d287d9221cbd9e199992b5f91d7.html",
+        "https://www.globalsecurity.org/military/world/china/pla-personnel.htm"
+      ],
+      "notes": "PLA active 2,035,000; Ground Force ~965,000 + PLAN Marine Corps ~35,000 (SNL citing IISS; other estimates 30-40k, some 2026 claims ~100k) = 1,000,000 (0.49). Navy ~260,000, Air Force ~395,000, Rocket Force/support the rest. Reserve 510,000 (IISS) is organised in PLA reserve divisions/brigades, so used as organised_reserve (flag). PAP 500,000 paramilitary excluded; militia (millions, paper) excluded.",
+      "uncertain_fields": [
+        "organised_reserve",
+        "marine figure"
+      ]
+    },
+    "DEU": {
+      "ground_share": 0.34,
+      "organised_reserve": 34000,
+      "mobilisation_days": null,
+      "total_active": 182857,
+      "ground_active": 62108,
+      "wartime_strength": null,
+      "iiss_reserve": 34600,
+      "year": "Bundeswehr official, 31 Jan 2025",
+      "sources": [
+        "https://www.grosswald.org/bundeswehr-personnel-2025-breakdown/",
+        "https://snl.no/Tysklands_forsvar",
+        "https://www.osw.waw.pl/en/publikacje/analyses/2026-04-24/horizon-ambition-military-strategy-and-capability-profile-bundeswehr"
+      ],
+      "notes": "182,857 soldiers (Jan 2025; 184,194 Dec 2025). Heer 62,108 (0.34); Luftwaffe 27,642, Marine 15,549, Joint Support 23,520, Medical 20,372, CIR etc. Army includes KSK/airborne. Active (assigned) reservists ~34,000; IISS reserve ~34,600. Plan: 260,000 active + 200,000 reserve by mid-2030s.",
+      "uncertain_fields": []
+    },
+    "EGY": {
+      "ground_share": 0.707,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 438500,
+      "ground_active": 310000,
+      "wartime_strength": null,
+      "iiss_reserve": 479000,
+      "year": "IISS Military Balance 2023 (via SNL)",
+      "sources": [
+        "https://snl.no/Egypts_forsvar"
+      ],
+      "notes": "Active 438,500: Army 310,000 (incl. ~200,000 conscripts) (0.71); Air Defence Command, AF 30,000, Navy 18,500. IISS reserve 479,000 (ex-conscripts; organisation unknown) -> organised null.",
+      "uncertain_fields": []
+    },
+    "ERI": {
+      "ground_share": 0.991,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 201750,
+      "ground_active": 200000,
+      "wartime_strength": null,
+      "iiss_reserve": 120000,
+      "year": "IISS Military Balance (figures unchanged since ~2015)",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Eritrean_Defence_Forces",
+        "https://coi.euaa.europa.eu/administration/belgium/PLib/COI_Focus_Eritrea_Mobilisation_after_the_war_in_Tigray_20250919.pdf"
+      ],
+      "notes": "Active 201,750, mostly indefinite national-service conscripts: Army ~200,000 (0.99). IISS reserve ~120,000 (est.). In Sept 2022 all reservists up to age 55 were recalled (coercive round-ups) -- no sourced organised figure or timeline.",
+      "uncertain_fields": [
+        "iiss_reserve",
+        "all figures dated"
+      ]
+    },
+    "ESP": {
+      "ground_share": 0.622,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 124150,
+      "ground_active": 77250,
+      "wartime_strength": null,
+      "iiss_reserve": 14700,
+      "year": "IISS Military Balance 2023/2024 (via SNL)",
+      "sources": [
+        "https://snl.no/Spanias_forsvar"
+      ],
+      "notes": "Active 124,150: Army 71,900 + Marines 5,350 = 77,250 (0.62); Navy 20,500, AF 20,350. IISS reserve 14,700 (voluntary reservists).",
+      "uncertain_fields": []
+    },
+    "EST": {
+      "ground_share": 0.732,
+      "organised_reserve": 38800,
+      "mobilisation_days": 1,
+      "total_active": 8200,
+      "ground_active": 6000,
+      "wartime_strength": 43700,
+      "iiss_reserve": null,
+      "year": "Estonian Defence Forces / MoD 2023-2025 (IISS breakdown not retrieved)",
+      "sources": [
+        "https://news.postimees.ee/7770150/wartime-composition-of-estonian-defense-forces-increased-to-43-700-positions",
+        "https://en.wikipedia.org/wiki/Estonian_Defence_Forces",
+        "https://en.wikipedia.org/wiki/Estonian_Land_Forces",
+        "https://news.err.ee/1608863792/estonian-government-calls-okas-snap-exercise",
+        "https://news.postimees.ee/8255997/estonian-defense-forces-wartime-composition-to-be-increased-to-50-000"
+      ],
+      "notes": "Active 8,200 incl. ~4,000 conscripts. Ground ~6,000 = average peacetime size of the Land Forces (soldiers, conscripts, officers) -> 0.73 ESTIMATE. Wartime structure 43,700: 4,200 active/permanent-readiness + 38,800 reservists and Defence League members with wartime posts (= organised_reserve); ~40,000 more trained but unassigned; ~230,000 in mobilisation register; plan to raise wartime structure to ~50,000. National Defence Act allows call-up on 24 h notice; President: mobilisation 'in a matter of hours and days' -> mobilisation_days 1 (flag).",
+      "uncertain_fields": [
+        "ground_share (estimate)",
+        "mobilisation_days"
+      ]
+    },
+    "ETH": {
+      "ground_share": 0.994,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 503000,
+      "ground_active": 500000,
+      "wartime_strength": null,
+      "iiss_reserve": null,
+      "year": "IISS Military Balance 2023/2024 (via SNL)",
+      "sources": [
+        "https://snl.no/Etiopias_forsvar",
+        "https://en.wikipedia.org/wiki/Ethiopian_National_Defense_Force"
+      ],
+      "notes": "Active ~503,000 after wartime expansion: Army ~500,000, AF 3,000 (0.99). Pre-2020 IISS figure was ~138,000. Regional special forces/militias (e.g. Amhara Fano, regional police) excluded. No reserve figure.",
+      "uncertain_fields": [
+        "total_active (wartime estimate)"
+      ]
+    },
+    "FIN": {
+      "ground_share": 0.696,
+      "organised_reserve": 256000,
+      "mobilisation_days": null,
+      "total_active": 19250,
+      "ground_active": 13400,
+      "wartime_strength": 280000,
+      "iiss_reserve": 238000,
+      "year": "IISS Military Balance (~2022/2023 edition, via Forces News); wartime strength from Finnish govt",
+      "sources": [
+        "https://www.forcesnews.com/news/finland-and-uk-forces-firepower-comparison",
+        "https://snl.no/Finlands_forsvar",
+        "https://en.wikipedia.org/wiki/Finnish_Defence_Forces",
+        "https://www.rcinet.ca/eye-on-the-arctic/2016/01/21/finland-wants-shorter-call-up-time-for-reservists/"
+      ],
+      "notes": "IISS: 19,250 active (Army 13,400, Navy 3,150, AF 2,700) -> 0.70. SNL (peacetime staff + annual conscripts): Army 4,400+~18,000, Navy 1,400+3,200, AF ~2,000+1,300 -> ~0.74. Wikipedia: ~24,000 active incl. conscripts. Wartime strength 280,000 (Army wartime ~180,000); organised_reserve = 280,000 - ~24,000 active = 256,000 (derived). IISS reserve 238,000 (= previous wartime strength); total trained reservists ~870,000-900,000. Rapid call-up of up to 25,000 reservists without 3 months' notice since 2016; no sourced overall mobilisation time.",
+      "uncertain_fields": [
+        "mobilisation_days"
+      ]
+    },
+    "FRA": {
+      "ground_share": 0.576,
+      "organised_reserve": 48600,
+      "mobilisation_days": null,
+      "total_active": 203250,
+      "ground_active": 117000,
+      "wartime_strength": null,
+      "iiss_reserve": 36300,
+      "year": "IISS Military Balance 2023/2024 (via SNL); operational reserve Oct 2025",
+      "sources": [
+        "https://snl.no/Frankrikes_forsvar",
+        "https://www.assemblee-nationale.fr/dyn/17/comptes-rendus/cion_def/l17cion_def2526022_compte-rendu.pdf",
+        "https://www.publicsenat.fr/actualites/institutions/rearmement-en-quoi-consiste-larmee-de-reserve"
+      ],
+      "notes": "Active 203,250: Army 114,800 + naval commandos/fusiliers ~2,200 = 117,000 (0.58); AF 40,200, Navy 34,850. Gendarmerie 100,500 excluded. organised_reserve = operational reservists ~48,600 (31 Oct 2025; target 80,000 by 2030). IISS reserve 36,300.",
+      "uncertain_fields": []
+    },
+    "GBR": {
+      "ground_share": 0.61,
+      "organised_reserve": 29060,
+      "mobilisation_days": null,
+      "total_active": 126440,
+      "ground_active": 77130,
+      "wartime_strength": null,
+      "iiss_reserve": null,
+      "year": "UK MoD Quarterly Service Personnel Statistics, 1 Jan 2026 (Full-Time Trained Strength)",
+      "sources": [
+        "https://www.gov.uk/government/statistics/quarterly-service-personnel-statistics-2026/quarterly-service-personnel-statistics-1-january-2026",
+        "https://ukdefencejournal.org.uk/recruitment-rises-but-trained-strength-still-slips-in-forces/",
+        "https://www.lukepollard.org/news/2021/03/25/concern-as-400-royal-marines-slated-for-cut-in-defence-review"
+      ],
+      "notes": "Full-time trained strength: Army 70,630, RN/RM 28,140, RAF 27,670 = 126,440 (UK Regulars incl. untrained 136,960). Ground = Army 70,630 + Royal Marines ~6,500 (2021 figure, RM not published separately) = 77,130 -> 0.61. organised_reserve = trained Future Reserves 2020 ~29,060 (Army Reserve 23,740). Earlier IISS (via Forces News) 153,200 active (Army 85,800) -> 0.56.",
+      "uncertain_fields": [
+        "Royal Marines figure"
+      ]
+    },
+    "GRC": {
+      "ground_share": 0.707,
+      "organised_reserve": null,
+      "mobilisation_days": 1,
+      "total_active": 132200,
+      "ground_active": 93500,
+      "wartime_strength": null,
+      "iiss_reserve": 289000,
+      "year": "IISS Military Balance 2023/2024 (via SNL)",
+      "sources": [
+        "https://snl.no/Hellas'_forsvar",
+        "https://epistrateusi.army.gr/en/mission-of-mobilization/",
+        "https://origin01-en.protothema.gr/2025/04/30/ministry-of-defence-plan-for-150000-combat-ready-reservists-in-the-army"
+      ],
+      "notes": "Active 132,200: Army 93,500 (45,000 conscripts) (0.71); Navy 16,700, AF 21,800. IISS reserve 289,000; reservists are pre-assigned to units by the Army mobilisation directorate. 2025 MoD plan for 150,000 'combat-ready' Army reservists (not yet achieved -> organised null). The 1996 Imia mobilisation was completed within a single day -> mobilisation_days 1 (historical, flag).",
+      "uncertain_fields": [
+        "organised_reserve",
+        "mobilisation_days"
+      ]
+    },
+    "IND": {
+      "ground_share": 0.839,
+      "organised_reserve": 40000,
+      "mobilisation_days": null,
+      "total_active": 1475750,
+      "ground_active": 1238200,
+      "wartime_strength": null,
+      "iiss_reserve": 1155000,
+      "year": "IISS Military Balance 2024",
+      "sources": [
+        "https://www.deccanherald.com/amp/story/india%2Fhow-do-india-and-pakistans-militaries-compare-as-tensions-rise-after-kashmir-attack-3518553",
+        "https://snl.no/Indias_forsvar",
+        "https://www.theweek.in/news/india/2025/05/09/centre-gives-orders-to-activate-14-battalions-of-the-territorial-army-amid-tension-with-pakistan-what-does-it-mean.amp.html"
+      ],
+      "notes": "Active 1,475,750: Army 1,237,000 + navy marine commandos ~1,200 = 1,238,200 (0.84); Navy 75,500, AF 149,900, Coast Guard 13,350. IISS reserve 1,155,000 (Army 960,000 ex-regulars liable to recall; not formed units). organised_reserve = Territorial Army 'over 40,000' (other reports ~50,000); 14 TA infantry battalions were activated in May 2025.",
+      "uncertain_fields": [
+        "organised_reserve (40-50k)"
+      ]
+    },
+    "IRN": {
+      "ground_share": 0.82,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 610000,
+      "ground_active": 500000,
+      "wartime_strength": null,
+      "iiss_reserve": 350000,
+      "year": "IISS Military Balance 2024/2025 (via SNL)",
+      "sources": [
+        "https://snl.no/Irans_forsvar",
+        "https://www.worldjewishcongress.org/en/islamic-revolutionary-guard-corps-military"
+      ],
+      "notes": "Active 610,000: Artesh Ground Force 350,000 (220,000 conscripts) + IRGC Ground Forces ~150,000 = 500,000 (0.82); Artesh Navy 18,000, AF 37,000, AD 15,000; IRGC total 190,000 (navy ~20-25k, aerospace ~15k). IISS reserve 350,000. Basij: ~600,000 said to be mobilisable (SNL), poorly trained paramilitary -> not counted as organised reserve (null).",
+      "uncertain_fields": [
+        "IRGC ground figure (~150k estimate)"
+      ]
+    },
+    "IRQ": {
+      "ground_share": 0.933,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 193000,
+      "ground_active": 180000,
+      "wartime_strength": null,
+      "iiss_reserve": null,
+      "year": "IISS Military Balance 2023 (via SNL)",
+      "sources": [
+        "https://snl.no/Iraks_forsvar"
+      ],
+      "notes": "Active 193,000: Army ~180,000 (0.93). Paramilitary ~86,000 (incl. Federal Police ~36,000); Popular Mobilisation militias ~180,000 'available on mobilisation' (paramilitary, not an organised military reserve) -> null.",
+      "uncertain_fields": []
+    },
+    "ISR": {
+      "ground_share": 0.743,
+      "organised_reserve": 360000,
+      "mobilisation_days": 2,
+      "total_active": 169500,
+      "ground_active": 126000,
+      "wartime_strength": null,
+      "iiss_reserve": 465000,
+      "year": "IISS Military Balance 2023/2024",
+      "sources": [
+        "https://www.aljazeera.com/news/2023/10/11/how-big-is-israels-military-and-how-much-funding-does-it-get-from-the-us",
+        "https://www.dhakatribune.com/world/middle-east/328834/the-israel-hamas-military-balance",
+        "https://www.adn.com/nation-world/2023/10/10/israels-massive-mobilization-of-360000-reservists-upends-lives/",
+        "https://www.inss.org.il/wp-content/uploads/2023/10/Israeli-army-calls-up-360000-reservists-in-48-hours-how-does-that-work-Ariel-Heimann-De-Volkskrant-Translated-from-Dutch-for-site.pdf"
+      ],
+      "notes": "IISS: 169,500 active, Army 126,000 (0.74). IISS reserve 465,000 (all assigned to reserve units). organised_reserve = demonstrated call-up of ~360,000 in Oct 2023 (IDF: 300,000 within 48 h) -> mobilisation_days 2. Use 465,000 as the theoretical ceiling.",
+      "uncertain_fields": []
+    },
+    "ITA": {
+      "ground_share": 0.597,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 161050,
+      "ground_active": 96100,
+      "wartime_strength": null,
+      "iiss_reserve": 17900,
+      "year": "IISS Military Balance 2023/2024 (via SNL)",
+      "sources": [
+        "https://snl.no/Italias_forsvar"
+      ],
+      "notes": "Active 161,050: Army 93,100 + San Marco marines ~3,000 = 96,100 (0.60); Navy 28,700, AF 39,250. Carabinieri ~108,000 excluded. IISS reserve 17,900 (Army 13,400); no separate organised-reserve figure found.",
+      "uncertain_fields": []
+    },
+    "JPN": {
+      "ground_share": 0.61,
+      "organised_reserve": 36072,
+      "mobilisation_days": null,
+      "total_active": 247150,
+      "ground_active": 150700,
+      "wartime_strength": null,
+      "iiss_reserve": 55900,
+      "year": "IISS Military Balance 2023/2024 (via SNL); MOD actual reserve fill (latest MOD page)",
+      "sources": [
+        "https://snl.no/Japans_forsvar",
+        "https://www.mod.go.jp/j/profile/personnel-status/index.html",
+        "https://www.nippon.com/en/japan-data/h02075/"
+      ],
+      "notes": "IISS: 247,150 active, GSDF 150,700 (0.61). These are close to AUTHORISED strength; actual SDF manning ~227,843 (92%, FY2023). organised_reserve = actual Ready Reserve 3,805 + Reserve SDF personnel 32,267 = 36,072 (MOD; authorised 7,981 / 47,900). IISS reserve 55,900.",
+      "uncertain_fields": []
+    },
+    "KOR": {
+      "ground_share": 0.809,
+      "organised_reserve": 950000,
+      "mobilisation_days": null,
+      "total_active": 555000,
+      "ground_active": 449000,
+      "wartime_strength": null,
+      "iiss_reserve": 3100000,
+      "year": "IISS Military Balance 2023 (via SNL)",
+      "sources": [
+        "https://snl.no/S%C3%B8r-Koreas_forsvar",
+        "https://www.ajunews.com/view/20200105094637340",
+        "https://www.koreaherald.com/article/10866469",
+        "https://warontherocks.com/south-korea-needs-a-wake-up-call-on-its-reservist-crisis/",
+        "https://thedefensepost.com/2025/08/11/south-korea-military-downsize/amp/"
+      ],
+      "notes": "MB2023: 555,000 active; Army 420,000 + Marines 29,000 = 449,000 (0.81). Actual strength has fallen to ~450,000 (2025) and the plan figure is 500,000 (Army 365,000, Marines 29,000 -> 0.79) -- share is stable ~0.8. Reserve: IISS 3,100,000 (total incl. homeland reserve). organised_reserve = mobilisation reserve (dongwon yebigun, 1-3/4 yrs after discharge, assigned to wartime mobilisation divisions/units): ~1.3M, being cut to ~950,000 under Defense Reform 2.0 (Aju News 2020); total reserve ~2.56-2.75M, ~1.7M trained annually but only 2-3 days/yr. No sourced mobilisation timeline.",
+      "uncertain_fields": [
+        "organised_reserve (950k-1.3M)",
+        "mobilisation_days"
+      ]
+    },
+    "LTU": {
+      "ground_share": 0.674,
+      "organised_reserve": 28000,
+      "mobilisation_days": null,
+      "total_active": 23000,
+      "ground_active": 15500,
+      "wartime_strength": null,
+      "iiss_reserve": 7100,
+      "year": "IISS (via SNL/Wikipedia, ~2021-2023 data); Lithuanian MoD plans",
+      "sources": [
+        "https://snl.no/Litauens_forsvar",
+        "https://en.wikipedia.org/wiki/Lithuanian_Armed_Forces",
+        "https://en.wikipedia.org/wiki/Lithuanian_Land_Forces",
+        "https://www.lrt.lt/en/news-in-english/19/2356278/lithuania-should-have-15-500-professional-50-000-reserve-troops-by-2030-ministry",
+        "https://wearethemighty.com/feature/how-this-small-european-country-is-preparing-for-war-with-russia"
+      ],
+      "notes": "23,000 active. Land Forces ~12,000 active + ~3,500 conscripts = 15,500 -> 0.67 ESTIMATE (excludes ~5,500 NDVF volunteers, which IISS counts as paramilitary militia). organised_reserve = 'active reserve' (ex-conscripts within 10 yrs, trained, equipped, assigned to units): 28,000 (2021); other reports 36,000-38,000; plan 50,000 by 2030. IISS reserve 7,100.",
+      "uncertain_fields": [
+        "ground_share (estimate)",
+        "organised_reserve (28-38k)"
+      ]
+    },
+    "LVA": {
+      "ground_share": 0.906,
+      "organised_reserve": 22000,
+      "mobilisation_days": null,
+      "total_active": 8000,
+      "ground_active": 7250,
+      "wartime_strength": null,
+      "iiss_reserve": null,
+      "year": "SNL 2026 / Latvian MoD-LSM 2024-2025 (IISS breakdown not retrieved)",
+      "sources": [
+        "https://snl.no/Latvias_forsvar",
+        "https://eng.lsm.lv/article/society/defence/17.07.2025-latvian-army-could-grow-to-8000-this-year.a607140/",
+        "https://www.fpri.org/article/2025/06/latvias-renewed-conscription-turns-two/",
+        "https://www.wikipedia.com/wiki/Latvian_military"
+      ],
+      "notes": "~8,000 active (professional + National Defence Service conscripts). Navy ~500 and Air Force ~250 (SNL) -> everything else (land forces, SOF, staff/logistics) 7,250 = 0.91 UPPER BOUND; true combat-ground share lower. National Guard (Zemessardze) ~10,000 volunteers + ~12,000 designated reserve soldiers -> organised_reserve ~22,000 (ESTIMATE); further ~26,000 older trained reservists. Target 61,000 total (31,000 active incl. NG/high-readiness reserve) by ~2030-36.",
+      "uncertain_fields": [
+        "ground_share",
+        "organised_reserve"
+      ]
+    },
+    "NLD": {
+      "ground_share": 0.454,
+      "organised_reserve": 8510,
+      "mobilisation_days": null,
+      "total_active": 44245,
+      "ground_active": 20106,
+      "wartime_strength": null,
+      "iiss_reserve": null,
+      "year": "Dutch MoD, 1 Sep 2025",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Netherlands_Armed_Forces",
+        "https://en.wikipedia.org/wiki/Royal_Netherlands_Army",
+        "https://snl.no/Nederlands_forsvar"
+      ],
+      "notes": "Military personnel 44,245 (1 Sep 2025; appears to include Royal Marechaussee and central staff). Army 17,806 active + Korps Mariniers ~2,300 = 20,106 -> 0.45. Using IISS definitions (2018: 35,400 total excl. Marechaussee; Army 18,850 + marines 2,650) the share is 0.61 -- choose 0.45 if the sim's total includes all uniformed personnel. Reservists 8,510.",
+      "uncertain_fields": [
+        "ground_share (0.45 vs 0.61 depending on denominator)"
+      ]
+    },
+    "NOR": {
+      "ground_share": 0.39,
+      "organised_reserve": 40000,
+      "mobilisation_days": null,
+      "total_active": 23950,
+      "ground_active": 9350,
+      "wartime_strength": 70000,
+      "iiss_reserve": 40000,
+      "year": "IISS Military Balance (~2022 edition, via Forces News); MB2024 total 25,400",
+      "sources": [
+        "https://www.forcesnews.com/news/norway-vs-russia-how-do-their-militaries-compare",
+        "https://en.defence-ua.com/analysis/russia_calls_out_norway_for_militarizing_svalbard_setting_the_stage_for_war_how_strong_is_natos_northern_flank-13928.html",
+        "https://en.wikipedia.org/wiki/Norwegian_Armed_Forces",
+        "https://en.wikipedia.org/wiki/Norwegian_Home_Guard"
+      ],
+      "notes": "IISS: 23,950 active: Army 9,350 (0.39), Navy 4,300, AF 3,600 (rest joint/HV staff). MB2024 total 25,400 (branch split not retrieved). Home Guard ~40,000-40,500 (IISS lists 40,000), incl. ~3,000 high-readiness 'innsatsstyrker'. Total strength on full mobilisation ~70,000 (Wikipedia). organised_reserve = Home Guard 40,000.",
+      "uncertain_fields": [
+        "ground_share (older edition)"
+      ]
+    },
+    "PAK": {
+      "ground_share": 0.853,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 660000,
+      "ground_active": 563200,
+      "wartime_strength": null,
+      "iiss_reserve": null,
+      "year": "IISS Military Balance 2024/2025",
+      "sources": [
+        "https://www.outlookindia.com/national/pakistan-news-205606",
+        "https://www.al-monitor.com/originals/2026/07/factbox-what-pakistan-militarys-strength-and-capability",
+        "https://en.wikipedia.org/wiki/Pakistan_Armed_Forces"
+      ],
+      "notes": "Active 660,000: Army 560,000 + Marines 3,200 = 563,200 (0.85); Navy 30,000, AF 70,000. IISS lists no formal reserve figure we could confirm; Wikipedia/GFP-type sources give 550,000 'reserve' (ex-servicemen, not organised) -> null. Paramilitary (FC, Rangers ~290k) excluded.",
+      "uncertain_fields": [
+        "iiss_reserve"
+      ]
+    },
+    "PHL": {
+      "ground_share": 0.767,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 145300,
+      "ground_active": 111500,
+      "wartime_strength": null,
+      "iiss_reserve": 131000,
+      "year": "IISS Military Balance 2023/2024 (via SNL)",
+      "sources": [
+        "https://snl.no/Filippinenes_forsvar"
+      ],
+      "notes": "Active 145,300: Army 103,200 + Marines 8,300 = 111,500 (0.77); Navy 24,500 incl. marines, AF 17,600. IISS reserve 131,000; CAFGU militia ~50,000 (paramilitary).",
+      "uncertain_fields": []
+    },
+    "POL": {
+      "ground_share": 0.717,
+      "organised_reserve": 300000,
+      "mobilisation_days": null,
+      "total_active": 216100,
+      "ground_active": 155000,
+      "wartime_strength": 550000,
+      "iiss_reserve": null,
+      "year": "Polish MoD 2024 total; branch split via SNL (approximate)",
+      "sources": [
+        "https://notesfrompoland.com/2024/07/16/poland-has-natos-third-largest-military-new-figures-show/.",
+        "https://snl.no/Polens_forsvar",
+        "https://defence24.pl/sily-zbrojne/jak-rosnie-armia-wiemy-ilu-zolnierzy-ma-wojsko-polskie-analiza",
+        "https://www.polskieradio.pl/395/7784/Artykul/3493202,polands-military-mobilization-plans-how-many-reservists-would-be-called-up-in-the-event-of-war",
+        "https://thedefensepost.com/2026/08/17/poland-military-220000-active-personnel/"
+      ],
+      "notes": "Total 216,100 (2024; >220,000 by Aug 2026). Ground = Army ~110,000 + Special Forces ~5,000 + Territorial Defence ~40,000 (SNL) = 155,000 -> 0.72 ESTIMATE. Caution: 2025 budget data for PROFESSIONAL soldiers only list Land Forces 71,714, Air 21,980, Navy 8,240, WOT 5,850 (rest in central/joint units) which would give a lower share (~0.55-0.6). Wartime: >550,000 incl. >300,000 reservists could be mobilised (Polish Radio) -> organised_reserve 300,000 is a PLAN figure; active reserve/high-readiness reserve still being built (target 150,000 by 2039).",
+      "uncertain_fields": [
+        "ground_share",
+        "organised_reserve"
+      ]
+    },
+    "PRK": {
+      "ground_share": 0.859,
+      "organised_reserve": 600000,
+      "mobilisation_days": null,
+      "total_active": 1280000,
+      "ground_active": 1100000,
+      "wartime_strength": null,
+      "iiss_reserve": 600000,
+      "year": "IISS Military Balance (2020-2025 editions, unchanged); ROK Defense White Paper agrees",
+      "sources": [
+        "https://snl.no/Nord-Koreas_forsvar",
+        "https://www.globalsecurity.org/military/world/dprk/personnel.htm",
+        "https://mnd.go.kr/mnd_book/DefenseWhitePaper/2018/suppl(eng)/files/basic-html/page30.html"
+      ],
+      "notes": "Active 1,280,000: Army ~1,100,000 (0.86), Navy 60,000, Air Force 110,000, Strategic Forces ~10,000. IISS reserve 600,000 = Reserve Military Training Units (organised, used as organised_reserve, flag). Worker-Peasant Red Guards ~5.7M and Red Youth Guard ~1M are paramilitary militia, excluded. ROK DWP gives ~7.6M total reserve incl. militia.",
+      "uncertain_fields": [
+        "organised_reserve"
+      ]
+    },
+    "ROU": {
+      "ground_share": 0.497,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 71500,
+      "ground_active": 35500,
+      "wartime_strength": null,
+      "iiss_reserve": 55000,
+      "year": "IISS Military Balance 2023 (via SNL)",
+      "sources": [
+        "https://snl.no/Romanias_forsvar",
+        "https://www.romania-insider.com/romania-expands-voluntary-military-service-july-2025"
+      ],
+      "notes": "Active 71,500: Army 35,500 (0.50), Navy 6,800, AF 11,700, remainder joint/SOF/other. Gendarmerie 57,000 excluded. IISS reserve 55,000; reserve ageing (avg age ~48-50); 2025 law creates 4-month voluntary training feeding an operational reserve (size not yet reported).",
+      "uncertain_fields": []
+    },
+    "SAU": {
+      "ground_share": 0.809,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 257000,
+      "ground_active": 208000,
+      "wartime_strength": null,
+      "iiss_reserve": null,
+      "year": "IISS Military Balance 2023 (via SNL)",
+      "sources": [
+        "https://snl.no/Saudi-Arabias_forsvar"
+      ],
+      "notes": "Active 257,000: Army 75,000 + National Guard 130,000 (mechanised/infantry brigades, ground combat) + Marines 3,000 = 208,000 (0.81); AF 20,000, Air Defence 16,000, Navy 13,500 (incl. marines), Strategic Missile Force. No reserve listed.",
+      "uncertain_fields": []
+    },
+    "SGP": {
+      "ground_share": 0.784,
+      "organised_reserve": 252500,
+      "mobilisation_days": 1,
+      "total_active": 51000,
+      "ground_active": 40000,
+      "wartime_strength": null,
+      "iiss_reserve": 252500,
+      "year": "IISS Military Balance 2023/2024 (via SNL); MINDEF mobilisation exercises",
+      "sources": [
+        "https://snl.no/Singapores_forsvar",
+        "https://www.mindef.gov.sg/news-and-events/latest-releases/27jan18_nr/",
+        "https://www.mindef.gov.sg/news-and-events/latest-releases/7feb26-nr2/"
+      ],
+      "notes": "Active 51,000: Army 40,000 (26,000 conscripts) (0.78); AF 6,000, Navy 4,000. IISS reserve 252,500 = operationally ready NSmen assigned to units -> organised_reserve. MINDEF open-mobilisation drills: >90% of activated NSmen report within a few hours; units equipped same day -> mobilisation_days 1 (actually <1).",
+      "uncertain_fields": []
+    },
+    "SRB": {
+      "ground_share": 0.471,
+      "organised_reserve": 2000,
+      "mobilisation_days": null,
+      "total_active": 28150,
+      "ground_active": 13250,
+      "wartime_strength": null,
+      "iiss_reserve": 50150,
+      "year": "IISS Military Balance 2023/2024 (via SNL)",
+      "sources": [
+        "https://snl.no/Serbias_forsvar",
+        "https://wikipedia.com/wiki/Vojska_Srbije"
+      ],
+      "notes": "Active 28,150: Army 13,250 (0.47; includes river flotilla), Air Force & AD 5,100, rest training/joint commands. IISS reserve 50,150; 'active reserve' ~2,000; passive reserve ~600,000 (paper).",
+      "uncertain_fields": []
+    },
+    "SWE": {
+      "ground_share": 0.461,
+      "organised_reserve": 73150,
+      "mobilisation_days": 1,
+      "total_active": 14850,
+      "ground_active": 6850,
+      "wartime_strength": 88000,
+      "iiss_reserve": 11450,
+      "year": "IISS Military Balance 2024; wartime organisation per Swedish govt/Armed Forces 2024-25",
+      "sources": [
+        "https://www.forcesnews.com/nato/how-swedens-military-compares-uks-following-long-awaited-nato-accession",
+        "https://snl.no/Sveriges_forsvar",
+        "https://nordicdefencesector.com/en/article/sweden-increases-war-organization-in-2025",
+        "https://www.forsvarsmakten.se/en/about-the-swedish-armed-forces/official-information/personnel/"
+      ],
+      "notes": "MB2024: 14,850 active: Army 6,850 (0.46), Navy 2,350 (incl. amphibious corps, not separable), AF 2,700, other 2,950. Wartime organisation ~88,000 (to 115,000 by 2030, ~130,000 by 2035). organised_reserve = 88,000 - 14,850 = 73,150 (derived; includes Home Guard ~22,000 and conscript-trained reservists with wartime placements). IISS reserve 11,450. Home Guard readiness '6-24-90' (start tasks in 6 h, full capability 24 h) -> mobilisation_days 1 applies to Home Guard.",
+      "uncertain_fields": [
+        "organised_reserve (derived)"
+      ]
+    },
+    "SYR": {
+      "ground_share": 0.95,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 180000,
+      "ground_active": null,
+      "wartime_strength": null,
+      "iiss_reserve": null,
+      "year": "2026 (post-Assad new Syrian Army); pre-fall IISS MB2023 given in notes",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Syrian_Army",
+        "https://israel-alma.org/wp-content/uploads/2025/07/Special-Report-The-New-Syrian-Army-.pdf",
+        "https://www.jns.org/analysis/damascus-aims-to-rebuild-and-modernize-the-syrian-army",
+        "https://snl.no/Syrias_forsvar"
+      ],
+      "notes": "Assad-era SAA dissolved Dec 2024. New army reported at ~180,000-182,000 after SDF integration (Aug 2026), target 300,000; division counts are considered inflated. Air force/navy largely destroyed (Dec 2024 strikes) so the force is overwhelmingly ground: ground_share 0.95 is an ESTIMATE, not sourced. Pre-fall IISS MB2023: 169,000 active, Army 130,000 (0.77), AF 15,000, AD 20,000; paramilitary ~100,000. No organised reserve.",
+      "uncertain_fields": [
+        "total_active",
+        "ground_share (estimate)"
+      ]
+    },
+    "TUR": {
+      "ground_share": 0.741,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 355200,
+      "ground_active": 263200,
+      "wartime_strength": null,
+      "iiss_reserve": 378700,
+      "year": "IISS Military Balance 2024 (via SNL)",
+      "sources": [
+        "https://snl.no/Tyrkias_forsvar",
+        "https://www.ynetnews.com/article/h1tfuztvfx"
+      ],
+      "notes": "Active 355,200: Army 260,200 + Marines 3,000 = 263,200 (0.74); Navy 45,000 incl. marines, AF 50,000. IISS reserve 378,700. Gendarmerie (~150k+) excluded (NATO counts give ~494,500 incl. gendarmerie).",
+      "uncertain_fields": []
+    },
+    "TWN": {
+      "ground_share": 0.615,
+      "organised_reserve": 260000,
+      "mobilisation_days": 1,
+      "total_active": 169000,
+      "ground_active": 104000,
+      "wartime_strength": null,
+      "iiss_reserve": 1657000,
+      "year": "IISS Military Balance 2022-2024 (unchanged)",
+      "sources": [
+        "https://snl.no/Taiwans_forsvar",
+        "https://www.forcesnews.com/news/taiwans-military-firepower-explained",
+        "https://news.ltn.com.tw/news/focus/breakingnews/3329681",
+        "https://www.taiwannews.com.tw/en/news/4433732",
+        "https://dominotheory.com/how-many-reserves-does-taiwan-really-have/",
+        "https://rfa.org/english/china/2025/02/12/china-taiwan-annual-drill-scale/"
+      ],
+      "notes": "Active 169,000: Army 94,000 + Marines 10,000 (in Navy 40,000) = 104,000 (0.62); AF 35,000. IISS reserve 1,657,000 is a paper figure. Legislative Yuan (Jun 2024): 1,981,822 listed reservists, 710,569 within 8 yrs (trainable), only ~110,000 trained in 2024; Tung Hsin mobilisation drill 2024 used 14,647. organised_reserve = MND's first-response plan: 450,000 force incl. ~260,000 reservists + ~185,000 standing (Minister Yen De-fa via Taipei Times). MND mobilisation office claims 215,000 reservists can be mobilised within 24 h (+78,000 standby) -> mobilisation_days 1 is an OFFICIAL CLAIM; readiness of those units is widely doubted (reserve brigades formed in 18 counties; 14-day refresher every ~2 yrs).",
+      "uncertain_fields": [
+        "organised_reserve (quality)",
+        "mobilisation_days (official claim)"
+      ]
+    },
+    "USA": {
+      "ground_share": 0.481,
+      "organised_reserve": 765700,
+      "mobilisation_days": null,
+      "total_active": 1276700,
+      "ground_active": 614600,
+      "wartime_strength": null,
+      "iiss_reserve": null,
+      "year": "FY2025 authorised end strength (DoD request via CRS IN12447); DMDC actual 1,285,084 on 30 Sep 2025",
+      "sources": [
+        "https://www.everycrsreport.com/reports/IN12447.html",
+        "https://www.everycrsreport.com/files/2025-09-30_IN12449_fd93141902d0739eb7af0cc281d8592824b569be.html",
+        "https://www.militarytimes.com/news/your-military/2024/03/11/2025-budget-45-pay-raise-shift-of-troops-from-active-to-reserve/"
+      ],
+      "notes": "Active: Army 442,300 + USMC 172,300 = 614,600 of 1,276,700 (Navy 332,300, USAF 320,000, USSF 9,800) -> 0.48. organised_reserve = Selected Reserve 765,700 (ARNG 325,000, USAR 175,800, USNR 57,700, USMCR 32,500, USAFR 67,000, ANG 107,700); ground subset ARNG+USAR+USMCR = 533,300. All are drilling unit members, but Guard/Reserve combat brigades need weeks-months of post-mobilisation training (no sourced figure) -> mobilisation_days null. IISS reserve not retrieved.",
+      "uncertain_fields": [
+        "mobilisation_days"
+      ]
+    },
+    "VEN": {
+      "ground_share": 0.634,
+      "organised_reserve": 220000,
+      "mobilisation_days": null,
+      "total_active": 123000,
+      "ground_active": 78000,
+      "wartime_strength": null,
+      "iiss_reserve": 8000,
+      "year": "IISS Military Balance 2024/2025",
+      "sources": [
+        "https://snl.no/Venezuelas_forsvar",
+        "https://www.kxly.com/news/national-and-world-news/how-venezuela-s-aging-soviet-era-military-stacks-up-next-to-us-forces-in-the/article_795b2164-9723-534f-80a8-582ca2fb7adb.html",
+        "https://www.agazeta.com.br/mundo/exercito-venezuelano-e-3-maior-forca-da-regiao-e-foca-defesa-aerea-0419"
+      ],
+      "notes": "Active 123,000: Army 63,000 + Naval Infantry ~15,000 = 78,000 (0.63); Navy 25,500 incl. marines, AF 11,500, National Guard 23,000 (gendarmerie; counting it as ground gives 0.82). IISS reserve 8,000. organised_reserve = Bolivarian Militia ~220,000 'armed and ideologically close' (IISS paramilitary estimate; 343,000 in 2020) -- low military value, flag. Government claims 4.5M+ militia (not credible).",
+      "uncertain_fields": [
+        "organised_reserve (militia quality)"
+      ]
+    },
+    "VNM": {
+      "ground_share": 0.911,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 482000,
+      "ground_active": 439000,
+      "wartime_strength": null,
+      "iiss_reserve": 5000000,
+      "year": "IISS Military Balance 2023 (via SNL/Wikipedia)",
+      "sources": [
+        "https://snl.no/Vietnams_forsvar",
+        "https://en.wikipedia.org/wiki/People%27s_Army_of_Vietnam"
+      ],
+      "notes": "Active 482,000: Army 412,000 + Naval Infantry ~27,000 = 439,000 (0.91); Navy 40,000 incl. NI, Air Defence/AF 30,000. Reserve commonly cited (IISS) ~5,000,000 (SNL wording suggests 500,000 militia reservists -- conflicting, flag). Self-defence militia excluded.",
+      "uncertain_fields": [
+        "iiss_reserve (5M vs 500k)",
+        "naval infantry 27k looks high vs other estimates"
+      ]
+    }
+  },
+  "2021": {
+    "RUS": {
+      "ground_share": 0.4,
+      "organised_reserve": 100000,
+      "mobilisation_days": 37,
+      "total_active": 900000,
+      "ground_active": 360000,
+      "wartime_strength": null,
+      "iiss_reserve": 2000000,
+      "year": "IISS Military Balance 2021/2022 (pre-invasion)",
+      "sources": [
+        "https://www.euaa.europa.eu/russian-federation-country-focus/4-military-service",
+        "https://www.euaa.europa.eu/russian-federation-country-focus/412-reserve",
+        "https://www.criticalthreats.org/analysis/explainer-on-russian-conscription-reserve-and-mobilization",
+        "https://www.themoscowtimes.com/2026/08/06/hidden-mobilization-what-russias-new-reservist-law-could-mean-for-the-war-in-ukraine",
+        "https://www.aa.com.tr/en/europe/partial-mobilization-of-troops-completed-russian-defense-minister-says/2723661",
+        "https://pravda.com.ua/eng/news/2022/10/28/7373979"
+      ],
+      "notes": "Total 900,000 (IISS, 2021) per EUAA citing Military Balance. Ground = Ground Forces 280,000 + VDV 45,000 + naval infantry 35,000 = 360,000 (SOF/Spetsnaz brigades are GRU and largely inside Ground Forces figure). Reserve: official/IISS 'reserve' ~2,000,000 on paper (MB2023 lists 1,500,000); RAND (2019) judged only 4-5k were an active reserve in the Western sense; BARS contract reserve grew 'from a few thousand to ~100,000' in 2021 (Meduza via Moscow Times) -> organised_reserve 100,000 is an UPPER-BOUND claim. Mobilisation: Sept-2022 'partial mobilisation' of 300,000 (mostly NOT pre-assigned organised reservists) was declared complete in ~37 days (21 Sep-28 Oct 2022); only 82,000 were in the zone at completion, 41,000 in combat units -> mobilisation_days=37 describes that call-up, not an organised-reserve readiness standard.",
+      "uncertain_fields": [
+        "organised_reserve",
+        "iiss_reserve",
+        "mobilisation_days"
+      ]
+    },
+    "UKR": {
+      "ground_share": 0.741,
+      "organised_reserve": 234000,
+      "mobilisation_days": null,
+      "total_active": 196600,
+      "ground_active": 145600,
+      "wartime_strength": null,
+      "iiss_reserve": 900000,
+      "year": "IISS Military Balance 2022 (data as of late 2021)",
+      "sources": [
+        "https://www.forcesnews.com/news/numbers-how-does-ukraines-military-stack-against-russias",
+        "https://abc17news.com/news/national-world/cnn-europe-mideast-africa/2022/02/25/russia-and-ukraines-militaries-are-david-and-goliath-heres-how-they-compare/",
+        "https://dupuyinstitute.org/2023/05/01/how-many-brigades-did-ukraine-start-with-war-with/",
+        "https://armyinform.com.ua/2021/05/12/do-vijskovo-operatyvnogo-rezervu-zarahovano-ponad-230-tysyach-osib/",
+        "https://www.pravda.com.ua/eng/news/2022/07/08/7357075/",
+        "https://censor.net/ru/news/3301007/rezerv_teroborony_sostavlyaet_bolee_200_tysyach_grajdan_reznikov"
+      ],
+      "notes": "MB2022: active 196,600; land forces 125,600; Air Assault Forces ~20,000 (Feb 2022) -> ground 145,600 (0.74). Two naval-infantry brigades (35th, 36th) sit inside the Navy total and are NOT added (no sourced personnel figure); adding a few thousand would raise the share to ~0.76. MB2021 (data 2020) gave 209,000 active incl. army ~145,000. Reserve: IISS 900,000 (mostly 2014-21 combat veterans). organised_reserve = ~234,000 discharged servicemen enrolled in the 'military-operational reserve' (May 2021, MoD/ArmyInform) assigned to replenish units; +~11,000 reserve-contract personnel; TDF reserve >200,000 claimed by Reznikov. Observed: 37,000 reservists joined TDF by 26 Feb 2022; armed forces reached ~700,000 by July 2022 (~4.5 months). No sourced single 'days' figure.",
+      "uncertain_fields": [
+        "ground_share (naval infantry omitted)",
+        "organised_reserve"
+      ]
+    }
+  },
+  "2026": {
+    "RUS": {
+      "ground_share": 0.525,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 1134000,
+      "ground_active": 595000,
+      "wartime_strength": null,
+      "iiss_reserve": 1500000,
+      "year": "IISS Military Balance 2025 (data as of early 2025; MB2026 Russia branch figures not found)",
+      "sources": [
+        "https://www.euaa.europa.eu/russian-federation-country-focus/4-military-service",
+        "https://dupuyinstitute.org/2025/02/25/force-ratios-in-the-russo-ukrainian-war/",
+        "https://snl.no/Russlands_forsvar",
+        "https://kyivindependent.com/putin-raises-russian-military-personnel-to-nearly-2-4-million/",
+        "https://novayagazeta.eu/en/articles/2026/06/10/russias-military-recruitment-rate-fell-to-three-year-low-in-first-quarter-of-2026-en-news",
+        "https://www.themoscowtimes.com/2026/08/06/hidden-mobilization-what-russias-new-reservist-law-could-mean-for-the-war-in-ukraine"
+      ],
+      "notes": "MB2025: total ~1,134,000; Ground Forces ~550,000, VDV 35,000, naval infantry 10,000 (heavy losses) -> ground 595,000 (52.5%). MB2025 also records ~617,000 personnel deployed to/near Ukraine (Dec 2024) and ~20,000 PMC. MB2023 (via SNL) gave 1,190,000 with Army 550,000 (incl. ~300k mobilised), VDV 40,000, NI 30,000 -> 0.52, consistent. Authorised strength: Sept-2024 decree 1.5M servicemen; March-2026 decree 2,391,770 total incl. 1,502,640 servicemen (actual strength lower). Wartime replacement is by contract recruitment (~30,000/month in Q2 2026; ~172-200k in H1 2026), not an organised reserve; reserve size is secret (official claims ~2M 'active reserve' in 2025, ICDS researcher suggests <1M). 2026 law lets reservists be called for 'special training' to guard infrastructure. organised_reserve left null.",
+      "uncertain_fields": [
+        "ground_share (Russian ground strength includes mobilised + contract fillers; NI/VDV heavily attrited)",
+        "iiss_reserve"
+      ]
+    },
+    "UKR": {
+      "ground_share": 0.932,
+      "organised_reserve": null,
+      "mobilisation_days": null,
+      "total_active": 730000,
+      "ground_active": 680000,
+      "wartime_strength": null,
+      "iiss_reserve": null,
+      "year": "IISS Military Balance 2025 branch breakdown (as reported by Slovo i Dilo / Dupuy Institute)",
+      "sources": [
+        "https://www.slovoidilo.ua/2025/05/29/infografika/bezpeka/portret-ukrayinskoho-vijska-2025-roczi",
+        "https://dupuyinstitute.org/2025/02/25/force-ratios-in-the-russo-ukrainian-war/",
+        "https://euromaidanpress.com/2025/01/15/zelenskyy-ukrainian-armed-forces-currently-number-880000-troops",
+        "https://snl.no/Ukrainas_forsvar",
+        "https://fakty.com.ua/ua/ukraine/suspilstvo/20260310-rejtyng-najbilshyh-armij-svitu-2026-chy-ye-ukrayina-sered-lideriv/",
+        "https://nikvesti.com/en/news/public/ukraine-mobilizes-30-thousand-people"
+      ],
+      "notes": "MB2025 armed-forces branches: Ground Forces ~500,000, Territorial Defence ~100,000, Air Assault ~45,000, Navy ~40,000 (incl. ~30,000 marines), Air Force ~35,000, SOF ~5,000, Unmanned Systems ~5,000 => sum 730,000. Ground = 500k+100k+45k+30k marines+5k SOF = 680,000 (0.93). Plus ~260,000 in National Guard/Border Guard etc. (MB2025 overall ~990,000). Zelensky: 880,000 (Jan 2025); SNL: >900,000 at end-2025 with land forces ~600,000; MB2026 ~880,000 (fakty.com.ua). Apply the 0.93 share to whichever total the sim uses (National Guard combat brigades are also ground forces). No organised reserve: replacement via general mobilisation at ~30,000/month (Zelensky/Syrskyi 2024-25).",
+      "uncertain_fields": [
+        "total_active (730k armed forces vs 880k-990k incl. NGU/DPSU)"
+      ]
+    }
+  }
+}

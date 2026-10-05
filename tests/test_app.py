@@ -122,6 +122,13 @@ def test_the_http_api_rejects_nonsense(server):
         post(server + "/api/start", {"preset": "atlantis"})
     assert e.value.code == 400
     with pytest.raises(urllib.error.HTTPError) as e:
+        post(server + "/api/start", {"year": 2026, "attacker": "RUS", "defender": "UKR", "attacker_motivation": "ANGRY"})
+    assert e.value.code == 400
+    post(server + "/api/start", {"preset": "kashmir"})
+    with pytest.raises(urllib.error.HTTPError) as e:
+        get(server + "/api/province/999999")
+    assert e.value.code == 404
+    with pytest.raises(urllib.error.HTTPError) as e:
         get(server + "/api/nowhere")
     assert e.value.code == 404
     with pytest.raises(urllib.error.HTTPError) as e:

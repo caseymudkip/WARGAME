@@ -42,6 +42,8 @@ if TYPE_CHECKING:
 # ---------------------------------------------------------------------------
 
 
+DEFAULT_GROUND_SHARE = 0.71  # Median of the 45 countries in data/curated/personnel.json.
+
 @dataclass(frozen=True)
 class CapitulationTuning:
     # Threshold = min + (max - min) * resolve ** curve, plus situational bonuses.
@@ -178,6 +180,10 @@ class Country:
     # Wartime posture (curated: data/curated/force_posture.json, leadership.json)
     drone_saturation: float = 0.0          # 0..1: how densely small drones watch and strike its front.
     reach_per_hop: float | None = None     # Supply reach per province beyond the railhead (None: the default).
+    ground_share: float = DEFAULT_GROUND_SHARE  # Share of active personnel in ground combat forces (curated).
+    organised_reserve: int = 0             # Reservists assigned to wartime units, callable within weeks (curated).
+    mobilisation_days: float | None = None  # How fast the organised reserve can be fielded, where a source says.
+    peacetime_active: int | None = None    # Active strength at the start date; anyone called up since is ground troops.
     mobilised: bool = False                # Already on a war footing at the start date.
     leadership_defiance: float = 0.0       # 0..1: a leader who has shown he will not submit.
     hosts: frozenset[str] = frozenset()    # Belligerents allowed to attack from our soil (Belarus 2022)...

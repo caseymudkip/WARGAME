@@ -22,11 +22,11 @@ picks which enemy provinces to assault; every hour each assaulted province is fo
                then fights on land supplied over the beach. Blue-water navies land within 2,000 km.
 
 The same rules produce both paces of the war in Ukraine (tools/calibration/ukraine_2025.py):
-  2022, from the 2021 map: ~78,000 km2 held after 36 days (real ~165,000), Kyiv holds; ~125,000 after
+  2022, from the 2021 map: ~68,000 km2 held after 36 days (real ~165,000), Kyiv holds; ~99,000 after
        four years (real 2025: ~116,000). Surprise, thin lines, an unmobilised defender, attacks from
        Belarus; then fieldworks and drones as both sides adapt.
-  2025, from the 2026 front: 12.0 km2/day (DeepState 11.9), ~1,045 Russian casualties/day
-       (UK MoD 1,137), Ukrainian losses 0.54x (CSIS 0.42-0.5). A fortified, drone-saturated front.
+  2025, from the 2026 front: 11.9 km2/day (DeepState 11.9), ~980 Russian casualties/day
+       (UK MoD 1,137), Ukrainian losses 0.44x (CSIS 0.42-0.5). A fortified, drone-saturated front.
 
 Also here because they are daily force-level effects: encirclement, fortification of static fronts,
 operational reach, mobilisation, equipment attrition and refurbishment, and naval blockade from
@@ -53,7 +53,9 @@ if TYPE_CHECKING:
     from wargame.world.world import World
 
 # --- force pool -----------------------------------------------------------------------------
-INFANTRY_POWER_PER_1000 = 2.0          # Combat power of 1,000 active personnel (one tank-equivalent ~ 1).
+INFANTRY_POWER_PER_1000 = 2.8          # Combat power of 1,000 ground troops (one tank-equivalent ~ 1). Only the ground
+                                       # share of active personnel counts (Russia 2021: 40%; Ukraine 2026: 93%); at the
+                                       # median share, 0.71, that is 2.0 per 1,000 active personnel.
 COMMITMENT_EXISTENTIAL_DEFENCE = 0.9
 COMMITMENT_DEFENCE = 0.8
 # Share of ground power (mostly equipment) sent against the enemy. Russia went in with ~120 of ~170
@@ -103,7 +105,7 @@ ATTACK_PERSONNEL_PER_KM = 1_500        # Attack frontage: a ~15,000-strong divis
 AMPHIBIOUS_FRONTAGE_KM = 20.0          # A beachhead.
 FORTIFICATION_ADVANCE_DRAG = 2.5       # Dupuy: advance rates vary inversely with fortification.
 DRONE_ADAPTATION_PER_DAY = 0.001      # Saturation gained per day at war: from nothing to the 2025 front in ~2.5 years.
-DRONE_ADVANCE_DRAG = 0.961             # Full saturation: the 2025 front, slower than the Somme (CSIS).
+DRONE_ADVANCE_DRAG = 0.977             # Full saturation: the 2025 front, slower than the Somme (CSIS).
 CASUALTY_RATE = 0.004                  # Share of engaged personnel lost per day at R = 1.
 LOPSIDED_RATIO = 3.0                   # Beyond this, attacker losses fall as 1/R rather than 1/sqrt(R).
 DEFENDER_FRONTAGE = 2.7                # Defenders in contact: at most attackers / 2.5 (holding takes fewer troops).
@@ -182,6 +184,11 @@ MOBILISATION_RATE_EXISTENTIAL = 0.02
 MOBILISATION_CEILING_EXISTENTIAL = 3.5
 MOBILISATION_RATE = 0.003
 MOBILISATION_CEILING = 1.3
+# Reserve armies field their organised reserve first: reservists already assigned to wartime units (curated,
+# data/curated/personnel.json), over the days a source states (Israel, October 2023: ~300,000 in 48 hours), or
+# the file's default where an official wartime strength exists but no timing (Finland: 280,000 against ~24,000
+# active). Never faster than MIN_MOBILISATION_DAYS.
+MIN_MOBILISATION_DAYS = 3
 
 
 def amphibious_penalty(km: float) -> float:
@@ -198,8 +205,15 @@ def crossing_penalty(world: World, origin: int, target: int, sea_km: float) -> f
     return MAJOR_RIVER_CROSSING if rank <= MAJOR_RIVER_MAX_SCALERANK else RIVER_CROSSING
 
 
+def ground_troops(country: Country) -> float:
+    """Active personnel in ground combat forces. Everyone called up since the start date fights on the ground."""
+    active = country.oob.active_personnel
+    peacetime = country.peacetime_active if country.peacetime_active is not None else active
+    return min(active, peacetime) * country.ground_share + max(0, active - peacetime)
+
+
 def ground_power(country: Country) -> float:
-    return country.oob.branch_power(Branch.LAND) + INFANTRY_POWER_PER_1000 * country.oob.active_personnel / 1000
+    return country.oob.branch_power(Branch.LAND) + INFANTRY_POWER_PER_1000 * ground_troops(country) / 1000
 
 
 @dataclass
@@ -388,13 +402,17 @@ class LandWarfare:
         assert isinstance(result, frozenset)
         return result
 
-    def _commitment(self, wars: list[War], tag: str) -> float:
+    def _commitment(self, wars: list[War], tag: str, world: World | None = None) -> float:
         best = 0.0
         for war in wars:
             p = war.participants.get(tag)
             if p is None:
                 continue
-            if p.role is ParticipantRole.CO_BELLIGERENT:
+            if p.role is ParticipantRole.CO_BELLIGERENT and p.side is Side.DEFENDER and world is not None \
+                    and self._frontline(world, war, tag):
+                # An ally next door to the aggressor defends its own border (Finland, Poland, the Baltics).
+                share = COMMITMENT_EXISTENTIAL_DEFENCE if self._invaded(world, war, tag) else COMMITMENT_DEFENCE
+            elif p.role is ParticipantRole.CO_BELLIGERENT:
                 share = COMMITMENT_CO_BELLIGERENT
             elif p.side is Side.DEFENDER:
                 share = COMMITMENT_EXISTENTIAL_DEFENCE if war.is_existential_for(tag) else COMMITMENT_DEFENCE
@@ -603,7 +621,7 @@ class LandWarfare:
         dep = self.deployments.setdefault(tag, Deployment())
         dep.effectiveness = self._effectiveness(world, wars, tag, enemies, allies, now_hour)
         dep.personnel_per_power = country.oob.active_personnel / pool if pool > 0 else 0.0
-        power = pool * self._commitment(wars, tag)
+        power = pool * self._commitment(wars, tag, world)
 
         # Only provinces with a supply line home can stage forces (not Transnistria, cut off from Russia),
         # plus the soil of countries that let us attack from it (Belarus, February 2022).
@@ -752,17 +770,43 @@ class LandWarfare:
                 prewar = self._prewar_active.setdefault(tag, country.oob.active_personnel)
                 if country.mobilised:
                     continue
-                existential = part.side is Side.DEFENDER and war.is_existential_for(tag)
+                # Fighting for survival, or with the enemy on its own soil (Israel, October 2023; Finland under
+                # Article 5): the whole nation is called up, whatever the war was declared for.
+                existential = part.side is Side.DEFENDER and (war.is_existential_for(tag) or self._invaded(world, war, tag))
                 rate = MOBILISATION_RATE_EXISTENTIAL if existential else MOBILISATION_RATE
                 ceiling = MOBILISATION_CEILING_EXISTENTIAL if existential else MOBILISATION_CEILING
                 oob = country.oob
-                want = min(int(rate * prewar), int(ceiling * prewar) - oob.active_personnel)
+                daily = rate * prewar
+                cap = ceiling * prewar
+                if existential and country.organised_reserve:
+                    organised = prewar + country.organised_reserve
+                    cap = max(cap, organised)
+                    # A reserve army with a standing wartime structure fields it first, then whoever else will come.
+                    # Paper reserves (Ukraine 2022: 234,000 registered, 37,000 reported in two days) only raise the
+                    # ceiling of the general call-up.
+                    if country.mobilisation_days is not None and oob.active_personnel < organised:
+                        daily = max(daily, country.organised_reserve / max(MIN_MOBILISATION_DAYS, country.mobilisation_days))
+                want = min(int(daily), int(cap) - oob.active_personnel)
                 if want <= 0:
                     continue
                 from_reserve = min(oob.reserve_personnel, want)
                 pool = max(0, oob.mobilizable_manpower - oob.active_personnel - oob.reserve_personnel - oob.casualties_total)
                 oob.reserve_personnel -= from_reserve
                 oob.active_personnel += from_reserve + min(pool, want - from_reserve)
+
+    @staticmethod
+    def _frontline(world: World, war: War, tag: str) -> bool:
+        foes = war.enemies_of(tag)
+        return any(world.provinces[n].controller in foes for p in world.controlled_by(tag) for n in p.neighbors)
+
+    @staticmethod
+    def _invaded(world: World, war: War, tag: str) -> bool:
+        """Does an enemy hold or contest this country's own soil (beyond what it held before the war)?"""
+        foes = war.enemies_of(tag)
+        for pid, (attacker, progress) in world.contested.items():
+            if attacker in foes and progress > 0 and world.provinces[pid].owner == tag:
+                return True
+        return any(p.controller in foes and war.prewar_occupation.get(p.id) != p.controller for p in world.owned_by(tag))
 
     @staticmethod
     def _adapt_drones(world: World, enemies: dict[str, set[str]]) -> None:
