@@ -37,14 +37,16 @@ from collections import deque
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from wargame.core.enums import Branch, ParticipantRole, ProvinceTag, Side
+from wargame.core.enums import Branch, EscalationTier, ParticipantRole, ProvinceTag, Side
 from wargame.core.mathutil import clamp
+from wargame.conflict import strategy
 from wargame.conflict.war_goal import EXISTENTIAL_GOALS, PROVINCE_GOALS
 
 if TYPE_CHECKING:
     from wargame.conflict.war import War
     from wargame.nation.country import Country
     from wargame.simulation import Simulation
+    from wargame.world.province import Province
     from wargame.world.world import World
 
 # --- force pool -----------------------------------------------------------------------------
@@ -57,19 +59,15 @@ COMMITMENT_DEFENCE = 0.8
 # stored equipment, not from a bigger share.
 COMMITMENT_ATTACK = {"realistic_cautious": 0.45, "epic_aggressive": 0.6}
 COMMITMENT_CO_BELLIGERENT = 0.5
+# Limited aims get limited forces: Kargil 1999 and Galwan 2020 were fought by a few brigades.
+GOAL_COMMITMENT = {"border_skirmish": 0.3, "coercion": 0.3}
 EXPEDITIONARY_EFFICIENCY = 0.5         # Forces fighting from an ally's territory.
 REDEPLOY_RATE = 0.25                   # Share of the gap to the planned deployment closed per day.
 PEACETIME_LINE_WEIGHT = 20.0           # x pre-war fortification: how heavily a peacetime army mans its lines.
 
-# --- offensives -------------------------------------------------------------------------------
-OFFENSIVE_SHARE = {"realistic_cautious": 0.35, "epic_aggressive": 0.5}
-OFFENSIVE_SHARE_HALTED = 0.1
-COUNTERATTACK_SHARE = 0.15
-COUNTERATTACK_MIN_RESOLVE = 0.5
-# A defender that comes to outnumber the invader goes over to the offensive (Kharkiv and Kherson,
-# autumn 2022): from COUNTERATTACK_SHARE at 1.2x the enemy's committed power to a full offensive at 2x.
-COUNTEROFFENSIVE_FROM = 1.2
-COUNTEROFFENSIVE_FULL = 2.0
+# --- offensives (how much attacks is decided in conflict/strategy.py) ---------------------------------
+DEFENDER_INCURSION = 0.15              # A defender's interest in the aggressor's own soil (Kursk, 2024)...
+DEFENDER_INVASION_TOTAL_WAR = 0.5      # ...and in total war, when the aggressor's homeland is fair game.
 MAX_TARGETS = 6
 MIN_ASSAULT_RATIO = 1.1                # Planners don't send troops into assaults they expect to lose.
 
@@ -115,6 +113,17 @@ FORTIFICATION_MAX = 0.6                # QJM's "fortified" posture: x1.6.
 
 # --- naval ----------------------------------------------------------------------------------------
 NAVAL_SUPERIORITY = 1.5                # Needed for amphibious assaults and sea-supplied pockets.
+# Amphibious lift: troops a navy can put ashore per day, per unit of naval power. The PLA Navy's
+# amphibious fleet can land about one division, ~20,000 troops, per lift (DoD, as widely reported),
+# against 300,000+ needed for Taiwan. A beachhead builds up wave by wave.
+LIFT_TROOPS_PER_NAVAL_POWER = 8.0
+SEA_THREAT_WEIGHT = 0.3                # A coast facing enemy shipping weighs this much against a land front.
+# Global reach: a navy with at least two big decks (carriers or helicopter carriers) can land anywhere
+# within this range of its own or an ally's coast, if it rules the sea (the US in the Caribbean). Others
+# are limited to sea crossings of AMPHIBIOUS_MAX_KM.
+BLUE_WATER_BIG_DECKS = 2
+BLUE_WATER_RANGE_KM = 2_000.0
+EXPEDITIONARY_WEIGHT = 0.5             # A co-belligerent's interest in an ally's front, relative to its own.
 AMPHIBIOUS_MAX_KM = 250
 BRIDGE_KM = 10                         # Shorter sea links count as land for supply (Kerch bridge).
 FRIENDLY_SUPPLY_RELATION = 0.5         # A neutral neighbour this friendly keeps a cut-off region supplied.
@@ -136,6 +145,7 @@ REACTIVATION_PER_DAY = 0.0005          # Stored equipment refurbished per day at
 # province of distance from the consolidated rear: owned soil, a host's soil, or ground held long enough.
 REACH_PER_HOP = 0.6
 CONSOLIDATION_DAYS = 90
+REACH_CUT_OFF_HOPS = 3                 # Ground with no traceable line back (supplied, if at all, by air or truck).
 
 # --- mobilisation ------------------------------------------------------------------------------------
 # Calling up reserves and volunteers, as a share of pre-war active strength. Ukraine 2022: ~250,000 to
@@ -186,6 +196,11 @@ class LandWarfare:
         self._taken_hour: dict[int, int] = {}            # province -> hour it last changed hands in combat
         self.reach: dict[str, dict[int, int]] = {}       # tag -> province -> hops from its consolidated rear
         self._hosts: dict[str, set[str]] = {}            # tag -> countries currently letting it attack from their soil
+        self.posture: dict[str, strategy.Posture] = {}   # tag -> today's posture, for the spectator
+        self.ashore: dict[tuple[str, int], float] = {}   # (tag, target) -> power landed for an amphibious assault
+        self._cache: dict[tuple[object, ...], object] = {}  # Per-day results shared by every member of a side.
+        self._far_cache: dict[tuple[int, frozenset[str]], bool] = {}
+        self._last_review_hour = -strategy.REVIEW_DAYS * 24
         self._blockaded: set[str] = set()
 
     # --- relationships -------------------------------------------------------------------------
@@ -224,6 +239,7 @@ class LandWarfare:
 
     def daily(self, sim: Simulation) -> None:
         world, wars = sim.world, sim.active_wars
+        self._cache = {}
         enemies, allies = self._sides(wars)
         self._apply_attrition(world)
         self._blockade(world, wars)
@@ -241,6 +257,10 @@ class LandWarfare:
         self._encirclement(world, wars, enemies, allies)
         self._fortify(world, enemies)
         self._operational_reach(world, enemies, allies, sim.clock.hours_elapsed)
+        self._reclaim(world, enemies, allies)
+        if sim.clock.hours_elapsed - self._last_review_hour >= strategy.REVIEW_DAYS * 24:
+            self._last_review_hour = sim.clock.hours_elapsed
+            self._withdraw(world, wars, enemies, allies, sim.clock.hours_elapsed)
         for tag in list(self.deployments):
             if tag not in enemies:
                 del self.deployments[tag]
@@ -251,15 +271,80 @@ class LandWarfare:
         for pid, (attacker, _) in list(world.contested.items()):
             if attacker not in enemies or world.provinces[pid].controller not in enemies[attacker]:
                 del world.contested[pid]  # That war is over; ground taken but unpressed otherwise stays held.
+        self._land_waves(world, allies)
+
+    def _land_waves(self, world: World, allies: dict[str, set[str]]) -> None:
+        """Each day's lift puts more troops ashore for every amphibious assault still going in."""
+        live = {(tag, t) for tag, d in self.deployments.items() for t, (_, _, km) in d.attacks.items() if km}
+        for key in list(self.ashore):
+            if key not in live:
+                del self.ashore[key]
+        for tag, dep in sorted(self.deployments.items()):
+            targets = sorted(t for t, (_, _, km) in dep.attacks.items() if km)
+            if not targets or dep.personnel_per_power <= 0:
+                continue
+            lift = LIFT_TROOPS_PER_NAVAL_POWER * world.country(tag).oob.branch_power(Branch.NAVAL) / dep.personnel_per_power
+            for t in targets:
+                planned = dep.attacks[t][1]
+                self.ashore[(tag, t)] = min(planned, self.ashore.get((tag, t), 0.0) + lift / len(targets))
 
     @staticmethod
     def _front(world: World, tag: str, foes: set[str]) -> list[int]:
         return sorted(p.id for p in world.controlled_by(tag)
                       if any(world.provinces[n].controller in foes for n in p.neighbors))
 
-    @staticmethod
-    def _branch(world: World, tags: set[str], branch: Branch) -> float:
-        return sum(world.country(t).oob.branch_power(branch) for t in sorted(tags) if t in world.countries)
+    def _branch(self, world: World, tags: set[str], branch: Branch) -> float:
+        key = ("branch", frozenset(tags), branch)
+        if key not in self._cache:
+            self._cache[key] = sum(world.country(t).oob.branch_power(branch) for t in sorted(tags) if t in world.countries)
+        value = self._cache[key]
+        assert isinstance(value, float | int)
+        return float(value)
+
+    def _value(self, world: World, pid: int) -> float:
+        key = ("value", pid)
+        if key not in self._cache:
+            self._cache[key] = world.provinces[pid].strategic_value()
+        value = self._cache[key]
+        assert isinstance(value, float)
+        return value
+
+    def _components(self, world: World, friends: set[str]) -> tuple[list[set[int]], int]:
+        """Connected bodies of a side's held ground, and the index of the main (most valuable) one."""
+        key = ("components", frozenset(friends))
+        if key not in self._cache:
+            held = {p.id for t in friends for p in world.controlled_by(t)}
+            components: list[set[int]] = []
+            seen: set[int] = set()
+            for start in sorted(held):
+                if start in seen:
+                    continue
+                part = {start}
+                queue = deque([start])
+                while queue:
+                    prov = world.provinces[queue.popleft()]
+                    links = list(prov.neighbors) + [q for q, km in prov.sea_links if km <= BRIDGE_KM]
+                    for n in links:
+                        if n in held and n not in part:
+                            part.add(n)
+                            queue.append(n)
+                seen |= part
+                components.append(part)
+            main = max(range(len(components)), key=lambda i: (sum(self._value(world, j) for j in components[i]),
+                                                              -min(components[i])), default=-1)
+            self._cache[key] = (components, main)
+        result = self._cache[key]
+        assert isinstance(result, tuple)
+        return result
+
+    def _side_fronts(self, world: World, friends: set[str], foes: set[str]) -> frozenset[int]:
+        key = ("fronts", frozenset(friends), frozenset(foes))
+        if key not in self._cache:
+            self._cache[key] = frozenset(p.id for t in friends for p in world.controlled_by(t)
+                                         if any(world.provinces[n].controller in foes for n in p.neighbors))
+        result = self._cache[key]
+        assert isinstance(result, frozenset)
+        return result
 
     def _commitment(self, wars: list[War], tag: str) -> float:
         best = 0.0
@@ -272,28 +357,123 @@ class LandWarfare:
             elif p.side is Side.DEFENDER:
                 share = COMMITMENT_EXISTENTIAL_DEFENCE if war.is_existential_for(tag) else COMMITMENT_DEFENCE
             else:
-                share = COMMITMENT_ATTACK.get(p.motivation.name, 0.6)
+                share = COMMITMENT_ATTACK.get(p.motivation.name, 0.6) * GOAL_COMMITMENT.get(war.goal.type.value, 1.0)
             best = max(best, share)
         return best
 
-    def _offensive_share(self, wars: list[War], tag: str, power: float, foes: set[str]) -> float:
-        share = 0.0
-        for war in wars:
-            p = war.participants.get(tag)
-            if p is None:
+    # --- power projection ----------------------------------------------------------------------------
+
+    @staticmethod
+    def blue_water(country: Country) -> bool:
+        decks = sum(country.oob.equipment[n].quantity for n in ("aircraft_carriers", "helicopter_carriers")
+                    if n in country.oob.equipment)
+        return decks >= BLUE_WATER_BIG_DECKS
+
+    def _within_far_reach(self, world: World, p: Province, foes: set[str]) -> bool:
+        """Can a blue-water enemy land here? Cached for the war: coasts change hands rarely."""
+        key = (p.id, frozenset(foes))
+        if key not in self._far_cache:
+            self._far_cache[key] = any(p.distance_km(q) <= BLUE_WATER_RANGE_KM for q in self._far_reach(world, foes))
+        return self._far_cache[key]
+
+    def _far_reach(self, world: World, foes: set[str]) -> list[Province]:
+        key = ("far_reach", frozenset(foes))
+        if key not in self._cache:
+            self._cache[key] = [world.provinces[q] for foe in sorted(foes) if foe in world.countries
+                                and self.blue_water(world.country(foe)) for q in self._coasts(world, {foe})]
+        result = self._cache[key]
+        assert isinstance(result, list)
+        return result
+
+    @staticmethod
+    def _coasts(world: World, tags: set[str]) -> list[int]:
+        return sorted(p.id for t in sorted(tags) for p in world.controlled_by(t) if p.coastal)
+
+    def _distant_landings(self, world: World, friends: set[str], foes: set[str]) -> list[tuple[int, int, int]]:
+        """Landings on enemy coasts within BLUE_WATER_RANGE_KM of any friendly coast, from the nearest one."""
+        key = ("landings", frozenset(friends), frozenset(foes))
+        if key in self._cache:
+            cached = self._cache[key]
+            assert isinstance(cached, list)
+            return cached
+        bases = [world.provinces[pid] for pid in self._coasts(world, friends)]
+        out: list[tuple[int, int, int]] = []
+        for q in self._coasts(world, foes):
+            target = world.provinces[q]
+            nearest = min(bases, key=lambda b: (b.distance_km(target), b.id), default=None)
+            if nearest is not None and nearest.distance_km(target) <= BLUE_WATER_RANGE_KM:
+                out.append((nearest.id, q, AMPHIBIOUS_MAX_KM))  # The longest crossing's penalty.
+        self._cache[key] = out
+        return out
+
+    # --- queries for the strategy layer --------------------------------------------------------------
+
+    def committed_power(self, tags: set[str]) -> float:
+        """Ground power these belligerents have on the line and in the attack."""
+        return sum(sum(d.stationed.values()) + sum(a for _, a, _ in d.attacks.values())
+                   for t, d in self.deployments.items() if t in tags)
+
+    def stationed_power(self, tags: set[str], pid: int) -> float:
+        return sum(d.stationed.get(pid, 0.0) for t, d in self.deployments.items() if t in tags)
+
+    def defence_of(self, world: World, pid: int, side: set[str]) -> tuple[float, dict[str, float]]:
+        return self._defence(world, pid, side)
+
+    def depth_km_per_day(self, world: World, target: int, ratio: float) -> float:
+        """How deep an assault at force ratio `ratio` gets into `target` in a day."""
+        if ratio <= 1.0:
+            return 0.0
+        prov = world.provinces[target]
+        holder = prov.controller
+        drones = world.country(holder).drone_saturation if holder in world.countries else 0.0
+        depth = min(MAX_DEPTH_KM_PER_DAY, DEPTH_KM_AT_R2 * math.pow(ratio - 1.0, DEPTH_EXPONENT))
+        depth /= prov.terrain_profile.movement_cost * (1.0 + FORTIFICATION_ADVANCE_DRAG * self.fortification.get(target, 0.0))
+        return depth * (1.0 - DRONE_ADVANCE_DRAG * drones)
+
+    def hops_from_rear(self, tag: str, pid: int) -> int:
+        return self.reach.get(tag, {}).get(pid, REACH_CUT_OFF_HOPS)
+
+    @staticmethod
+    def major_river_between(world: World, a: int, b: int) -> bool:
+        rank = world.provinces[a].river_rank(b)
+        return rank is not None and rank <= MAJOR_RIVER_MAX_SCALERANK
+
+    def _reclaim(self, world: World, enemies: dict[str, set[str]], allies: dict[str, set[str]]) -> None:
+        """Ground taken inside a province but no longer pressed is pushed back by a stronger local defence."""
+        for pid, (attacker, progress) in sorted(world.contested.items()):
+            dep = self.deployments.get(attacker)
+            if dep is None or pid in dep.attacks:
                 continue
-            full = OFFENSIVE_SHARE.get(p.motivation.name, 0.35)
-            if p.side is Side.ATTACKER or p.claim is not None:
-                s = OFFENSIVE_SHARE_HALTED if p.offensive_halted else full
-            elif p.resolve >= COUNTERATTACK_MIN_RESOLVE:
-                enemy = sum(sum(d.stationed.values()) + sum(a for _, a, _ in d.attacks.values())
-                            for t, d in self.deployments.items() if t in foes)
-                edge = clamp((power / max(enemy, 1.0) - COUNTEROFFENSIVE_FROM) / (COUNTEROFFENSIVE_FULL - COUNTEROFFENSIVE_FROM))
-                s = COUNTERATTACK_SHARE + (max(full, COUNTERATTACK_SHARE) - COUNTERATTACK_SHARE) * edge
+            prov = world.provinces[pid]
+            holder = prov.controller
+            side = allies.get(holder, {holder})
+            defence, _ = self._defence(world, pid, side)
+            own = defence - (LOCAL_DEFENCE_BASE + LOCAL_DEFENCE_PER_100K * prov.population / 100_000) * prov.terrain_profile.defense_multiplier
+            pressing = [n for n in prov.neighbors if world.provinces[n].controller in allies.get(attacker, {attacker})]
+            enemy = sum(self.stationed_power(allies.get(attacker, {attacker}), n) for n in pressing) * dep.effectiveness
+            ratio = own / max(enemy * (1.0 + max((self.fortification.get(n, 0.0) for n in pressing), default=0.0)), 1.0)
+            if ratio <= 1.0:
+                continue
+            depth = min(MAX_DEPTH_KM_PER_DAY, DEPTH_KM_AT_R2 * (ratio - 1.0) ** DEPTH_EXPONENT) / prov.terrain_profile.movement_cost
+            depth *= 1.0 - DRONE_ADVANCE_DRAG * (world.country(attacker).drone_saturation if attacker in world.countries else 0.0)
+            frontage = sum(prov.border_with(n) for n in pressing) or math.sqrt(prov.area_km2)
+            progress -= depth * frontage / max(prov.area_km2, 1.0)
+            if progress <= 0:
+                del world.contested[pid]
             else:
-                s = 0.0
-            share = max(share, s)
-        return share
+                world.contested[pid] = (attacker, progress)
+
+    def _withdraw(self, world: World, wars: list[War], enemies: dict[str, set[str]], allies: dict[str, set[str]],
+                  now_hour: int) -> None:
+        for w in strategy.withdrawals(self, world, wars, enemies, allies):
+            prov = world.provinces[w.province]
+            world.set_controller(w.province, w.to)
+            self._taken_hour[w.province] = now_hour
+            self.fortification[w.province] = 0.0
+            self.deployments[w.tag].stationed.pop(w.province, None)
+            war = self._war_between(wars, w.tag, w.to)
+            if war is not None:
+                war.note(now_hour, "withdrawal", f"{world.country(w.tag).name} withdraws from {prov.name}: {w.reason}.")
 
     def _effectiveness(self, world: World, wars: list[War], tag: str, enemies: dict[str, set[str]],
                        allies: dict[str, set[str]], now_hour: int) -> float:
@@ -313,14 +493,20 @@ class LandWarfare:
     def _relevance(self, world: World, wars: list[War], tag: str, target: int, capital_hops: dict[str, dict[int, int]]) -> float:
         q = world.provinces[target]
         war = self._war_between(wars, tag, q.controller)
-        if war is None:
-            return 0.0
+        if war is None or q.owner not in war.participants:
+            return 0.0  # Never invade a neutral's soil, even where the enemy holds it (Transnistria).
         p = war.participants[tag]
         if p.claim is not None:
             return 4.0 if target in p.claim.province_ids else 0.2
         goal = war.goal
         if p.side is Side.DEFENDER:
-            return 3.0 if world.provinces[target].owner in war.tags_on(p.side) else 0.5
+            if q.owner in war.tags_on(p.side):
+                return 3.0  # Liberation.
+            # The aggressor's homeland: limited incursions (Kursk, 2024); allies who came to defend
+            # don't invade it unless the war is total.
+            if war.escalation_tier is EscalationTier.UNRESTRICTED:
+                return DEFENDER_INVASION_TOTAL_WAR
+            return 0.0 if p.role is ParticipantRole.CO_BELLIGERENT else DEFENDER_INCURSION
         if goal.type in PROVINCE_GOALS:
             if target in goal.province_ids:
                 return 4.0
@@ -367,6 +553,11 @@ class LandWarfare:
         # A border with a country hosting the enemy is a front too (Ukraine's border with Belarus, 2022).
         hostile_soil = foes | {h for foe in foes for h in self._hosts.get(foe, set())}
         stations = [pid for pid in self._front(world, tag, hostile_soil) if pid not in self.encircled]
+        # Coasts within reach of enemy shipping are a front too (Taiwan has no land border with China).
+        sea_fronts = {p.id for p in world.controlled_by(tag) if p.coastal and p.id not in self.encircled and p.id not in stations
+                      and (any(km <= AMPHIBIOUS_MAX_KM and world.provinces[q].controller in foes for q, km in p.sea_links)
+                           or self._within_far_reach(world, p, foes))}
+        stations += sorted(sea_fronts)
         for host in sorted(self._hosts.get(tag, set()) - foes):
             stations += [pid for pid in self._front(world, host, foes) if pid not in stations]
         efficiency = 1.0
@@ -377,6 +568,15 @@ class LandWarfare:
                 if p.coastal and p.id not in self.encircled:
                     amphibious.extend((p.id, q, km) for q, km in p.sea_links
                                       if km <= AMPHIBIOUS_MAX_KM and world.provinces[q].controller in foes)
+            if not amphibious and self.blue_water(world.country(tag)):
+                amphibious = self._distant_landings(world, friends, foes)
+        # Co-belligerents fight where the war is: on their allies' fronts too (NATO in Estonia, not the
+        # US in Alaska facing Chukotka).
+        ally_fronts: set[int] = set()
+        if any(w.participants[tag].role is ParticipantRole.CO_BELLIGERENT for w in wars if tag in w.participants):
+            ally_fronts = {pid for pid in self._side_fronts(world, friends, foes)
+                           if world.provinces[pid].controller != tag and pid not in self.encircled}
+            stations += sorted(ally_fronts - set(stations))
         if not stations:
             stations = sorted({p.id for ally in friends - {tag} for p in world.controlled_by(ally)
                                if any(world.provinces[n].controller in foes for n in p.neighbors)})
@@ -388,7 +588,8 @@ class LandWarfare:
         power *= efficiency
 
         # Assault targets: enemy provinces next to our stations (or reachable by sea), best value per defender.
-        offensive = power * self._offensive_share(wars, tag, power, foes)
+        share, self.posture[tag] = strategy.offensive_share(self, world, wars, tag, power, foes, dep.effectiveness)
+        offensive = power * share
         hops = self._capital_hops(world, wars)
         defenders_at: dict[int, float] = {}
         for other, d in self.deployments.items():
@@ -397,10 +598,17 @@ class LandWarfare:
         candidates: dict[int, tuple[float, int, float]] = {}
         routes = [(pid, n, 0.0) for pid in stations for n in world.provinces[pid].neighbors
                   if world.provinces[n].controller in foes]
-        routes += [(origin, q, float(max(km, 1))) for origin, q, km in amphibious]  # 0 would read as a land route.
+        defending = any(w.participants[tag].side is Side.DEFENDER and w.participants[tag].claim is None
+                        for w in wars if tag in w.participants)
+        routes += [(origin, q, float(max(km, 1))) for origin, q, km in amphibious  # 0 would read as a land route.
+                   if not defending or world.provinces[q].owner in friends]   # Defenders land only to liberate.
         for origin, q, km in routes:
-            score = world.provinces[q].strategic_value() * self._relevance(world, wars, tag, q, hops)
-            score *= crossing_penalty(world, origin, q, km) * self._reach_factor(tag, origin)  # Dry-shod, well supplied.
+            edge = crossing_penalty(world, origin, q, km) * self._reach_factor(tag, origin)  # Dry-shod, well supplied.
+            if offensive * dep.effectiveness * edge < MIN_ASSAULT_RATIO * self._defence(world, q, foes)[0]:
+                continue  # Out of reach even with every assault unit.
+            if not strategy.worth_attacking(self, world, wars, tag, q):
+                continue
+            score = world.provinces[q].strategic_value() * self._relevance(world, wars, tag, q, hops) * edge
             score /= 1.0 + defenders_at.get(q, 0.0) / (power + 1.0)
             if score > candidates.get(q, (0.0, 0, 0.0))[0]:
                 candidates[q] = (score, origin, km)
@@ -435,10 +643,13 @@ class LandWarfare:
         for pid in stations:
             prov = world.provinces[pid]
             if surprised:
-                weights[pid] = prov.strategic_value() * (1.0 + PEACETIME_LINE_WEIGHT * self.fortification.get(pid, 0.0))
+                base = SEA_THREAT_WEIGHT if pid in sea_fronts else 1.0
+                weights[pid] = prov.strategic_value() * (base + PEACETIME_LINE_WEIGHT * self.fortification.get(pid, 0.0))
                 continue
             threat = sum(enemy_power_at.get(n, 0.0) for n in prov.neighbors) + incoming.get(pid, 0.0)
-            weights[pid] = prov.strategic_value() * (1.0 + 3.0 * threat / (power + 1.0))
+            threat += SEA_THREAT_WEIGHT * sum(enemy_power_at.get(q, 0.0) for q, km in prov.sea_links if km <= AMPHIBIOUS_MAX_KM)
+            base = SEA_THREAT_WEIGHT if pid in sea_fronts else EXPEDITIONARY_WEIGHT if pid in ally_fronts else 1.0
+            weights[pid] = prov.strategic_value() * (base + 3.0 * threat / (power + 1.0))
         wsum = sum(weights.values()) or 1.0
         defensive = power - sum(a for _, a, _ in dep.attacks.values())
         target_station = {pid: defensive * w / wsum for pid, w in weights.items()}
@@ -491,20 +702,31 @@ class LandWarfare:
         consolidated = now_hour - CONSOLIDATION_DAYS * 24
         for tag in sorted(enemies):
             staging = self._staging(world, tag, allies)
+            # Whoever rules the sea can also run supply across it (a beachhead on Taiwan).
+            by_sea = self._branch(world, allies[tag], Branch.NAVAL) >= NAVAL_SUPERIORITY * max(
+                self._branch(world, enemies[tag], Branch.NAVAL), 1.0)
+            key = ("reach", frozenset(staging), by_sea)
+            if key in self._cache:
+                cached = self._cache[key]
+                assert isinstance(cached, dict)
+                self.reach[tag] = cached
+                continue
             rear = [p.id for t in sorted(staging) for p in world.controlled_by(t)
                     if p.owner in staging or self._taken_hour.get(p.id, consolidated) <= consolidated]
             hops = {pid: 0 for pid in rear}
             queue = deque(rear)
             while queue:
                 pid = queue.popleft()
-                for n in world.provinces[pid].neighbors:
+                prov = world.provinces[pid]
+                links = list(prov.neighbors) + ([q for q, km in prov.sea_links if km <= AMPHIBIOUS_MAX_KM] if by_sea else [])
+                for n in links:
                     if n not in hops and world.provinces[n].controller in staging:
                         hops[n] = hops[pid] + 1
                         queue.append(n)
-            self.reach[tag] = hops
+            self.reach[tag] = self._cache[key] = hops
 
     def _reach_factor(self, tag: str, origin: int) -> float:
-        return REACH_PER_HOP ** self.reach.get(tag, {}).get(origin, 0)
+        return REACH_PER_HOP ** self.hops_from_rear(tag, origin)
 
     def _encirclement(self, world: World, wars: list[War], enemies: dict[str, set[str]], allies: dict[str, set[str]]) -> None:
         """A pocket is ground cut off from the country's main body and from friendly borders.
@@ -515,33 +737,20 @@ class LandWarfare:
         self.encircled = set()
         for tag in sorted(enemies):
             friends = allies[tag]
-            held = {p.id for t in friends for p in world.controlled_by(t)}
-            components: list[set[int]] = []
-            seen: set[int] = set()
-            for start in sorted(held):
-                if start in seen:
-                    continue
-                part = {start}
-                queue = deque([start])
-                while queue:
-                    prov = world.provinces[queue.popleft()]
-                    links = list(prov.neighbors) + [q for q, km in prov.sea_links if km <= BRIDGE_KM]
-                    for n in links:
-                        if n in held and n not in part:
-                            part.add(n)
-                            queue.append(n)
-                seen |= part
-                components.append(part)
+            components, main_index = self._components(world, friends)
             if not components:
                 continue
-            main = max(components, key=lambda c: (sum(world.provinces[i].strategic_value() for i in c), -min(c)))
+            main = components[main_index]
+            if len(components) == 1:
+                continue
             sea_supplied = self._branch(world, friends, Branch.NAVAL) >= self._branch(world, enemies[tag], Branch.NAVAL)
+            belligerents = enemies[tag] | friends
             for part in components:
-                if part is main:
+                if part is main or not any(world.provinces[i].controller == tag for i in part):
                     continue
-                if any(world.provinces[n].controller not in enemies[tag] | friends
+                if any(world.provinces[n].controller not in belligerents and world.provinces[n].controller in world.countries
                        and world.country(world.provinces[n].controller).relations.get(tag, 0.0) >= FRIENDLY_SUPPLY_RELATION
-                       for i in part for n in world.provinces[i].neighbors if world.provinces[n].controller in world.countries):
+                       for i in part for n in world.provinces[i].neighbors):
                     continue  # Supplied across a friendly border.
                 for pid in part:
                     if world.provinces[pid].controller == tag and not (sea_supplied and world.provinces[pid].coastal):
@@ -617,6 +826,10 @@ class LandWarfare:
                     continue
                 if world.provinces[origin].controller not in self._staging(world, tag, allies):
                     continue
+                if km:  # Only what has been landed so far can fight.
+                    power = min(power, self.ashore.get((tag, target), 0.0))
+                    if power <= 0:
+                        continue
                 strength, personnel, beach = assaults.setdefault(target, {}).get(tag, (0.0, 0.0, 0.0))
                 assaults[target][tag] = (strength + power * dep.effectiveness * crossing_penalty(world, origin, target, km)
                                          * self._reach_factor(tag, origin),
@@ -660,11 +873,7 @@ class LandWarfare:
 
         advance = 0.0  # km2/day
         if ratio > 1.0:
-            fort = self.fortification.get(target, 0.0)
-            drones = world.country(holder).drone_saturation if holder in world.countries else 0.0
-            depth = min(MAX_DEPTH_KM_PER_DAY, DEPTH_KM_AT_R2 * (ratio - 1.0) ** DEPTH_EXPONENT)
-            depth /= prov.terrain_profile.movement_cost * (1.0 + FORTIFICATION_ADVANCE_DRAG * fort)
-            depth *= 1.0 - DRONE_ADVANCE_DRAG * drones
+            depth = self.depth_km_per_day(world, target, ratio)
             side = self._staging(world, lead, allies)
             border = sum(prov.border_with(n) for n in prov.neighbors if world.provinces[n].controller in side)
             beach = max(b for _, _, b in attackers.values())
@@ -699,7 +908,9 @@ class LandWarfare:
             for tag in attackers:  # The assault force moves in and holds what it took.
                 dep = self.deployments[tag]
                 if target in dep.attacks:
-                    _, power, _ = dep.attacks.pop(target)
+                    _, power, km = dep.attacks.pop(target)
+                    if km:
+                        power = min(power, self.ashore.pop((tag, target), 0.0))
                     dep.stationed[target] = dep.stationed.get(target, 0.0) + power
 
     def _casualties(self, world: World, wars: list[War], tag: str, opponent: str, amount: float, offensive: bool) -> None:

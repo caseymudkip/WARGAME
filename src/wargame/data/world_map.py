@@ -146,6 +146,8 @@ def build_real_world(year: int, root: Path | None = None) -> RealWorld:
             border_km=tuple((j, km) for j, km in p["border_km"]),
             coastal=p["coastal"],
             area_km2=float(p["area_km2"]),
+            lat=float(p["lat"]),
+            lon=float(p["lon"]),
         ))
 
     airfields: dict[str, int] = {}

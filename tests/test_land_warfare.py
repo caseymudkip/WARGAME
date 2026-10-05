@@ -340,11 +340,38 @@ def test_amphibious_assaults_need_naval_superiority():
     _coast(without)
     assert all(km == 0 for _, _, km in start(without, goal).land.deployments["ARD"].attacks.values())
 
-    with_fleet = world_with(ard_troops=GRINDING)
+    with_fleet = world_with()
     _coast(with_fleet)
     with_fleet.country("ARD").oob.equipment["frigates"] = navy(40)
-    attacks = start(with_fleet, goal).land.deployments["ARD"].attacks
+    sim = start(with_fleet, goal)
+    attacks = sim.land.deployments["ARD"].attacks
     assert attacks.get(9, (0, 0.0, 0.0))[2] == 120  # Straight across the water to the objective.
+
+
+def test_a_beachhead_builds_up_one_lift_at_a_time():
+    goal = WarGoal(WarGoalType.TERRITORIAL_CONQUEST, "ARD", "BOR", frozenset({9}))
+    world = world_with()
+    _coast(world)
+    world.country("ARD").oob.equipment["frigates"] = navy(40)
+    sim = start(world, goal)
+    planned = sim.land.deployments["ARD"].attacks[9][1]
+    first = sim.land.ashore[("ARD", 9)]
+    assert 0 < first < planned  # One division at a time: PLA Navy lift ~20,000 troops (DoD).
+    sim.run_days(1)
+    assert sim.land.ashore.get(("ARD", 9), planned) > first or world.provinces[9].controller == "ARD"
+
+
+def test_a_blue_water_navy_can_land_far_from_home():
+    goal = WarGoal(WarGoalType.TERRITORIAL_CONQUEST, "ARD", "BOR", frozenset({9}))
+    world = world_with()
+    for pid in (9, 15):
+        world.provinces[pid].coastal = True
+    world.provinces[9].lat, world.provinces[15].lat = 10.0, 18.0  # ~890 km apart: no sea link.
+    world.country("ARD").oob.equipment["frigates"] = navy(40)
+    assert not [km for _, _, km in start(world, goal).land.deployments["ARD"].attacks.values() if km]
+    world.country("ARD").oob.equipment["helicopter_carriers"] = EquipmentStock("helicopter_carriers", Branch.NAVAL, 2, 0.8)
+    assert lw.LandWarfare.blue_water(world.country("ARD"))  # Two big decks: the US in the Caribbean.
+    assert start(world, goal).land.deployments["ARD"].attacks.get(9, (0, 0.0, 0.0))[2] == lw.AMPHIBIOUS_MAX_KM
 
 
 def test_a_dominant_fleet_blockades_the_weaker_side():

@@ -65,6 +65,8 @@ MOTIVATION_PRESETS: dict[Motivation, MotivationProfile] = {
 LEDGER_WINDOW_DAYS = 14
 MIN_CASUALTIES_TO_JUDGE = 200
 MAX_OVERSHOOT_PENALTY = 3.0
+MIN_HALT_DAYS = 14                   # A halted offensive regroups for at least two weeks...
+RESUME_FRACTION = 0.5                # ...and resumes once losses fall well below what halted it.
 DEFIANCE_RESOLVE_SHIELD = 0.5        # A defiant leader halves how fast a costly offensive loses will...
 DEFIANCE_RESOLVE_FLOOR = 0.4         # ...and never lets it break: he halts, mobilises and tries again (Russia 2022-23).
 RESOLVE_WAR_SUPPORT_HEADROOM = 0.25  # An army can't stay keener than its public by more than this.
@@ -110,6 +112,7 @@ class WarParticipant:
     resolve: float
     ledger: CampaignLedger
     offensive_halted: bool = False
+    halted_hour: int = 0
     claim: WarGoal | None = None  # A joiner's own war aim (opportunists), honoured at the peace table.
 
 
@@ -154,10 +157,14 @@ BATTLE_SCORE_MAX = 20.0
 BLOCKADE_SCORE_MAX = 10.0
 
 RESOLVE_BROKEN = 0.05
+ARMISTICE_QUIET_DAYS = 180
 STALEMATE_RESOLVE = 0.25
 STALEMATE_SCORE_BAND = 15.0
 DEFENDER_MIN_SCORE_FOR_TERMS = 10.0
 
+PATRON_MIN_RELATION = 0.6          # Tier 3: close partners intervene without a treaty...
+PATRON_MAX_ENEMY_RELATION = -0.5   # ...against a country they already treat as hostile...
+PATRON_MIN_POWER_SHARE = 0.25      # ...if their military would matter against it.
 LEND_LEASE_MIN_RELATION = 0.5
 LEND_LEASE_MAX_ENEMY_RELATION = -0.2
 LEND_LEASE_SHARE = 0.15
@@ -207,6 +214,9 @@ class War:
     events: list[WarEvent] = field(default_factory=list)
     settlements: list[PeaceTreaty] = field(default_factory=list)  # Surrenders signed while the war goes on.
     treaty: PeaceTreaty | None = None
+    prewar_occupation: dict[int, str] = field(default_factory=dict)  # province -> occupier when the war began
+    last_combat_hour: int = 0
+    fought_today: bool = False
 
     # --- construction ------------------------------------------------------
 
@@ -229,6 +239,8 @@ class War:
             policy=EscalationPolicy.for_tier(tier),
             nuclear_weapons_enabled=nuclear_weapons_enabled,
             started_hour=now_hour,
+            prewar_occupation={p.id: p.controller for p in world.provinces.values() if p.is_occupied},
+            last_combat_hour=now_hour,
         )
         war._join(world, goal.holder, Side.ATTACKER, ParticipantRole.PRIMARY, MOTIVATION_PRESETS[attacker_motivation], now_hour)
         war._join(world, goal.target, Side.DEFENDER, ParticipantRole.PRIMARY, MOTIVATION_PRESETS[defender_motivation], now_hour)
@@ -238,6 +250,7 @@ class War:
                  f"{attacker.name} declares war on {defender.name}: {goal.type.value}, escalation tier {int(tier)}.")
         if war.policy.alliances_trigger:
             war._trigger_defensive_pacts(world, now_hour)
+            war._patrons_intervene(world, now_hour)
         if war.policy.lend_lease_allowed:
             war._world_reacts_to_aggression(world, now_hour)
         war.review_external_support(world, now_hour)
@@ -283,6 +296,23 @@ class War:
                        MOTIVATION_PRESETS[Motivation.CAUTIOUS], now_hour)
             self._log(now_hour, "pact_triggered",
                       f"{world.country(ally).name} honours its defensive pact and enters the war.")
+
+    def _patrons_intervene(self, world: World, now_hour: int) -> None:
+        """Total war draws in the belligerents' close partners even without a treaty, when they can
+        matter: the United States for Taiwan (CSIS's wargames assume it), China for North Korea (1950),
+        North Korea for Russia (Kursk, 2024)."""
+        sides = ((Side.DEFENDER, self.goal.target, self.goal.holder), (Side.ATTACKER, self.goal.holder, self.goal.target))
+        for side, friend, enemy in sides:
+            enemy_power = world.country(enemy).military_power()
+            for tag, country in sorted(world.countries.items()):
+                if tag in self.participants or country.is_exile:
+                    continue
+                if (country.relations.get(friend, 0.0) >= PATRON_MIN_RELATION
+                        and country.relations.get(enemy, 0.0) <= PATRON_MAX_ENEMY_RELATION
+                        and country.military_power() >= PATRON_MIN_POWER_SHARE * enemy_power):
+                    self._join(world, tag, side, ParticipantRole.CO_BELLIGERENT, MOTIVATION_PRESETS[Motivation.CAUTIOUS], now_hour)
+                    self._log(now_hour, "intervention",
+                              f"{country.name} enters the war on {world.country(friend).name}'s side.")
 
     # --- queries -------------------------------------------------------------
 
@@ -405,6 +435,8 @@ class War:
         """Called by the combat system. Only losses taken attacking count against an offensive's
         cost/reward; holding ground against counterattacks is not an offensive failing."""
         ledger = self.participants[tag].ledger
+        if count > 0:
+            self.fought_today = True
         if offensive:
             ledger.casualties_today += count
         ledger.casualties_total += count
@@ -415,6 +447,8 @@ class War:
     def on_daily_tick(self, world: World, now_hour: int, rng: random.Random) -> None:
         if self.ended:
             return
+        if self.fought_today:
+            self.last_combat_hour, self.fought_today = now_hour, False
         self._deliver_external_support(world)
         for p in self.participants.values():
             p.ledger.roll(self._held_value(world, p.tag))
@@ -469,15 +503,18 @@ class War:
                 continue
             was_halted = p.offensive_halted
             overshoot = p.ledger.cost_overshoot(p.motivation.casualty_tolerance)
-            if overshoot is None and p.offensive_halted:
-                p.offensive_halted = False  # A quiet month: regrouped, it tries again.
             if overshoot is not None:
                 if overshoot > 1.0:
                     shield = 1.0 - DEFIANCE_RESOLVE_SHIELD * country.leadership_defiance
                     p.resolve -= p.motivation.resolve_decay * min(overshoot - 1.0, MAX_OVERSHOOT_PENALTY) * shield
                 else:
                     p.resolve += p.motivation.resolve_recovery * (1.0 - overshoot)
-                p.offensive_halted = overshoot > p.motivation.halt_ratio
+            if not p.offensive_halted:
+                if overshoot is not None and overshoot > p.motivation.halt_ratio:
+                    p.offensive_halted, p.halted_hour = True, now_hour
+            elif now_hour - p.halted_hour >= MIN_HALT_DAYS * 24 and (
+                    overshoot is None or overshoot < RESUME_FRACTION * p.motivation.halt_ratio):
+                p.offensive_halted = False  # Regrouped: it tries again.
             ceiling = clamp(country.spirit.effective_war_support(now_hour) + RESOLVE_WAR_SUPPORT_HEADROOM)
             p.resolve = clamp(max(min(p.resolve, ceiling), DEFIANCE_RESOLVE_FLOOR * country.leadership_defiance))
             if p.offensive_halted and not was_halted:
@@ -527,6 +564,13 @@ class War:
             return self._conclude(world, now_hour, target, holder, 100.0, False, f"{attacker.name} capitulated")
         if self.goal.is_achieved(world, attackers):
             return self._conclude(world, now_hour, holder, target, self.war_score, True, "war goal secured")
+
+        if now_hour - self.last_combat_hour >= ARMISTICE_QUIET_DAYS * 24:
+            # Nobody has fired a shot for months: the war freezes on the line of contact (Korea 1953,
+            # Karabakh 1994, Donbas 2015). Ground held stays held.
+            armistice = white_peace(now_hour, f"armistice after {ARMISTICE_QUIET_DAYS} quiet days")
+            armistice.frozen = True
+            return self._end(world, armistice, now_hour)
 
         attacker_resolve = self.participants[holder].resolve
         if attacker_resolve <= RESOLVE_BROKEN:
@@ -627,7 +671,7 @@ class War:
 
     def _end(self, world: World, treaty: PeaceTreaty, now_hour: int) -> bool:
         everyone = set(self.participants) | self.exited
-        apply_treaty(world, treaty, everyone)
+        apply_treaty(world, treaty, everyone, prewar_occupation=self.prewar_occupation)
         for tag in everyone:
             world.country(tag).on_peace()
         self.treaty = treaty
@@ -832,3 +876,7 @@ class War:
 
     def _log(self, hour: int, kind: str, message: str) -> None:
         self.events.append(WarEvent(hour, kind, message))
+
+    def note(self, hour: int, kind: str, message: str) -> None:
+        """For other systems (land warfare, strategy) to put what they did in the war's record."""
+        self._log(hour, kind, message)

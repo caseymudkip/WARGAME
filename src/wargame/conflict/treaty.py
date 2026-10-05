@@ -8,7 +8,7 @@ buys extras, and how much of it the winner spends on extras is its ambition.
 
 from __future__ import annotations
 
-from collections.abc import Collection
+from collections.abc import Collection, Mapping
 from dataclasses import dataclass, field
 
 from wargame.conflict.war_goal import PROVINCE_GOALS, WarGoal
@@ -42,6 +42,7 @@ class PeaceTreaty:
     signed_hour: int
     terms: list[TreatyTerm] = field(default_factory=list)
     reason: str = ""
+    frozen: bool = False  # An armistice on the line of contact: occupied ground stays occupied (Korea 1953).
 
     @property
     def is_white_peace(self) -> bool:
@@ -150,8 +151,12 @@ def draft_treaty(
     return PeaceTreaty(winner, loser, signed_hour, terms, reason)
 
 
-def apply_treaty(world: World, treaty: PeaceTreaty, participants: Collection[str], restore: bool = True) -> None:
-    """Enforce terms, then (unless the war goes on) hand every still-occupied province back to its owner."""
+def apply_treaty(world: World, treaty: PeaceTreaty, participants: Collection[str], restore: bool = True,
+                 prewar_occupation: Mapping[int, str] | None = None) -> None:
+    """Enforce terms, then (unless the war goes on) hand back what this war occupied.
+
+    Occupations older than the war stay as they were: peace between Russia and Estonia does not
+    return Crimea, Abkhazia or Transnistria."""
     for term in treaty.terms:
         if term.type is TermType.PROVINCE_TRANSFER:
             for pid in term.province_ids:
@@ -167,9 +172,10 @@ def apply_treaty(world: World, treaty: PeaceTreaty, participants: Collection[str
             debtor = world.country(term.target)
             debtor.reparations_owed[term.beneficiary] = REPARATIONS_SHARE
 
-    if not restore:
+    if not restore or treaty.frozen:
         return
     tags = set(participants)
+    before = prewar_occupation or {}
     for p in list(world.provinces.values()):
-        if p.is_occupied and (p.owner in tags or p.controller in tags):
+        if p.is_occupied and (p.owner in tags or p.controller in tags) and before.get(p.id) != p.controller:
             world.set_controller(p.id, p.owner)

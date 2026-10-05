@@ -68,6 +68,8 @@ class Province:
     border_km: tuple[tuple[int, int], ...] = ()     # (neighbour id, length of the shared border in km).
     coastal: bool = False
     area_km2: float = 5_000.0          # Land combat progress is measured as share of this area taken.
+    lat: float = 0.0                   # Representative point, for distances beyond the sea-link graph.
+    lon: float = 0.0
     damage: float = 0.0                # 0..1 from bombing/fighting; degrades output.
     extra: dict[str, float] = field(default_factory=dict)  # Scenario-specific data hooks.
 
@@ -78,6 +80,12 @@ class Province:
     @property
     def terrain_profile(self) -> TerrainProfile:
         return TERRAIN[self.terrain]
+
+    def distance_km(self, other: Province) -> float:
+        """Great-circle distance between representative points."""
+        la1, lo1, la2, lo2 = map(math.radians, (self.lat, self.lon, other.lat, other.lon))
+        h = math.sin((la2 - la1) / 2) ** 2 + math.cos(la1) * math.cos(la2) * math.sin((lo2 - lo1) / 2) ** 2
+        return 2 * 6371.0 * math.asin(min(1.0, math.sqrt(h)))
 
     def border_with(self, neighbor: int) -> float:
         """Length of the shared border in km. Without map data, the side of a square of this area."""
