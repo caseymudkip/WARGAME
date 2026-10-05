@@ -23,6 +23,11 @@ narrates the war, and the peace terms appear when it ends.
 Without the viewer: `wargame presets` lists the flashpoints, and `wargame run taiwan --days 365`
 runs one and prints how it went.
 
+**In the browser, without installing anything:** `python tools/web/build_site.py OUT_DIR` runs every
+flashpoint for up to two years, records each day, and writes a self-contained page that replays them
+(the same map, panels and diary, with a timeline). Since a spectator only controls time, a replay of a
+flashpoint is the same war as watching it live; custom wars need the engine and stay in the local app.
+
 ## What's here
 
 This repository contains the **simulation engine** (data model, daily

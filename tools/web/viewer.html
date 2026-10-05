@@ -1,0 +1,757 @@
+<title>WARGAME</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Semi+Condensed:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a situation room. Map fills the stage; a status rail on the right holds the belligerents and the war diary.
+   One deliberate dark world (map ink on slate); colours below are tokens, sides are semantic, amber is the accent. */
+:root {
+  --bg: #0b1016;
+  --panel: #111a24;
+  --panel-2: #172331;
+  --line: #24364a;
+  --text: #dbe3ea;
+  --muted: #8598ab;
+  --accent: #e3b04b;
+  --attacker: #d4544a;
+  --defender: #4f8fd6;
+  --good: #5bb37c;
+  --warn: #e0a24c;
+  --danger: #e0614f;
+  --ocean: #0a0f15;
+  --font-display: "Saira Semi Condensed", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--text); font: 14px/1.45 var(--font-body); }
+* { box-sizing: border-box; }
+button, select, input { font: inherit; color: inherit; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+#app { height: 100%; display: flex; flex-direction: column; padding-inline: 16px; padding-block: 0 12px; gap: 10px; }
+
+#topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding-block: 10px 0; }
+.brand { font: 700 20px/1 var(--font-display); letter-spacing: 0.22em; }
+.badge { font: 600 10px/1 var(--font-data); letter-spacing: 0.04em; color: var(--bg); background: var(--accent);
+  border-radius: 3px; padding: 3px 6px; margin-left: 8px; vertical-align: 3px; }
+.scenario { flex: 1 1 200px; min-width: 0; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.clock { font: 600 15px/1 var(--font-data); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.clock .day { color: var(--muted); font-weight: 400; margin-left: 8px; }
+.controls { display: flex; gap: 2px; background: var(--ocean); border: 1px solid var(--line); border-radius: 8px; padding: 2px; }
+.controls button { background: none; border: 0; padding: 5px 9px; border-radius: 6px; cursor: pointer; color: var(--muted);
+  white-space: nowrap; font-size: 13px; }
+.controls button.active { background: var(--panel-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
+.controls button:disabled { opacity: 0.4; cursor: default; }
+button.ghost, button.primary { border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+button.ghost { background: transparent; border: 1px solid var(--line); color: var(--text); }
+button.ghost:hover { border-color: var(--muted); }
+button.primary { background: var(--accent); color: #17130a; border: 0; font-weight: 600; }
+
+#timeline { display: flex; align-items: center; gap: 12px; font: 12px var(--font-data); color: var(--muted); }
+#timeline input { flex: 1; min-width: 0; accent-color: var(--accent); }
+
+main { flex: 1; min-height: 0; display: flex; gap: 12px; }
+#map-wrap { position: relative; flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+  background: var(--ocean); }
+#map { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+#map.dragging { cursor: grabbing; }
+#loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); }
+#tooltip { position: absolute; pointer-events: none; background: rgba(11, 16, 22, 0.94); border: 1px solid var(--line);
+  border-radius: 6px; padding: 6px 8px; font-size: 12px; max-width: 260px; color: var(--text); }
+#tooltip b { display: block; }
+#legend { position: absolute; left: 10px; bottom: 10px; display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 12px;
+  color: var(--muted); background: rgba(11, 16, 22, 0.8); padding: 6px 10px; border-radius: 8px; max-width: calc(100% - 20px); }
+.sw { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.sw.attacker { background: var(--attacker); }
+.sw.defender { background: var(--defender); }
+.sw.occupied { background: repeating-linear-gradient(45deg, var(--attacker) 0 3px, var(--defender) 3px 6px); }
+.sw.contested { background: var(--attacker); opacity: 0.55; outline: 1px dashed var(--text); }
+.sw.goal { border: 2px solid var(--accent); }
+
+#rail { width: 370px; flex: none; display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+#rail section { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+#war-panel { overflow-y: auto; max-height: 58%; }
+h3.label { font: 600 11px/1 var(--font-body); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin: 0 0 8px; }
+.goal-line { display: flex; justify-content: space-between; gap: 8px; }
+.goal-line b { font: 700 16px/1.2 var(--font-display); letter-spacing: 0.02em; text-wrap: balance; }
+.tier { color: var(--muted); font-size: 12px; text-align: right; white-space: nowrap; }
+.score { margin: 10px 0 4px; }
+.score-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+.score-bar { position: relative; height: 6px; background: var(--panel-2); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+#score-fill { position: absolute; top: 0; bottom: 0; }
+.score-mid { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--muted); }
+.score-value { text-align: center; font: 12px var(--font-data); color: var(--muted); margin-top: 2px; }
+.side { margin-top: 10px; }
+.member { background: var(--panel-2); border-radius: 8px; padding: 8px 10px; margin-top: 6px; border-left: 3px solid var(--line); }
+.member .name { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
+.member .name small { color: var(--muted); font-weight: 400; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px 8px; font-size: 11px; margin-top: 6px; color: var(--muted); }
+.stats b { display: block; color: var(--text); font: 600 12px/1.3 var(--font-data); font-variant-numeric: tabular-nums;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bars { grid-template-columns: 1fr 1fr; }
+.bar { height: 4px; background: var(--bg); border-radius: 2px; margin-top: 3px; position: relative; overflow: hidden; }
+.bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; }
+.supporters { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.supporters b { color: var(--text); font-weight: 500; }
+.more { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+#province-panel h4 { margin: 0 0 6px; font: 700 16px/1.2 var(--font-display); }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 12px; }
+.kv span { color: var(--muted); }
+.kv b { font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
+
+#feed-panel { flex: 1; min-height: 120px; display: flex; flex-direction: column; }
+#feed { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; font-size: 13px; }
+#feed li { padding: 5px 0 5px 10px; border-left: 2px solid var(--line); margin-bottom: 2px; }
+#feed li .d { color: var(--muted); font: 11px var(--font-data); display: block; }
+#feed li.k-declaration, #feed li.k-escalation, #feed li.k-pact_triggered, #feed li.k-intervention,
+#feed li.k-patron_intervention, #feed li.k-opportunist { border-color: var(--danger); }
+#feed li.k-peace, #feed li.k-separate_peace, #feed li.k-ceasefire { border-color: var(--good); }
+#feed li.k-capitulation, #feed li.k-government_in_exile, #feed li.k-collapse_begins, #feed li.k-pursuit { border-color: var(--accent); }
+#feed li.k-nuclear_detonation, #feed li.k-nuclear_shock, #feed li.k-nuclear_rally { border-color: var(--text); }
+#feed li.k-offensive_halted, #feed li.k-withdrawal, #feed li.k-offensive_resumed { border-color: var(--warn); }
+#feed li.k-province_taken { border-color: #9a5650; }
+#feed li.k-lend_lease, #feed li.k-world_reaction { color: var(--muted); }
+
+.overlay { position: fixed; inset: 0; background: rgba(5, 8, 11, 0.74); display: grid; place-items: center; z-index: 10;
+  padding-inline: 16px; }
+.card { width: min(940px, 100%); max-height: calc(100% - 32px); overflow-y: auto; background: var(--panel);
+  border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); }
+.card h1 { margin: 0; font: 700 34px/1 var(--font-display); letter-spacing: 0.3em; }
+.lede { color: var(--muted); margin: 8px 0 16px; max-width: 65ch; }
+.presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+.preset { text-align: left; background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+  cursor: pointer; display: flex; flex-direction: column; gap: 4px; color: var(--text); }
+.preset:hover { border-color: var(--accent); }
+.preset .meta { font: 11px var(--font-data); color: var(--accent); letter-spacing: 0.02em; }
+.preset b { font: 700 16px/1.2 var(--font-display); letter-spacing: 0.01em; }
+.preset small { color: var(--muted); }
+.preset .end { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 6px; margin-top: 2px; }
+.note { font-size: 12px; color: var(--muted); margin: 16px 0 0; max-width: 75ch; }
+.note a { color: var(--accent); }
+#peace-terms { color: var(--muted); padding-left: 18px; }
+.peace-card { width: min(560px, 100%); }
+.peace-card h2 { margin: 0 0 6px; font: 700 24px/1.2 var(--font-display); }
+.actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+
+@media (max-width: 900px) {
+  #app { height: auto; min-height: 100%; }
+  main { flex-direction: column; }
+  #map-wrap { height: 58vh; flex: none; }
+  #rail { width: 100%; }
+  #war-panel { max-height: none; }
+  #feed-panel { max-height: 50vh; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+
+<div id="app">
+  <header id="topbar">
+    <div class="brand">WARGAME<span class="badge" id="version">alpha</span></div>
+    <div class="scenario" id="scenario-name">Choose a flashpoint</div>
+    <div class="clock"><span id="date">—</span><span class="day" id="day"></span></div>
+    <div class="controls" id="speeds" role="group" aria-label="Playback">
+      <button id="play" title="Play or pause (space)" disabled>❚❚</button>
+      <button data-speed="1" title="1 day per second (1)" disabled>1 day/s</button>
+      <button data-speed="3" title="3 days per second (2)" disabled>3 days/s</button>
+      <button data-speed="7" title="1 week per second (3)" disabled>1 week/s</button>
+      <button data-speed="30" title="1 month per second (4)" disabled>1 month/s</button>
+    </div>
+    <button class="ghost" id="new-war">Flashpoints</button>
+  </header>
+  <div id="timeline">
+    <span id="t-start">day 0</span>
+    <input type="range" id="scrub" min="0" max="0" value="0" step="1" aria-label="Timeline" disabled>
+    <span id="t-end"></span>
+  </div>
+  <main>
+    <div id="map-wrap">
+      <canvas id="map" aria-label="War map"></canvas>
+      <div id="tooltip" hidden></div>
+      <div id="legend">
+        <span><i class="sw attacker"></i>Attacker side</span>
+        <span><i class="sw defender"></i>Defender side</span>
+        <span><i class="sw occupied"></i>Occupied</span>
+        <span><i class="sw contested"></i>Being taken</span>
+        <span><i class="sw goal"></i>War goal</span>
+      </div>
+      <div id="loading">Loading the world…</div>
+    </div>
+    <aside id="rail">
+      <section id="war-panel" hidden>
+        <div class="goal-line"><b id="goal-text"></b><span class="tier" id="tier-text"></span></div>
+        <div class="score">
+          <div class="score-labels"><span>Defender</span><span>War score</span><span>Attacker</span></div>
+          <div class="score-bar"><div id="score-fill"></div><div class="score-mid"></div></div>
+          <div class="score-value" id="score-value"></div>
+        </div>
+        <div class="side" id="side-attacker"></div>
+        <div class="side" id="side-defender"></div>
+        <div class="supporters" id="supporters"></div>
+      </section>
+      <section id="province-panel" hidden></section>
+      <section id="feed-panel">
+        <h3 class="label">War diary</h3>
+        <ol id="feed"></ol>
+      </section>
+    </aside>
+  </main>
+</div>
+
+<div id="setup" class="overlay">
+  <div class="card">
+    <h1>WARGAME</h1>
+    <p class="lede">Twelve real-world wars, fought by the simulation on today's map with real forces. Pick one and
+      watch: once it starts, the only thing you control is time.</p>
+    <div class="presets" id="presets"></div>
+    <p class="note">Each war was fought by the WARGAME engine and recorded day by day; you are watching the record.
+      To set up your own war between any two of 145 countries, run the full game on your computer
+      (<a href="https://github.com/caseymudkip/WARGAME" target="_blank" rel="noopener">WARGAME on GitHub</a>, then
+      <code>pip install -e .</code> and <code>wargame</code>).</p>
+  </div>
+</div>
+
+<div id="peace" class="overlay" hidden>
+  <div class="card peace-card">
+    <h2 id="peace-title">Peace</h2>
+    <p id="peace-reason"></p>
+    <ul id="peace-terms"></ul>
+    <div class="actions">
+      <button class="ghost" id="peace-close">Look at the map</button>
+      <button class="primary" id="peace-new">Another war</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const getJSON = async (path) => {
+  const res = await fetch(path);
+  if (!res.ok) throw new Error(`${path}: ${res.status}`);
+  return res.json();
+};
+
+// --- state -------------------------------------------------------------------------------------
+const S = {
+  meta: null, worlds: {}, world: null, shapes: [], names: {},
+  replay: null, control: [], frame: 0, cursor: 0, playing: false, speed: 3,
+  hover: null, selected: null, view: { scale: 4, tx: 0, ty: 0 }, peaceShown: false,
+};
+
+// --- projection: Miller cylindrical, in degrees ------------------------------------------------
+const DEG = Math.PI / 180;
+const project = (lon, lat) => {
+  const phi = Math.max(-85, Math.min(85, lat)) * DEG;
+  return [lon, -1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * phi)) / DEG];
+};
+
+function buildShapes(geometry) {
+  const scale = geometry.scale;
+  S.shapes = geometry.provinces.map((polys) => {
+    const path = new Path2D();
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const rings of polys) for (const flat of rings) {
+      let ix = 0, iy = 0;
+      for (let i = 0; i < flat.length; i += 2) {
+        ix = i === 0 ? flat[0] : ix + flat[i];
+        iy = i === 0 ? flat[1] : iy + flat[i + 1];
+        const [x, y] = project(ix / scale, iy / scale);
+        if (i === 0) path.moveTo(x, y); else path.lineTo(x, y);
+        if (x < x0) x0 = x; if (y < y0) y0 = y; if (x > x1) x1 = x; if (y > y1) y1 = y;
+      }
+      path.closePath();
+    }
+    return { path, bbox: [x0, y0, x1, y1] };
+  });
+}
+
+// --- colours -----------------------------------------------------------------------------------
+const css = getComputedStyle(document.documentElement);
+const OCEAN = css.getPropertyValue("--ocean").trim() || "#0a0f15";
+function hash(tag) {
+  let h = 2166136261;
+  for (const c of tag) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+function currentFrame() { return S.replay ? S.replay.frames[S.frame] : null; }
+function sides() {
+  const f = currentFrame(), out = { attacker: [], defender: [] };
+  if (!f) return out;
+  f.s[0].forEach((m) => out.attacker.push(S.replay.tags[m[0]]));
+  f.s[1].forEach((m) => out.defender.push(S.replay.tags[m[0]]));
+  return out;
+}
+function palette() {
+  const s = sides(), side = {};
+  s.attacker.forEach((t, i) => (side[t] = ["attacker", i]));
+  s.defender.forEach((t, i) => (side[t] = ["defender", i]));
+  const cache = {};
+  return (tag) => (cache[tag] ??= (() => {
+    const h = hash(tag), sd = side[tag];
+    if (sd && sd[0] === "attacker") return sd[1] === 0 ? "hsl(3, 62%, 46%)" : `hsl(${12 + (h % 28)}, ${48 + (h % 14)}%, ${38 + (h % 10)}%)`;
+    if (sd) return sd[1] === 0 ? "hsl(212, 60%, 48%)" : `hsl(${190 + (h % 45)}, ${38 + (h % 16)}%, ${36 + (h % 10)}%)`;
+    return `hsl(${h % 360}, ${9 + (h % 7)}%, ${20 + ((h >> 8) % 9)}%)`;
+  })());
+}
+const patternCache = new Map();
+function hatch(ctx, fg, bg) {
+  const key = fg + bg;
+  if (!patternCache.has(key)) {
+    const c = document.createElement("canvas");
+    c.width = c.height = 8;
+    const g = c.getContext("2d");
+    g.fillStyle = bg; g.fillRect(0, 0, 8, 8);
+    g.strokeStyle = fg; g.lineWidth = 3;
+    g.beginPath(); g.moveTo(-2, 10); g.lineTo(10, -2); g.moveTo(6, 10); g.lineTo(10, 6); g.moveTo(-2, 2); g.lineTo(2, -2); g.stroke();
+    patternCache.set(key, ctx.createPattern(c, "repeat"));
+  }
+  const p = patternCache.get(key);
+  p.setTransform(new DOMMatrix().scaleSelf(1 / S.view.scale));
+  return p;
+}
+
+// --- drawing -----------------------------------------------------------------------------------
+const canvas = $("map"), ctx = canvas.getContext("2d");
+let queued = false;
+const redraw = () => { if (!queued) { queued = true; requestAnimationFrame(draw); } };
+function resize() {
+  const r = canvas.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.max(1, Math.round(r.width * dpr));
+  canvas.height = Math.max(1, Math.round(r.height * dpr));
+  redraw();
+}
+function setTransform() {
+  const dpr = window.devicePixelRatio || 1, v = S.view;
+  ctx.setTransform(v.scale * dpr, 0, 0, v.scale * dpr, v.tx * dpr, v.ty * dpr);
+}
+function visibleBox() {
+  const v = S.view, r = canvas.getBoundingClientRect();
+  return [-v.tx / v.scale, -v.ty / v.scale, (r.width - v.tx) / v.scale, (r.height - v.ty) / v.scale];
+}
+function centroid(id) { const p = S.world.provinces[id - 1]; return project(p[4], p[3]); }
+
+function draw() {
+  queued = false;
+  if (!S.shapes.length || !S.world) return;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = OCEAN;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  setTransform();
+  const colour = palette(), [vx0, vy0, vx1, vy1] = visibleBox(), px = 1 / S.view.scale;
+  const visible = (b) => !(b[2] < vx0 || b[0] > vx1 || b[3] < vy0 || b[1] > vy1);
+  for (let i = 0; i < S.shapes.length; i++) {
+    const { path, bbox } = S.shapes[i];
+    if (!visible(bbox)) continue;
+    const [owner, controller] = S.control[i];
+    ctx.fillStyle = controller === owner ? colour(owner) : hatch(ctx, colour(owner), colour(controller));
+    ctx.fill(path, "evenodd");
+  }
+  if (S.view.scale > 6) {
+    ctx.lineWidth = px * 0.6; ctx.strokeStyle = "rgba(0,0,0,0.35)";
+    for (const { path, bbox } of S.shapes) if (visible(bbox)) ctx.stroke(path);
+  }
+  const f = currentFrame();
+  if (f) {
+    for (const [pid, t, p] of f.k) {
+      const shape = S.shapes[pid - 1];
+      ctx.globalAlpha = 0.2 + 0.6 * p / 1000;
+      ctx.fillStyle = colour(S.replay.tags[t]);
+      ctx.fill(shape.path, "evenodd");
+      ctx.globalAlpha = 1;
+      ctx.setLineDash([4 * px, 3 * px]); ctx.lineWidth = 1.4 * px; ctx.strokeStyle = "rgba(255,255,255,0.85)";
+      ctx.stroke(shape.path); ctx.setLineDash([]);
+    }
+    ctx.lineWidth = 1.6 * px; ctx.strokeStyle = "#e3b04b";
+    for (const pid of S.replay.goal.provinces) if (S.shapes[pid - 1]) ctx.stroke(S.shapes[pid - 1].path);
+    for (const [origin, target, t, power, amph] of f.a) arrow(origin, target, colour(S.replay.tags[t]), power, amph, px);
+    for (const [day, , pid, intercepted] of S.replay.nukes) {
+      if (day > f.d) continue;
+      const [x, y] = centroid(pid);
+      ctx.beginPath(); ctx.arc(x, y, 9 * px, 0, 2 * Math.PI);
+      ctx.fillStyle = intercepted ? "rgba(255,255,255,0.25)" : "rgba(255,245,200,0.9)"; ctx.fill();
+      ctx.lineWidth = 2 * px; ctx.strokeStyle = "#fff"; ctx.stroke();
+    }
+  }
+  for (const [id, style] of [[S.hover, "rgba(255,255,255,0.7)"], [S.selected, "#fff"]]) {
+    if (!id) continue;
+    ctx.lineWidth = 2 * px; ctx.strokeStyle = style; ctx.stroke(S.shapes[id - 1].path);
+  }
+  labels(px);
+}
+
+function arrow(origin, target, col, power, amph, px) {
+  const [x0, y0] = centroid(origin), [x1, y1] = centroid(target);
+  const dx = x1 - x0, dy = y1 - y0, len = Math.hypot(dx, dy);
+  if (!len) return;
+  const ux = dx / len, uy = dy / len;
+  const w = Math.max(1.5, Math.min(6, Math.log10(power + 1) * 2)) * px;
+  const head = Math.min(len * 0.35, 10 * px + w * 2), ex = x1 - ux * 2 * px, ey = y1 - uy * 2 * px;
+  ctx.strokeStyle = col; ctx.lineWidth = w; ctx.setLineDash(amph ? [5 * px, 4 * px] : []);
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(ex - ux * head * 0.6, ey - uy * head * 0.6); ctx.stroke();
+  ctx.setLineDash([]); ctx.fillStyle = col;
+  ctx.beginPath(); ctx.moveTo(ex, ey);
+  ctx.lineTo(ex - ux * head - uy * head * 0.55, ey - uy * head + ux * head * 0.55);
+  ctx.lineTo(ex - ux * head + uy * head * 0.55, ey - uy * head - ux * head * 0.55);
+  ctx.closePath(); ctx.fill(); ctx.lineWidth = px; ctx.strokeStyle = "rgba(0,0,0,0.6)"; ctx.stroke();
+}
+
+let anchors = null;
+function labels(px) {
+  if (!anchors) {
+    const acc = {};
+    S.world.provinces.forEach((p, i) => {
+      const [x, y] = centroid(i + 1), a = (acc[p[1]] ??= { x: 0, y: 0, w: 0 });
+      a.x += x * p[5]; a.y += y * p[5]; a.w += p[5];
+    });
+    anchors = Object.entries(acc).map(([t, a]) => [t, a.x / a.w, a.y / a.w, a.w]);
+  }
+  const s = sides(), featured = new Set([...s.attacker.slice(0, 6), ...s.defender.slice(0, 6)]);
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  for (const [tag, x, y, area] of anchors) {
+    const size = Math.sqrt(area) / 111 * S.view.scale;
+    if (!featured.has(tag) && size < 70) continue;
+    const f = featured.has(tag);
+    ctx.font = `${f ? 600 : 500} ${(f ? 13 : 11) * px}px "IBM Plex Sans", system-ui, sans-serif`;
+    ctx.lineWidth = 3 * px; ctx.strokeStyle = "rgba(0,0,0,0.75)";
+    const name = S.names[tag] || tag;
+    ctx.strokeText(name, x, y);
+    ctx.fillStyle = f ? "#ffffff" : "rgba(219,227,234,0.7)";
+    ctx.fillText(name, x, y);
+  }
+}
+
+// --- interaction -------------------------------------------------------------------------------
+function provinceAt(cx, cy) {
+  const r = canvas.getBoundingClientRect(), sx = cx - r.left, sy = cy - r.top, v = S.view;
+  const wx = (sx - v.tx) / v.scale, wy = (sy - v.ty) / v.scale, dpr = window.devicePixelRatio || 1;
+  setTransform();
+  for (let i = S.shapes.length - 1; i >= 0; i--) {
+    const b = S.shapes[i].bbox;
+    if (wx < b[0] || wx > b[2] || wy < b[1] || wy > b[3]) continue;
+    if (ctx.isPointInPath(S.shapes[i].path, sx * dpr, sy * dpr, "evenodd")) return i + 1;
+  }
+  return null;
+}
+function frameWar() {
+  const rp = S.replay, ids = new Set(rp.goal.provinces), f0 = rp.frames[Math.min(3, rp.frames.length - 1)];
+  S.world.provinces.forEach((p, i) => { if (p[1] === rp.goal.target) ids.add(i + 1); });
+  for (const [o, t] of f0.a) { ids.add(o); ids.add(t); }
+  const pts = [...ids].map(centroid);
+  const xs = pts.map((p) => p[0]).sort((a, b) => a - b), ys = pts.map((p) => p[1]).sort((a, b) => a - b);
+  const mx = xs[xs.length >> 1], my = ys[ys.length >> 1];
+  const near = [...ids].filter((id) => { const [x, y] = centroid(id); return Math.abs(x - mx) < 25 && Math.abs(y - my) < 20; });
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const id of near.length ? near : ids) {
+    const b = S.shapes[id - 1].bbox;
+    x0 = Math.min(x0, b[0]); y0 = Math.min(y0, b[1]); x1 = Math.max(x1, b[2]); y1 = Math.max(y1, b[3]);
+  }
+  const r = canvas.getBoundingClientRect(), cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  const hx = Math.max((x1 - x0) * 0.8, 9), hy = Math.max((y1 - y0) * 0.8, 6);
+  const scale = Math.max(1.2, Math.min(r.width / (2 * hx), r.height / (2 * hy), 80));
+  S.view = { scale, tx: r.width / 2 - scale * cx, ty: r.height / 2 - scale * cy };
+  redraw();
+}
+let drag = null, pinch = null;
+canvas.addEventListener("pointerdown", (e) => {
+  canvas.setPointerCapture(e.pointerId);
+  drag = { x: e.clientX, y: e.clientY, moved: false };
+});
+canvas.addEventListener("pointermove", (e) => {
+  if (drag) {
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) { drag.moved = true; canvas.classList.add("dragging"); }
+    if (drag.moved) { S.view.tx += dx; S.view.ty += dy; drag.x = e.clientX; drag.y = e.clientY; redraw(); }
+    return;
+  }
+  if (!S.world || e.pointerType === "touch") return;
+  const id = provinceAt(e.clientX, e.clientY);
+  if (id !== S.hover) { S.hover = id; redraw(); }
+  tooltip(id, e);
+});
+canvas.addEventListener("pointerup", (e) => {
+  if (drag && !drag.moved) select(provinceAt(e.clientX, e.clientY));
+  drag = null; canvas.classList.remove("dragging");
+});
+canvas.addEventListener("pointerleave", () => { S.hover = null; $("tooltip").hidden = true; redraw(); });
+function zoomAt(sx, sy, k) {
+  const scale = Math.max(1, Math.min(400, S.view.scale * k)), f = scale / S.view.scale;
+  S.view.tx = sx - (sx - S.view.tx) * f; S.view.ty = sy - (sy - S.view.ty) * f; S.view.scale = scale;
+  redraw();
+}
+canvas.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  const r = canvas.getBoundingClientRect();
+  zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * 0.0015));
+}, { passive: false });
+canvas.addEventListener("dblclick", (e) => {
+  const r = canvas.getBoundingClientRect();
+  zoomAt(e.clientX - r.left, e.clientY - r.top, e.shiftKey ? 0.5 : 2);
+});
+
+function tooltip(id, e) {
+  const tip = $("tooltip");
+  if (!id) { tip.hidden = true; return; }
+  const p = S.world.provinces[id - 1], [owner, controller] = S.control[id - 1];
+  let html = `<b>${p[0]}</b>${S.names[owner] || owner}`;
+  if (controller !== owner) html += ` · held by ${S.names[controller] || controller}`;
+  const f = currentFrame(), c = f && f.k.find((x) => x[0] === id);
+  if (c) html += `<br>${Math.round(c[2] / 10)}% taken by ${S.names[S.replay.tags[c[1]]]}`;
+  tip.innerHTML = html;
+  const r = canvas.getBoundingClientRect();
+  tip.style.left = `${Math.min(e.clientX - r.left + 14, r.width - 270)}px`;
+  tip.style.top = `${e.clientY - r.top + 14}px`;
+  tip.hidden = false;
+}
+function select(id) {
+  S.selected = id; redraw(); renderProvince();
+}
+function renderProvince() {
+  const panel = $("province-panel"), id = S.selected;
+  if (!id || !S.world) { panel.hidden = true; return; }
+  const p = S.world.provinces[id - 1], [owner, controller] = S.control[id - 1];
+  const f = currentFrame(), c = f && f.k.find((x) => x[0] === id);
+  panel.innerHTML = `<h4>${p[0]}</h4><div class="kv">
+    <span>Owner</span><b>${S.names[owner] || owner}</b>
+    <span>Held by</span><b>${S.names[controller] || controller}</b>
+    ${c ? `<span>Being taken</span><b>${Math.round(c[2] / 10)}% by ${S.names[S.replay.tags[c[1]]]}</b>` : ""}
+    <span>Terrain</span><b>${p[6]}</b>
+    <span>Population</span><b>${p[7].toLocaleString()}</b>
+    <span>Area</span><b>${p[5].toLocaleString()} km²</b></div>`;
+  panel.hidden = false;
+}
+
+// --- playback ----------------------------------------------------------------------------------
+function applyChanges(frame) {
+  for (const [pid, o, c] of frame.c || []) S.control[pid - 1] = [S.replay.tags[o], S.replay.tags[c]];
+}
+function seek(day) {
+  const rp = S.replay, last = rp.frames.length - 1;
+  const target = Math.max(0, Math.min(last, Math.floor(day)));
+  if (target < S.frame) {
+    S.control = S.world.provinces.map((p) => [p[1], p[2]]);
+    S.frame = -1;
+  }
+  for (let i = S.frame + 1; i <= target; i++) applyChanges(rp.frames[i]);
+  const forward = target > S.frame;
+  const from = S.frame;
+  S.frame = target;
+  renderFeed(forward ? from : -1);
+  renderWar();
+  renderClock();
+  renderProvince();
+  redraw();
+  if (S.frame === last && !S.peaceShown) { S.peaceShown = true; setPlaying(false); showEnd(); }
+}
+function setPlaying(on) {
+  S.playing = on && S.replay && S.frame < S.replay.frames.length - 1;
+  $("play").textContent = S.playing ? "❚❚" : "▶";
+  $("play").title = S.playing ? "Pause (space)" : "Play (space)";
+}
+function setSpeed(days) {
+  S.speed = days;
+  document.querySelectorAll("#speeds button[data-speed]").forEach((b) => b.classList.toggle("active", Number(b.dataset.speed) === days));
+  setPlaying(true);
+}
+let lastTick = performance.now();
+function tick(now) {
+  const dt = Math.min(0.25, (now - lastTick) / 1000);
+  lastTick = now;
+  if (S.playing && S.replay) {
+    S.cursor += dt * S.speed;
+    if (Math.floor(S.cursor) !== S.frame) seek(S.cursor);
+  }
+  requestAnimationFrame(tick);
+}
+
+// --- panels ------------------------------------------------------------------------------------
+const GOALS = { border_skirmish: "Border skirmish", territorial_conquest: "Territorial conquest",
+  regime_change: "Regime change", total_capitulation: "Total capitulation", coercion: "Coercion" };
+const TIERS = { 1: "Vacuum", 2: "Proxy war", 3: "Unrestricted" };
+const pct = (x) => `${Math.round(x)}%`;
+function latest(field) {
+  for (let i = S.frame; i >= 0; i--) if (S.replay.frames[i][field] !== undefined) return S.replay.frames[i][field];
+  return undefined;
+}
+function renderClock() {
+  const rp = S.replay, f = currentFrame();
+  const d = new Date(`${rp.start}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + f.d);
+  $("date").textContent = d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
+  $("day").textContent = `day ${f.d}`;
+  $("scrub").value = String(S.frame);
+}
+function renderWar() {
+  const rp = S.replay, f = currentFrame(), colour = palette();
+  $("war-panel").hidden = false;
+  const g = rp.goal;
+  $("goal-text").textContent = `${GOALS[g.type] || g.type}: ${S.names[g.holder]} → ${S.names[g.target]}`;
+  $("tier-text").textContent = TIERS[latest("t")] || "";
+  const s = f.w, fill = $("score-fill");
+  fill.style.left = s >= 0 ? "50%" : `${50 + s / 2}%`;
+  fill.style.width = `${Math.abs(s) / 2}%`;
+  fill.style.background = s >= 0 ? "var(--attacker)" : "var(--defender)";
+  $("score-value").textContent = `${s > 0 ? "+" : ""}${s.toFixed(1)}`;
+  ["attacker", "defender"].forEach((side, i) => {
+    const members = f.s[i];
+    $(`side-${side}`).innerHTML = `<h3 class="label">${side === "attacker" ? "Attacker" : "Defender"} side</h3>`
+      + members.slice(0, 6).map((m) => member(m, colour)).join("")
+      + (members.length > 6 ? `<div class="more">and ${members.length - 6} more allies</div>` : "");
+  });
+  const sup = latest("sup") || {};
+  $("supporters").innerHTML = Object.entries(sup).filter(([, from]) => from.length).map(([to, from]) =>
+    `<div>Arms to <b>${S.names[rp.tags[to]]}</b> from ${from.map((t) => S.names[rp.tags[t]]).join(", ")}.</div>`).join("");
+}
+function member(m, colour) {
+  const rp = S.replay, tag = rp.tags[m[0]];
+  const [, cas, active, resolve, collapse, posture, air, drones, damage, driver, primary, warheads] = m;
+  return `<div class="member" style="border-left-color:${colour(tag)}">
+    <div class="name">${S.names[tag] || tag}<small>${primary ? "" : "ally"}${warheads ? " ☢" : ""}</small></div>
+    <div class="stats">
+      <span>Casualties<b>${cas.toLocaleString()}</b></span>
+      <span>Under arms<b>${active.toLocaleString()}</b></span>
+      <span>Posture<b>${posture >= 0 ? rp.postures[posture].replace("_", " ") : "—"}</b></span>
+      <span>Air superiority<b>${pct(air)}</b></span>
+      <span>Drones<b>${pct(drones)}</b></span>
+      <span>Strike damage<b>${pct(damage)}</b></span>
+    </div>
+    <div class="stats bars">
+      <span>Will to fight ${pct(resolve)}<div class="bar"><i style="width:${resolve}%;background:var(--good)"></i></div></span>
+      <span>Collapse ${pct(collapse)}${driver >= 0 ? ` · ${rp.drivers[driver].replace("_", " ")}` : ""}
+        <div class="bar"><i style="width:${collapse}%;background:${collapse > 80 ? "var(--danger)" : "var(--warn)"}"></i></div></span>
+    </div></div>`;
+}
+let feedCount = 0;
+const supplyLines = new Map();
+function renderFeed(fromFrame) {
+  const rp = S.replay, feed = $("feed"), day = currentFrame().d;
+  if (fromFrame < 0) { feed.replaceChildren(); supplyLines.clear(); feedCount = 0; }
+  const evs = rp.events;
+  while (feedCount < evs.length && evs[feedCount][0] <= day) { addEvent(evs[feedCount]); feedCount++; }
+}
+function addEvent([day, kind, message]) {
+  const feed = $("feed");
+  const supply = kind === "lend_lease" && message.match(/^(.*) begins supplying (.*)\.$/);
+  if (supply) {
+    const key = `${day}|${supply[2]}`;
+    let line = supplyLines.get(key);
+    if (!line) {
+      line = { li: document.createElement("li"), from: [] };
+      line.li.className = "k-lend_lease"; supplyLines.set(key, line); feed.prepend(line.li);
+    }
+    line.from.push(supply[1]);
+    line.li.innerHTML = `<span class="d">Day ${day}</span>`;
+    line.li.append(line.from.length === 1 ? message : `${line.from.length} countries begin supplying ${supply[2]}: ${line.from.join(", ")}.`);
+    return;
+  }
+  const li = document.createElement("li");
+  li.className = `k-${kind}`;
+  li.innerHTML = `<span class="d">Day ${day}</span>`;
+  li.append(message);
+  feed.prepend(li);
+}
+function showEnd() {
+  const t = S.replay.treaty, names = S.names;
+  if (t) {
+    $("peace-title").textContent = t.winner ? `${names[t.winner] || t.winner} prevails` : "The war is over";
+    $("peace-reason").textContent = `Day ${t.day}: ${t.reason}.`;
+    const text = {
+      white_peace: () => "White peace: everyone goes home.",
+      province_transfer: (b, o, n) => `${o} cedes ${n} province${n === 1 ? "" : "s"} to ${b}.`,
+      annexation: (b, o) => `${b} absorbs ${o}.`,
+      puppet: (b, o) => `${o} becomes a puppet of ${b}.`,
+      demilitarization: (b, o) => `${o} is demilitarised.`,
+      reparations: (b, o) => `${o} pays reparations to ${b}.`,
+    };
+    $("peace-terms").replaceChildren(...t.terms.map(([type, b, o, n]) => {
+      const li = document.createElement("li");
+      li.textContent = (text[type] || (() => type))(names[b] || b, names[o] || o, n);
+      return li;
+    }));
+  } else {
+    $("peace-title").textContent = "The war goes on";
+    $("peace-reason").textContent = `The record ends on day ${currentFrame().d} with neither side broken.`;
+    $("peace-terms").replaceChildren();
+  }
+  $("peace").hidden = false;
+}
+
+// --- choosing a war ----------------------------------------------------------------------------
+async function loadWorld(year) {
+  if (!S.worlds[year]) S.worlds[year] = await getJSON(`data/world-${year}.json`);
+  S.world = S.worlds[year];
+  anchors = null;
+}
+async function start(key) {
+  $("loading").hidden = false;
+  $("loading").textContent = "Loading the war…";
+  $("setup").hidden = true;
+  $("peace").hidden = true;
+  setPlaying(false);
+  const rp = await getJSON(`data/replays/${key}.json`);
+  await loadWorld(rp.year);
+  S.replay = rp;
+  S.names = Object.assign({}, S.world.countries, rp.names);
+  S.control = S.world.provinces.map((p) => [p[1], p[2]]);
+  S.frame = -1; S.cursor = 0; S.peaceShown = false; S.selected = null;
+  $("scenario-name").textContent = rp.name;
+  $("scrub").max = String(rp.frames.length - 1);
+  $("scrub").disabled = false;
+  $("t-end").textContent = `day ${rp.frames[rp.frames.length - 1].d}`;
+  document.querySelectorAll("#speeds button").forEach((b) => (b.disabled = false));
+  seek(0);
+  frameWar();
+  $("loading").hidden = true;
+  setSpeed(S.speed);
+}
+$("play").addEventListener("click", () => {
+  if (S.replay && S.frame >= S.replay.frames.length - 1) { S.cursor = 0; S.peaceShown = false; seek(0); }
+  setPlaying(!S.playing);
+});
+document.querySelectorAll("#speeds button[data-speed]").forEach((b) => b.addEventListener("click", () => setSpeed(Number(b.dataset.speed))));
+$("scrub").addEventListener("input", (e) => {
+  S.cursor = Number(e.target.value); S.peaceShown = Number(e.target.value) >= S.replay.frames.length - 1 ? S.peaceShown : false;
+  seek(S.cursor);
+});
+$("new-war").addEventListener("click", () => { setPlaying(false); $("setup").hidden = false; });
+$("peace-new").addEventListener("click", () => { $("peace").hidden = true; $("setup").hidden = false; });
+$("peace-close").addEventListener("click", () => { $("peace").hidden = true; });
+window.addEventListener("keydown", (e) => {
+  if (!S.replay || !$("setup").hidden || e.target.closest("input, select, textarea")) return;
+  const speeds = [1, 3, 7, 30];
+  if (e.code === "Space") { e.preventDefault(); $("play").click(); }
+  else if (/^Digit[1-4]$/.test(e.code)) setSpeed(speeds[Number(e.code.slice(5)) - 1]);
+});
+
+function renderPresets() {
+  $("version").textContent = `alpha ${S.meta.version}`;
+  $("presets").replaceChildren(...S.meta.presets.map((p) => {
+    const b = document.createElement("button");
+    b.className = "preset";
+    b.innerHTML = `<span class="meta">${p.year === 2021 ? "24 Feb 2022" : "1 Jan 2026"} · ${p.attacker} → ${p.defender}</span>
+      <b>${p.name}</b><small>${p.blurb}</small><span class="end">${p.days} days on record</span>`;
+    b.addEventListener("click", () => start(p.key).catch(fail));
+    return b;
+  }));
+}
+function fail(e) { $("loading").hidden = false; $("loading").textContent = `Could not load: ${e.message}`; }
+
+async function boot() {
+  window.addEventListener("resize", resize);
+  resize();
+  S.meta = await getJSON("data/meta.json");
+  renderPresets();
+  const [geometry] = await Promise.all([getJSON("data/geometry.json"), loadWorld(2026)]);
+  buildShapes(geometry);
+  S.names = Object.assign({}, S.world.countries);
+  S.control = S.world.provinces.map((p) => [p[1], p[2]]);
+  const r = canvas.getBoundingClientRect();
+  S.view = { scale: r.width / 380, tx: r.width / 2, ty: r.height / 2 - 20 * (r.width / 380) };
+  $("loading").hidden = true;
+  redraw();
+  requestAnimationFrame(tick);
+}
+boot().catch(fail);
+</script>

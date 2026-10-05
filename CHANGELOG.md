@@ -29,6 +29,8 @@ control once it starts is time.
   close its government is to collapse. A war diary narrates the war, and the peace terms appear at the end.
 - Playback from paused to a month per second (space pauses, 1–5 pick a speed).
 - `wargame run <flashpoint>` runs a war without the viewer and prints how it went.
+- A browser edition (`tools/web/build_site.py`): the flashpoints recorded day by day and replayed in the
+  same viewer, with a timeline, so they can be watched without installing anything.
 
 ### Engine
 - A 3,604-province world map with the real fronts of 1 January 2026, rivers, coasts, sea crossings,
