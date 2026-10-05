@@ -1,7 +1,7 @@
-"""Land warfare: fronts, assaults, encirclement, rivers, the sea and attrition.
+"""Land warfare: fronts, assaults, pace, encirclement, rivers, the sea, attrition and mobilisation.
 
-Mechanics run on the fictional map in conftest.py (provinces shrunk to 300 km2 so fronts
-move within a test); the calibration test runs the real 2026 front.
+Mechanics run on the fictional map in conftest.py (provinces of 3,000 km2, 55 km a side);
+the calibration tests run the real war in Ukraine at both of its paces, 2022 and 2025.
 """
 
 from __future__ import annotations
@@ -19,11 +19,11 @@ from wargame.conflict.war_goal import WarGoal
 from wargame.core.enums import Branch, EscalationTier, Motivation, TerrainType, WarGoalType
 from wargame.nation.military import EquipmentStock
 from wargame.simulation import ScenarioConfig, Simulation
-from wargame.world.world import World
+from wargame.world.world import FortifiedLine, World
 
 ROOT = Path(__file__).resolve().parents[1]
-AREA_KM2 = 300.0
-GRINDING = 800_000   # ARD troops that attack BOR's front at R ~ 2: a slow, partial advance.
+AREA_KM2 = 3_000.0
+GRINDING = 400_000   # ARD troops that attack BOR's front at R ~ 2: a slow, partial advance.
 
 
 def world_with(ard_troops: int = 1_500_000, bor_troops: int = 100_000) -> World:
@@ -31,6 +31,7 @@ def world_with(ard_troops: int = 1_500_000, bor_troops: int = 100_000) -> World:
     for p in world.provinces.values():
         p.area_km2 = AREA_KM2
     world.country("ARD").oob.active_personnel = ard_troops
+    world.country("ARD").mobilised = True  # Committed in full from the first day.
     world.country("BOR").oob.active_personnel = bor_troops
     return world
 
@@ -63,6 +64,52 @@ def _calibration():
     return module
 
 
+def test_calibrated_to_the_2022_invasion():
+    """From the 2021 map, Russia doubles its hold on Ukraine in five weeks but cannot take Kyiv.
+
+    It reaches ~60% of the real gain: in 2022 columns raced down roads through parts of seven oblasts
+    at once, while oblast-sized provinces fall one after another (left-bank Kherson before Melitopol)."""
+    cal = _calibration()
+    result = cal.run_2022(days=36)
+    low, _ = cal.BENCHMARK_OCCUPIED_31_MARCH_2022
+    assert result["occupied_km2"] >= 0.55 * low  # ISW: ~163,000 km2 on 31 March 2022.
+    assert result["occupied_km2"] > 2 * result["occupied_before"]
+    assert result["kyiv_held"] and not result["war_ended"]
+
+
+def _war_from(year: int, aid: bool, days: int):
+    cal = _calibration()
+    sim = cal.start(year)
+    if not aid:  # The West walks away: nobody will arm Ukraine.
+        for tag, country in sim.world.countries.items():
+            if tag != "UKR":
+                country.relations["UKR"] = min(country.relations.get("UKR", 0.0), 0.0)
+    for _ in range(days // 10):
+        sim.run_days(10)
+        if sim.finished:
+            break
+    return sim
+
+
+def test_without_aid_ukraine_breaks_within_a_year():
+    sim = _war_from(2026, aid=False, days=450)
+    assert sim.finished and any(e.kind == "capitulation" and "UKR" in e.message for e in sim.events())
+    assert sim.clock.hours_elapsed / 24 < 400
+
+
+def test_with_aid_ukraine_keeps_fighting_as_it_did_in_2023_2025():
+    sim = _war_from(2026, aid=True, days=3 * 365)  # Three more years like 2023-2025.
+    assert not sim.finished
+    assert sim.world.country("UKR").aid_coverage > 0.3  # Aid covers what its own industry can't make.
+
+
+def test_the_2022_war_lasts_years_with_aid_and_one_without():
+    with_aid = _war_from(2021, aid=True, days=3 * 365)
+    assert not with_aid.finished  # Still fighting in 2025, as it was.
+    without = _war_from(2021, aid=False, days=550)
+    assert without.finished
+
+
 def test_calibrated_to_the_2025_war():
     """Russia attacking from the real 1 January 2026 front reproduces 2025's pace and price."""
     cal = _calibration()
@@ -88,8 +135,9 @@ def test_a_much_stronger_army_breaks_through_and_takes_the_objective():
 def test_a_weak_attacker_does_not_throw_its_troops_away():
     sim = start(world_with(ard_troops=60_000))
     sim.run_days(10)
+    ledger = sim.wars[0].participants["ARD"].ledger
     assert sim.land.deployments["ARD"].attacks == {}       # Nothing reaches MIN_ASSAULT_RATIO...
-    assert sim.world.country("ARD").oob.casualties_total == 0  # ...so nobody bleeds...
+    assert sum(c for c, _ in ledger.window) == 0           # ...so no blood is spent attacking...
     assert sim.world.provinces[1].controller == "BOR"        # ...and nothing moves.
 
 
@@ -122,15 +170,27 @@ def test_a_major_river_blunts_the_assault():
     assert _progress_after(5, river) < _progress_after(5, lambda w: None) / 2
 
 
-def test_fortification_grows_on_a_static_front_and_slows_attackers():
+def test_fronts_start_open_and_dig_in_while_static():
     sim = start(world_with(ard_troops=60_000))  # A front that doesn't move.
-    assert sim.land.fortification[1] == pytest.approx(lw.ESTABLISHED_FRONT_FORTIFICATION + lw.FORTIFICATION_GROWTH)
+    assert sim.land.fortification[1] == pytest.approx(lw.FORTIFICATION_GROWTH)  # No works before the war.
     sim.run_days(5)
-    assert sim.land.fortification[1] == pytest.approx(lw.ESTABLISHED_FRONT_FORTIFICATION + 6 * lw.FORTIFICATION_GROWTH)
-    sim.run_days(30)
+    assert sim.land.fortification[1] == pytest.approx(6 * lw.FORTIFICATION_GROWTH)
+    sim.run_days(200)
     assert sim.land.fortification[1] == lw.FORTIFICATION_MAX
     assert 2 not in sim.land.fortification  # Only the front digs in.
 
+
+def test_prewar_lines_are_dug_in_from_the_first_day():
+    world = world_with(ard_troops=60_000)
+    world.fortified_lines.append(FortifiedLine(("ARD", "BOR"), frozenset({"BOR"}), 0.5))
+    world.fortified_lines.append(FortifiedLine(("BOR", "DRV"), frozenset({"BOR"}), 0.6))  # DRV isn't at war.
+    sim = start(world)
+    assert sim.land.fortification[1] == pytest.approx(0.5 + lw.FORTIFICATION_GROWTH)
+    assert sim.land.fortification[11] == pytest.approx(lw.FORTIFICATION_GROWTH)  # ARD didn't dig.
+    assert 6 not in sim.land.fortification
+
+
+def test_fieldworks_slow_attackers():
     world = world_with(ard_troops=GRINDING)
     dug_in = start(world)
     dug_in.land.fortification[1] = lw.FORTIFICATION_MAX
@@ -152,6 +212,75 @@ def test_captured_ground_is_damaged_and_unfortified():
     assert 1 not in sim.world.contested
 
 
+# --- pace: the same rules give blitzkrieg and trench war -----------------------------------------------
+
+
+def _depth_km_per_day(prepare, days: int = 2, ard_troops: int = GRINDING) -> float:
+    world = world_with(ard_troops=ard_troops)
+    world.country("BOR").mobilised = True  # A defence already deployed: no surprise (Dupuy's averages).
+    prepare(world)
+    sim = start(world)
+    sim.run_days(days)
+    frontage = world.provinces[1].border_with(11)
+    return progress(sim, 1) * AREA_KM2 / days / frontage
+
+
+def test_an_unopposed_army_advances_at_exploitation_speed():
+    def empty(world: World) -> None:  # BOR's army is elsewhere; only local defence remains.
+        world.country("BOR").oob.active_personnel = 1_000
+    depth = _depth_km_per_day(empty, days=1)
+    assert depth == pytest.approx(lw.MAX_DEPTH_KM_PER_DAY, rel=0.05)  # 3rd ID to Baghdad, 2003: ~25 km/day.
+
+
+def test_a_ww2_style_attack_moves_at_ww2_division_pace():
+    depth = _depth_km_per_day(lambda w: None, ard_troops=600_000)  # Force ratio ~2.3 on open ground.
+    assert 1.0 < depth < 4.5  # Dupuy: 1.8 km/day (West 1943-45, average ratio 2.3), 4.5 (East 1943).
+
+
+def test_a_drone_watched_fortified_front_is_slower_than_the_somme():
+    def trench_war(world: World) -> None:
+        world.country("BOR").drone_saturation = 1.0
+        world.fortified_lines.append(FortifiedLine(("ARD", "BOR"), frozenset({"BOR"}), lw.FORTIFICATION_MAX))
+    depth = _depth_km_per_day(trench_war)
+    assert depth < 0.08  # CSIS: Russia 2024-25 at 15-70 m/day; the Somme 1916 at 80 m/day.
+    assert depth < _depth_km_per_day(lambda w: None) / 50
+
+
+# --- mobilisation and basing --------------------------------------------------------------------------
+
+
+def test_a_nation_fighting_for_survival_mobilises():
+    goal = WarGoal(WarGoalType.REGIME_CHANGE, "ARD", "BOR")
+    sim = start(world_with(ard_troops=60_000), goal)
+    bor = sim.world.country("BOR").oob
+    prewar = 100_000
+    sim.run_days(30)
+    # 2% of pre-war strength a day (Ukraine 2022: ~250,000 to ~700,000 by May); reserves replace the dead.
+    assert bor.casualties_total > 0
+    assert bor.active_personnel == pytest.approx(prewar + 31 * lw.MOBILISATION_RATE_EXISTENTIAL * prewar, rel=0.02)
+    sim.run_days(200)
+    assert bor.active_personnel <= lw.MOBILISATION_CEILING_EXISTENTIAL * prewar
+
+
+def test_an_already_mobilised_nation_only_replaces_losses():
+    world = world_with(ard_troops=60_000)
+    world.country("BOR").mobilised = True
+    sim = start(world, WarGoal(WarGoalType.REGIME_CHANGE, "ARD", "BOR"))
+    sim.run_days(30)
+    assert sim.world.country("BOR").oob.active_personnel <= 100_000
+
+
+def test_a_host_lets_an_attacker_strike_from_its_soil():
+    world = world_with()
+    world.country("DRV").hosts = frozenset({"ARD"})  # Belarus, February 2022.
+    goal = WarGoal(WarGoalType.TERRITORIAL_CONQUEST, "ARD", "BOR", frozenset({6}))
+    sim = start(world, goal)
+    attacks = sim.land.deployments["ARD"].attacks
+    assert attacks[6][0] == 20  # Straight from DRV's province into the objective.
+    sim.run_days(3)
+    assert progress(sim, 6) > 0
+
+
 # --- encirclement --------------------------------------------------------------------------------------
 
 
@@ -164,6 +293,25 @@ def test_provinces_cut_off_from_the_capital_are_encircled():
     # The pocket can't stage troops: the BOR army holds 4-5 at the capital's side, not 1-4.
     stations = sim.land.deployments["BOR"].stationed
     assert stations.get(6, 0.0) > 0 and all(stations.get(pid, 0.0) == 0.0 for pid in (2, 3))
+
+
+def test_a_surrounded_capital_is_the_pocket_not_the_rest_of_the_country():
+    world = world_with(ard_troops=60_000)
+    occupy(world, [6, 8], "ARD")  # The capital at 7 is cut off; 1-5 and 9-10 are not.
+    sim = start(world)
+    assert BOR_CAPITAL in sim.land.encircled
+    assert not {1, 2, 3, 4, 5} & sim.land.encircled  # The main body (most value) keeps its supply.
+
+
+def test_a_friendly_neighbour_keeps_a_cut_off_region_supplied():
+    world = world_with(ard_troops=60_000)
+    occupy(world, [5], "ARD")
+    world.country("DRV").relations["BOR"] = 0.6  # DRV borders province 6, on the capital's side...
+    world.country("CAL").relations["BOR"] = 0.0
+    world.provinces[20].neighbors = (6, 2)        # ...and now also 2, in the cut-off west.
+    world.provinces[2].neighbors = (1, 3, 20)
+    sim = start(world)
+    assert not {1, 2, 3, 4} & sim.land.encircled  # Aid comes over the border, as through Poland.
 
 
 def test_a_pocket_fights_at_half_strength():
@@ -250,3 +398,40 @@ def test_land_combat_is_deterministic():
         return (sim.world.country("ARD").oob.casualties_total, sim.world.country("BOR").oob.casualties_total,
                 sorted(sim.world.contested.items()), [p.controller for p in sim.world.provinces.values()])
     assert run() == run()
+
+
+# --- surprise, reach, hosting --------------------------------------------------------------------------
+
+
+def test_surprise_fades_over_three_days():
+    world = world_with()
+    sim = start(world)  # BOR is not on a war footing.
+    war, now = sim.wars[0], sim.clock.hours_elapsed
+    assert sim.land._surprise(world, [war], "ARD", "BOR", now) == pytest.approx(lw.SURPRISE_UNMOBILISED)
+    assert sim.land._surprise(world, [war], "ARD", "BOR", now + 3 * 24) == 1.0
+    world.country("BOR").mobilised = True
+    assert sim.land._surprise(world, [war], "ARD", "BOR", now) == 1.0
+
+
+def test_assaults_from_freshly_taken_ground_are_weaker():
+    sim = start(world_with())
+    for _ in range(60):
+        sim.run_days(1)
+        if sim.world.provinces[1].controller == "ARD":
+            break
+    sim.run_days(1)
+    assert sim.land.reach["ARD"][11] == 0            # Owned soil: the rail runs there.
+    assert sim.land.reach["ARD"][1] == 1             # Just taken: supply by truck.
+    assert sim.land._reach_factor("ARD", 1) == pytest.approx(lw.REACH_PER_HOP)
+
+
+def test_hosting_ends_after_the_agreed_window():
+    world = world_with(ard_troops=GRINDING)
+    world.country("DRV").hosts = frozenset({"ARD"})
+    world.country("DRV").hosting_days = 10
+    sim = start(world, WarGoal(WarGoalType.REGIME_CHANGE, "ARD", "BOR"))
+    assert "DRV" in sim.land._hosts["ARD"]
+    sim.run_days(12)
+    assert not sim.finished
+    assert "DRV" not in sim.land._hosts.get("ARD", set())
+    assert all(origin != 20 for origin, _, _ in sim.land.deployments["ARD"].attacks.values())

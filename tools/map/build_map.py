@@ -399,11 +399,20 @@ def build(cache: Path) -> dict[str, Any]:
               if r.record["featurecla"] in ("River", "Lake Centerline") and int(r.record["scalerank"]) <= RIVER_MAX_SCALERANK]
     river_tree = STRtree([g for _, _, g in rivers])
     river_borders: list[dict[int, tuple[str, int]]] = [{} for _ in range(n)]
+    border_km: list[dict[int, int]] = [{} for _ in range(n)]
     for i in range(n):
         for j in neighbors[i]:
             if j < i:
                 continue
             border = geoms[i].boundary.intersection(geoms[j].buffer(ADJACENCY_TOLERANCE_DEG * 10))
+            # Front length: geodesic length of the shared border (a corner touch still counts as 1 km).
+            length = GEOD.geometry_length(border) / 1000 if border.geom_type in ("LineString", "MultiLineString") else 0.0
+            border_km[i][j] = border_km[j][i] = max(1, round(length))
+            if border.geom_type == "GeometryCollection":
+                lines = [g for g in border.geoms if g.geom_type in ("LineString", "MultiLineString")]
+                border = unary_union(lines) if lines else border
+                length = GEOD.geometry_length(border) / 1000 if lines else 0.0
+                border_km[i][j] = border_km[j][i] = max(1, round(length))
             if border.geom_type == "MultiLineString":
                 border = linemerge(border)
             if border.geom_type == "MultiLineString":
@@ -514,6 +523,7 @@ def build(cache: Path) -> dict[str, Any]:
             "neighbors": sorted(j + 1 for j in neighbors[i]),
             "sea_links": [[j + 1, km] for j, km in sorted(sea_links[i].items())],
             "river_borders": [[j + 1, name, rank] for j, (name, rank) in sorted(river_borders[i].items())],
+            "border_km": [[j + 1, km] for j, km in sorted(border_km[i].items())],
             "urban_population": urban[i],
             "largest_city": biggest[i][1] or None,
             "largest_metro_population": biggest[i][0],

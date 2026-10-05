@@ -52,6 +52,7 @@ class CapitulationTuning:
     external_support_bonus: float = 0.08  # x lend-lease coverage of own consumption.
     ally_bonus_per_ally: float = 0.02     # Co-belligerents fighting alongside (Tier 3).
     ally_bonus_cap: float = 0.06
+    defiance_bonus: float = 0.15          # x leadership defiance: a leader who will not submit.
 
     # Pressure contributions (each is weight x raw 0..1 input, then noisy-OR'd).
     w_territory: float = 1.0              # Losing everything alone is enough.
@@ -60,7 +61,7 @@ class CapitulationTuning:
     w_manpower: float = 0.60              # x casualty sensitivity.
     w_industry: float = 0.25
     w_supply: float = 0.25
-    w_exhaustion: float = 0.50
+    w_exhaustion: float = 0.3
     w_nuclear_shock: float = 1.0          # Acute shock of nuclear strikes on a nation that cannot answer.
 
     # Collapse dynamics (per day).
@@ -125,6 +126,9 @@ class DailyContext:
 # ---------------------------------------------------------------------------
 
 EVACUATION_TRIGGER_LOSS = 0.10   # Start evacuating once 10% of national value is occupied...
+RALLY_WAR_SUPPORT = 0.3      # x patriotism, fading over RALLY_DAYS.
+RALLY_STABILITY = 0.1
+RALLY_DAYS = 730
 EVACUATION_FRONT_HOPS = 1        # ...for industry adjacent to hostile-held ground...
 EVACUATION_MIN_DEPTH = 4         # ...to destinations at least this far from the front.
 EVACUATION_LOSS = 0.30           # Share of output permanently lost in transit.
@@ -169,6 +173,15 @@ class Country:
     seaborne_import_share: float = 0.5     # Share of imports a blockade can cut. 0 if landlocked.
     blockade_interdiction: float = 0.0     # 0..1, written by the naval system.
     sanction_severity: float = 0.0         # 0..1, written by diplomatic fallout.
+
+    # Wartime posture (curated: data/curated/force_posture.json, leadership.json)
+    drone_saturation: float = 0.0          # 0..1: how densely small drones watch and strike its front.
+    mobilised: bool = False                # Already on a war footing at the start date.
+    leadership_defiance: float = 0.0       # 0..1: a leader who has shown he will not submit.
+    hosts: frozenset[str] = frozenset()    # Belligerents allowed to attack from our soil (Belarus 2022)...
+    hosting_days: int | None = None        # ...for this many days into their war (None: for its duration).
+    aid_coverage: float = 0.0              # Share of our munitions and spares that arrived as aid today.
+    rallied: bool = False                  # Has rallied against an existential invasion.
 
     # War-time state
     prewar_industrial_capacity: float | None = None
@@ -256,6 +269,7 @@ class Country:
             threshold += t.existential_bonus * spirit.patriotism
         threshold += t.external_support_bonus * clamp(ctx.external_support_level)
         threshold += min(t.ally_bonus_cap, t.ally_bonus_per_ally * ctx.allied_belligerents)
+        threshold += t.defiance_bonus * self.leadership_defiance
         return clamp(threshold, t.min_threshold, t.max_threshold), False
 
     def capitulation_pressure(self, world: World, ctx: CapitulationContext) -> tuple[float, dict[str, float]]:
@@ -320,13 +334,15 @@ class Country:
         """Economy -> logistics -> morale, in that order (morale reads today's supply)."""
         self._advance_relocations(world, ctx.now_hour)
         if ctx.at_war:
+            self._rally_against_invasion(ctx)
             self._react_to_capital_loss(world, ctx)
             if ctx.existential_threat or self.occupied_fraction(world, ctx.hostile_tags) >= EVACUATION_TRIGGER_LOSS:
                 self._evacuate_threatened_industry(world, ctx)
 
         self.nuclear_shock *= NUCLEAR_SHOCK_DAILY_RETENTION
         tempo = 1.0 if ctx.at_war else PEACETIME_TEMPO
-        self.logistics.tick_day(self.production_factor(world), self.import_factor(ctx.policy), tempo)
+        arms_imports = 0.0 if ctx.at_war else 1.0  # At war, arms arrive only as aid (War._deliver_external_support).
+        self.logistics.tick_day(self.production_factor(world), self.import_factor(ctx.policy), tempo, arms_imports)
 
         casualties_today = self.oob.roll_day()
         casualty_ratio = casualties_today / self.oob.mobilizable_manpower if self.oob.mobilizable_manpower else 0.0
@@ -375,6 +391,16 @@ class Country:
             if key > best_key:
                 best, best_key = p, key
         return best
+
+    def _rally_against_invasion(self, ctx: DailyContext) -> None:
+        """A nation newly attacked for its existence rallies; patriots most. Ukraine 2022: 70% wanted to
+        fight until victory (Gallup), against 24% by July 2025. A country already at war at the start
+        date (mobilised) spent its rally long ago."""
+        if self.rallied or not ctx.existential_threat or self.mobilised:
+            return
+        self.rallied = True
+        self.spirit.apply_shock("invasion_rally", ctx.now_hour, war_support=RALLY_WAR_SUPPORT * self.spirit.patriotism,
+                                stability=RALLY_STABILITY * self.spirit.patriotism, duration_days=RALLY_DAYS)
 
     def _react_to_capital_loss(self, world: World, ctx: DailyContext) -> None:
         seat = world.provinces[self.government_seat_id] if self.government_seat_id is not None else None

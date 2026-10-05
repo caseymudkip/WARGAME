@@ -1,0 +1,55 @@
+{
+  "_doc": "Wartime force posture the equipment counts don't show. drone_saturation (0..1): how densely a country's front is watched and struck by small drones (1 = millions a year, the 2025 Ukrainian front's 'kill zone'). An attacker advancing into such a front slows by up to DRONE_ADVANCE_DRAG (conflict/land_warfare.py). mobilised: already on a war footing at the start date, so no further wartime expansion beyond replacing losses. hosts: belligerents this country lets attack from its territory without itself joining the war, for hosting_days after the war starts. active_share: share of a GFP land-equipment count that is with units rather than in long-term storage (GFP counts both; stored equipment fights only once refurbished). Countries not listed: no drone saturation, not mobilised, host no one.",
+  "_source": "curated_force_posture",
+  "2021": {
+    "UKR": {
+      "drone_saturation": 0.05,
+      "mobilised": false,
+      "basis": "A few Bayraktar TB2s and commercial quadcopters; ~250,000 active troops before the invasion (Zelensky, May 2022). Equipment: ~987 battle-ready tanks (IISS Military Balance, as cited by the Modern War Institute) against GFP's 2,596 (active share 0.38, applied to all land equipment; low confidence).",
+      "active_share": 0.38,
+      "sources": [
+        "https://mwi.westpoint.edu/leopards-into-the-fray-how-will-german-tanks-affect-the-battlefield-balance-in-ukraine/"
+      ]
+    },
+    "RUS": {
+      "drone_saturation": 0.1,
+      "mobilised": false,
+      "basis": "Orlan-10 reconnaissance drones for artillery spotting; no mass strike drones (140,000 drones delivered in 2023, per Putin, from a far smaller base). Equipment: IISS Military Balance 2022 counts 3,417 battle-ready tanks (army 2,927, naval infantry 330, airborne 160) and ~10,200 in storage; GFP's 12,420 counts both (active share 0.275, applied to all land equipment).",
+      "active_share": 0.275,
+      "sources": [
+        "https://www.kyivpost.com/post/19265",
+        "https://www.scmp.com/news/world/europe/article/3251900/russia-refits-old-tanks-after-losing-3000-ukraine-war-iiss-report-says"
+      ]
+    },
+    "BLR": {
+      "drone_saturation": 0.0,
+      "mobilised": false,
+      "hosts": [
+        "RUS"
+      ],
+      "basis": "~30,000 Russian troops in Belarus for the 'Allied Resolve' exercise in February 2022; the offensive on Kyiv was launched from Belarusian territory (UN General Assembly resolution ES-11/1, 2 March 2022, deplored Belarus's involvement). The arrangement covered that opening offensive: Russian forces left the Belarus-launched axes by 6 April 2022 and did not attack from Belarus again.",
+      "hosting_days": 45
+    }
+  },
+  "2026": {
+    "UKR": {
+      "drone_saturation": 1.0,
+      "mobilised": true,
+      "basis": "More than 1.3 million drones delivered to the armed forces in 2024, production above 2.5 million a year (Kyiv Post); drones score ~85% of battlefield hits (Zelensky, 2025). General mobilisation since 24 February 2022: ~900,000 active.",
+      "sources": [
+        "https://www.kyivpost.com/post/46892",
+        "https://kyivindependent.com/nearly-60-of-ukrainian-forces-weapons-domestically-produced-zelensky-says/"
+      ]
+    },
+    "RUS": {
+      "drone_saturation": 1.0,
+      "mobilised": true,
+      "basis": "Production raised tenfold to ~1.4 million drones in 2024 (Putin, September 2024). Partial mobilisation (September 2022) and contract recruitment: ~1.32 million active. Equipment: ~1,750 tanks with units and ~4,000 in storage, much of it unrecoverable (IISS Military Balance 2025, as reported); GFP's 5,630 counts both (active share 0.31).",
+      "sources": [
+        "https://www.swissinfo.ch/eng/putin-says-russia-is-ramping-up-drone-production-tenfold/87580792",
+        "https://rubryka.com/en/2025/02/14/isw-vtracheni-u-2024-rotsi-tanky-rosiya-kompensuvala-prote-mozhe-zitknutysya-z-problemamy-u-majbutnomu"
+      ],
+      "active_share": 0.31
+    }
+  }
+}

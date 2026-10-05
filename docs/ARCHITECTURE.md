@@ -166,17 +166,23 @@ for.
    touches provinces under assault, so a year of the real Russia–Ukraine war
    runs in about 3 s. Everything is keyed by plain IDs so hot loops can later
    move to NumPy arrays or a native core if global wars need it.
-10. **Land warfare is calibrated to the 2025 war in Ukraine** (`conflict/land_warfare.py`,
-   `tools/calibration/ukraine_2025.py`). Forces are pools of combat power; each day a
-   planner holds the line and picks assaults; each hour assaulted provinces are fought
-   over and a progress bar (share of area taken) fills. Armies don't attack where they
-   expect to lose (expected ratio < 1.1); they concentrate instead. Advance is
-   3.2 × (R − 1)² km²/day: a grind at R ≈ 2, a collapse at R ≈ 10. That curve, the
-   casualty rates and the defenders' frontage were fitted so that a year from the real
-   1 January 2026 front reproduces 2025: 11.9 km²/day taken (DeepState: 4,336 km²),
-   ~1,200 Russian casualties/day (UK MoD/CSIS: ~415,000) and Ukrainian losses 0.45×
-   Russia's (CSIS: 500–600k vs ~1.2M since 2022). The attacks land on the real axes
-   (Donetsk, Zaporizhzhia, Kupiansk) without being scripted.
+10. **Land warfare is calibrated to both paces of the war in Ukraine** (`conflict/land_warfare.py`,
+   `tools/calibration/ukraine_2025.py`). Advance is depth × frontage. Depth is 1.2 × (R − 1)² km/day:
+   about 2 km/day at R ≈ 2.3, Dupuy's WW2 division average, and up to 40 km/day in exploitation.
+   Frontage is the border with the attacker's ground, limited by attacking troops at about 1,500/km
+   and widening in pursuit. Conditions decide the pace, not one fitted curve:
+   - **Fieldworks:** dug over months, or curated pre-war lines (the DMZ, the 2015–22 Donbas line).
+   - **Drones:** a defender's drone saturation (curated) cuts depth by up to 88%. With fieldworks,
+     a 2025-like front grinds at Somme pace (CSIS: 15–70 m/day).
+   - **Surprise:** Dupuy's QJM ×1.6 for an unmobilised defender, fading over three days.
+   - **Operational reach:** strength ×0.6 per province beyond rail-restored ground (90 days).
+   - **Basing:** attacking from a host's soil (Belarus, the first 45 days of 2022).
+   - **Peacetime posture:** an unmobilised defender starts manning its existing lines.
+
+   2025 from the 2026 front: 11.1 km²/day, ~1,170 Russian and 0.46× Ukrainian casualties a day.
+   2022 from the 2021 map: ~97,000 km² in 36 days, about 60% of the real gain, because oblast-sized
+   provinces fall in sequence where 2022's columns ran down roads through seven oblasts at once.
+   Kyiv holds in both.
 11. **Rivers matter.** The map marks 965 land borders that run along a major river
    (Natural Earth scalerank ≤ 7). Assaults across them fight at 0.5× (scalerank ≤ 4:
    Dnipro, Rhine, Oder, Danube) or 0.7×, and planners prefer a dry route. Ukraine's
@@ -185,13 +191,36 @@ for.
    list provinces (`WarGoal.province_ids`): the attacker prioritises them, and they are
    annexed alongside the puppet government at the peace table (Russia's claim to the
    four oblasts it declared annexed in September 2022).
-13. **War exhaustion from occupation is calibrated to Ukraine.** Each day a country
-   gains 0.005 × its occupied fraction in exhaustion. At Ukraine's ~19%, war support
-   falls by about as much per year as Gallup measured: "fight until victory" went
-   from 73% (2022) to 24% (July 2025). At the 2025 rate the model's Ukraine is still
-   fighting after a year; its government collapses around month 14 if nothing else
-   changes.
-
+13. **War exhaustion from occupation is calibrated to Ukraine.** Each day of fighting adds
+   0.005 × the occupied fraction. At Ukraine's ~19%, war support falls by about as much per year as
+   Gallup measured: "fight until victory" went from 73% (2022) to 24% (July 2025). A frozen front
+   (no fighting that day) adds nothing, as the 2015–21 Donbas line showed. Exhaustion counts
+   0.3 toward capitulation pressure, so a 2025-like war is survivable for years, as 2023–25 was.
+   Stability erosion is calibrated the same way: V-Dem-based stability went from 0.63 (2021) to
+   0.53 (2026).
+14. **Foreign aid decides long wars.** At war, munitions and spare parts arrive from abroad only as
+   aid: arming a belligerent is a political decision, not trade. Supporters send what the
+   recipient's industry can't make, up to 15% of their own output, and aid also replaces lost
+   tanks and guns. Ukraine's munitions production covers 57% of its needs in the model; Zelensky put
+   the domestic share at 40–60% in 2025. With aid, Ukraine fights on for years from either start
+   date. If the West walks away, its supply falls to ~60% and its effectiveness halves, and it
+   capitulates within about a year.
+15. **Nations and leaders who will not submit.**
+   - **Rally:** a nation newly invaded for its existence rallies, +0.3 × patriotism war support
+     fading over two years (Ukraine 2022, Britain 1940).
+   - **Home soil:** defenders fight with +0.2 × patriotism morale (Gallup International's willingness
+     to fight: Ukraine 62%, Russia 32%).
+   - **Defiant leaders** (curated: Zelensky, Putin) raise the capitulation threshold by 0.15. As
+     attackers they never let resolve fall below 0.4: they halt, mobilise and try again, as Russia
+     did in 2022–23. Only offensive losses count against an offensive.
+16. **Mobilisation and storage.** A nation fighting for survival calls up 2% of its pre-war strength
+   a day, up to 3.5× (Ukraine: ~250,000 to ~700,000 by May 2022); others 0.3% a day, up to 1.3×.
+   Countries already on a war footing (curated) only replace losses. GFP's equipment counts include
+   storage. IISS has Russia going to war with 3,417 battle-ready tanks of 12,420, so the curated
+   active share sets what fights; stored equipment is refurbished at 0.05% a day.
+17. **Encirclement follows supply, not the capital.** Pockets are ground cut off from the main body
+   of held territory and from friendly neutral borders (aid through Poland). A surrounded capital
+   is itself the pocket, as Sarajevo was.
 ## Deliberately stubbed (data recorded, not yet consumed)
 
 - `NationalSpirit.occupation_resistance`: for the occupation/partisan system.

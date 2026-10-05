@@ -60,11 +60,18 @@ for pid, (attacker, progress) in real.world.contested.items():
     print(real.world.provinces[pid].name, f"{progress:.1%} taken by {attacker}")
 ```
 
-Fronts move by hourly combat on the real province graph. Run against the real
-1 January 2026 front for a year, Russia takes 11.9 km² a day (2025: 11.9, DeepState).
-It loses about 1,200 soldiers a day (2025: 1,137, UK MoD/CSIS), and Ukraine loses 0.45 as
-many (CSIS: 0.42–0.5). The attacks fall on the real 2025 axes. See
-`python tools/calibration/ukraine_2025.py 365`.
+Fronts move by hourly combat on the real province graph, at whatever pace the conditions
+allow. The same rules give an exploitation dash against an empty front, WW2 division pace
+in an even fight, and trench war against a fortified, drone-watched line. They are checked
+against both phases of the war in Ukraine (`python tools/calibration/ukraine_2025.py [2022]`):
+
+- **2025, from the 1 January 2026 front.** Russia takes 11.1 km² a day (DeepState: 11.9).
+  It loses about 1,170 soldiers a day (UK MoD: 1,137), and Ukraine loses 0.46 as many
+  (CSIS: 0.42–0.5). The attacks fall on the real axes.
+- **2022, from the 2021 map.** Russia more than doubles its hold within five weeks
+  (~97,000 km²; the real figure was ~165,000) but cannot take Kyiv.
+- **Foreign aid decides the long war.** With aid, Ukraine keeps fighting for years from
+  either start. If the West walks away, it collapses within about a year.
 
 Inspect a country's data with sources: `python -m wargame.data RUS UKR --year 2026`.
 

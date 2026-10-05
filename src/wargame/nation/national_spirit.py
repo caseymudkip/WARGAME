@@ -41,9 +41,10 @@ EXHAUSTION_PER_CASUALTY_RATIO = 3.0  # x (casualties today / mobilizable manpowe
 EXHAUSTION_PER_OCCUPIED_FRACTION = 0.005  # Ukraine ~19% occupied: "fight until victory" 73% (2022) -> 24% (2025), Gallup.
 EXHAUSTION_PER_SHORTAGE = 0.005
 EXHAUSTION_PEACE_RECOVERY = 0.01
+EXHAUSTION_FROZEN_RECOVERY = 0.001
 WAR_SUPPORT_DRIFT = 0.03             # Fraction of the gap to target closed per day.
 WAR_SUPPORT_EXHAUSTION_DRAG = 0.8
-STABILITY_EXHAUSTION_RATE = 0.004
+STABILITY_EXHAUSTION_RATE = 0.0003  # Ukraine's stability (V-Dem based) 0.63 in 2021, 0.53 in 2026: four years of war.
 STABILITY_SHORTAGE_RATE = 0.004
 
 WAR_SUPPORT = "war_support"
@@ -123,13 +124,18 @@ class NationalSpirit:
         supply_ratio: float,
     ) -> None:
         shortage = 1.0 - supply_ratio
-        if at_war:
+        if at_war and casualty_ratio_today > 0:
             self.war_exhaustion = clamp(
                 self.war_exhaustion
                 + EXHAUSTION_PER_CASUALTY_RATIO * casualty_ratio_today * self.casualty_sensitivity
                 + EXHAUSTION_PER_OCCUPIED_FRACTION * occupied_fraction
                 + EXHAUSTION_PER_SHORTAGE * shortage
             )
+        elif at_war:
+            # A frozen front (no fighting today) neither wears a nation down nor heals it fully: occupation
+            # without combat is a grievance people live with for years (Donbas 2015-21, Korea, Cyprus).
+            self.war_exhaustion = clamp(self.war_exhaustion + EXHAUSTION_PER_SHORTAGE * shortage
+                                        - EXHAUSTION_FROZEN_RECOVERY)
         else:
             self.war_exhaustion = clamp(self.war_exhaustion - EXHAUSTION_PEACE_RECOVERY)
 

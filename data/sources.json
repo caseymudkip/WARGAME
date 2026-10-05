@@ -186,5 +186,33 @@
     "notes": [
       "The 2015-2022 Donbas line of contact is approximated from front-line settlements (+/- ~10 km)."
     ]
+  },
+  "curated_fortifications": {
+    "title": "Fortified lines at each start date (curated)",
+    "publisher": "Compiled for this project; each entry states its basis",
+    "via": "data/curated/fortifications.json",
+    "confidence": "per entry",
+    "notes": [
+      "Fortification levels (0..0.6) are judgement on the scale of QJM defensive postures."
+    ]
+  },
+  "curated_force_posture": {
+    "title": "Wartime force posture: drones, mobilisation, basing, equipment in storage (curated)",
+    "publisher": "Compiled for this project from IISS Military Balance figures as reported, official statements and press; each entry cites its source",
+    "via": "data/curated/force_posture.json",
+    "confidence": "medium",
+    "notes": [
+      "Active shares apply the tank figure to all land equipment, an approximation.",
+      "Drone saturation is a 0..1 judgement anchored on production figures."
+    ]
+  },
+  "curated_leadership": {
+    "title": "Leadership defiance (curated)",
+    "publisher": "Compiled for this project from documented wartime conduct",
+    "via": "data/curated/leadership.json",
+    "confidence": "medium",
+    "notes": [
+      "Only leaders with documented wartime conduct are listed; all others default to 0."
+    ]
   }
 }

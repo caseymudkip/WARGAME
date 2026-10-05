@@ -135,3 +135,43 @@ def test_regime_type_changes_what_holds_a_nation_together():
     autocracy = NationalSpirit(0.5, stability=0.9, war_support=0.1, regime=RegimeType.TOTALITARIAN)
     # Unpopular war, rock-solid regime: the autocracy keeps fighting, the democracy wavers.
     assert autocracy.resolve(0) > democracy.resolve(0)
+
+
+# --- leadership and the rally --------------------------------------------------------------------
+
+
+def test_a_defiant_leader_raises_the_bar_for_surrender():
+    world = build_world()
+    country = world.country("BOR")
+    before, _ = country.capitulation_threshold(ctx(existential=True))
+    country.leadership_defiance = 1.0  # Zelensky, February 2022: "I need ammunition, not a ride."
+    after, _ = country.capitulation_threshold(ctx(existential=True))
+    assert after == pytest.approx(min(country.tuning.max_threshold, before + country.tuning.defiance_bonus))
+
+
+def test_an_invaded_nation_rallies_once_and_patriots_most():
+    from wargame.nation.country import RALLY_WAR_SUPPORT, DailyContext
+    world = build_world(bor_spirit=patriotic_spirit())
+    country = world.country("BOR")
+    base = country.spirit.effective_war_support(0)
+    attack = DailyContext(now_hour=0, hostile_tags=HOSTILE, existential_threat=True)
+    country.on_daily_tick(world, attack)
+    assert country.rallied
+    assert country.spirit.effective_war_support(0) > base  # ~RALLY_WAR_SUPPORT x patriotism, fading over two years.
+    assert RALLY_WAR_SUPPORT * country.spirit.patriotism > 0.25
+
+    already_at_war = build_world(bor_spirit=patriotic_spirit()).country("BOR")
+    already_at_war.mobilised = True  # Ukraine in 2026 spent its rally in 2022.
+    already_at_war.on_daily_tick(world, attack)
+    assert not already_at_war.rallied
+
+
+def test_a_frozen_front_does_not_wear_a_nation_down():
+    spirit = NationalSpirit(patriotism=0.6, stability=0.6, war_support=0.6, regime=RegimeType.FLAWED_DEMOCRACY)
+    spirit.war_exhaustion = 0.3
+    for _ in range(100):  # A fifth of the country occupied, nobody fighting (Donbas 2015-21).
+        spirit.daily_update(now_hour=0, at_war=True, casualty_ratio_today=0.0, occupied_fraction=0.2, supply_ratio=1.0)
+    assert spirit.war_exhaustion < 0.3
+    for _ in range(100):  # The same occupation with daily fighting grinds it up.
+        spirit.daily_update(now_hour=0, at_war=True, casualty_ratio_today=1e-5, occupied_fraction=0.2, supply_ratio=1.0)
+    assert spirit.war_exhaustion > 0.3

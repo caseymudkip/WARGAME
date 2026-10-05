@@ -27,6 +27,7 @@ from wargame.core.escalation import EscalationPolicy
 from wargame.core.mathutil import clamp, noisy_or
 from wargame.nation.country import CapitulationAssessment, CapitulationContext, Country
 from wargame.nation.exile import exile_eligible, form_government_in_exile
+from wargame.nation.logistics import ARMS
 from wargame.nation.nuclear import NuclearContext
 from wargame.world.world import World
 
@@ -64,6 +65,8 @@ MOTIVATION_PRESETS: dict[Motivation, MotivationProfile] = {
 LEDGER_WINDOW_DAYS = 14
 MIN_CASUALTIES_TO_JUDGE = 200
 MAX_OVERSHOOT_PENALTY = 3.0
+DEFIANCE_RESOLVE_SHIELD = 0.5        # A defiant leader halves how fast a costly offensive loses will...
+DEFIANCE_RESOLVE_FLOOR = 0.4         # ...and never lets it break: he halts, mobilises and tries again (Russia 2022-23).
 RESOLVE_WAR_SUPPORT_HEADROOM = 0.25  # An army can't stay keener than its public by more than this.
 
 
@@ -304,10 +307,8 @@ class War:
         return self.goal.is_existential and tag == self.goal.target
 
     def support_level(self, world: World, tag: str) -> float:
-        """Share of the recipient's consumption covered by lend-lease (0..1)."""
-        need = sum(world.country(tag).logistics.base_daily_consumption.values())
-        given = sum(sum(f.daily.values()) for f in self.external_support if f.recipient == tag)
-        return clamp(given / need) if need > 0 else 0.0
+        """Share of the recipient's munitions and spares that arrive as aid (0..1)."""
+        return world.country(tag).aid_coverage if any(f.recipient == tag for f in self.external_support) else 0.0
 
     @staticmethod
     def _controlled_value(world: World, tag: str) -> float:
@@ -400,10 +401,12 @@ class War:
 
     # --- inputs from other systems --------------------------------------------
 
-    def record_casualties(self, world: World, tag: str, count: int) -> None:
-        """Called by the combat system."""
+    def record_casualties(self, world: World, tag: str, count: int, offensive: bool = True) -> None:
+        """Called by the combat system. Only losses taken attacking count against an offensive's
+        cost/reward; holding ground against counterattacks is not an offensive failing."""
         ledger = self.participants[tag].ledger
-        ledger.casualties_today += count
+        if offensive:
+            ledger.casualties_today += count
         ledger.casualties_total += count
         world.country(tag).oob.record_casualties(count)
 
@@ -466,14 +469,17 @@ class War:
                 continue
             was_halted = p.offensive_halted
             overshoot = p.ledger.cost_overshoot(p.motivation.casualty_tolerance)
+            if overshoot is None and p.offensive_halted:
+                p.offensive_halted = False  # A quiet month: regrouped, it tries again.
             if overshoot is not None:
                 if overshoot > 1.0:
-                    p.resolve -= p.motivation.resolve_decay * min(overshoot - 1.0, MAX_OVERSHOOT_PENALTY)
+                    shield = 1.0 - DEFIANCE_RESOLVE_SHIELD * country.leadership_defiance
+                    p.resolve -= p.motivation.resolve_decay * min(overshoot - 1.0, MAX_OVERSHOOT_PENALTY) * shield
                 else:
                     p.resolve += p.motivation.resolve_recovery * (1.0 - overshoot)
                 p.offensive_halted = overshoot > p.motivation.halt_ratio
             ceiling = clamp(country.spirit.effective_war_support(now_hour) + RESOLVE_WAR_SUPPORT_HEADROOM)
-            p.resolve = clamp(min(p.resolve, ceiling))
+            p.resolve = clamp(max(min(p.resolve, ceiling), DEFIANCE_RESOLVE_FLOOR * country.leadership_defiance))
             if p.offensive_halted and not was_halted:
                 self._log(now_hour, "offensive_halted",
                           f"{country.name} halts its offensive: losses are outpacing strategic gains.")
@@ -656,14 +662,31 @@ class War:
                           f"{world.country(f.supporter).name} begins supplying {world.country(f.recipient).name}.")
 
     def _deliver_external_support(self, world: World) -> None:
+        """Supporters send what the recipient's own industry cannot make, up to what they offer."""
+        offered: dict[str, dict[SupplyType, float]] = {}
         for flow in self.external_support:
-            recipient = world.country(flow.recipient)
-            exposure = recipient.seaborne_import_share
-            if self._overland_route(world, flow.recipient):
-                exposure *= OVERLAND_SUPPLY_EXPOSURE  # e.g. aid to Ukraine through Poland and Romania.
-            delivered = 1.0 - recipient.blockade_interdiction * exposure
             for s, amt in flow.daily.items():
-                recipient.logistics.lend_lease_inbound[s] += amt * delivered
+                offered.setdefault(flow.recipient, {}).setdefault(s, 0.0)
+                offered[flow.recipient][s] += amt
+        for tag in self.participants:
+            world.country(tag).aid_coverage = 0.0
+        for tag, by_supply in sorted(offered.items()):
+            if tag not in self.participants:
+                continue  # Left the war since the weekly review.
+            recipient = world.country(tag)
+            exposure = recipient.seaborne_import_share
+            if self._overland_route(world, tag):
+                exposure *= OVERLAND_SUPPLY_EXPOSURE  # e.g. aid to Ukraine through Poland and Romania.
+            arrives = 1.0 - recipient.blockade_interdiction * exposure
+            factor = recipient.production_factor(world)
+            arms_delivered = arms_demand = 0.0
+            for s, amt in by_supply.items():
+                sent = min(amt, recipient.logistics.shortfall(s, factor)) * arrives
+                recipient.logistics.lend_lease_inbound[s] += sent
+                if s in ARMS:
+                    arms_delivered += sent
+                    arms_demand += recipient.logistics.base_daily_consumption.get(s, 0.0)
+            recipient.aid_coverage = clamp(arms_delivered / arms_demand) if arms_demand > 0 else 0.0
 
     def _overland_route(self, world: World, recipient: str) -> bool:
         """A friendly, non-belligerent land neighbour can carry supplies past any naval blockade."""

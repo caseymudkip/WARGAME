@@ -1,0 +1,16 @@
+{
+  "_doc": "Leaders who have shown, by their actions in war, that they will not submit. defiance (0..1) raises the capitulation threshold (DEFIANCE_BONUS in nation/country.py) and slows the loss of resolve when an offensive costs more than it gains. It does not change public opinion: Ukrainian support for fighting on fell from 73% to 24% (Gallup, 2022-2025) under the same leader. Only leaders with documented wartime conduct are listed; everyone else is 0. The 2021 entries use hindsight: the conduct was shown in 2022 by the same leaders.",
+  "_source": "curated_leadership",
+  "2021": {
+    "UKR": {"leader": "Volodymyr Zelensky", "defiance": 1.0,
+            "basis": "Stayed in Kyiv when Russian forces reached its outskirts, refusing a US offer of evacuation ('I need ammunition, not a ride', 26 February 2022); decree of 4 October 2022 ruling out talks with Putin."},
+    "RUS": {"leader": "Vladimir Putin", "defiance": 1.0,
+            "basis": "Pursued the war through ~1.2 million casualties (UK Defence Intelligence, January 2026) without scaling down its aims."}
+  },
+  "2026": {
+    "UKR": {"leader": "Volodymyr Zelensky", "defiance": 1.0,
+            "basis": "As 2021; through 2025 refused to cede the parts of Donbas Russia does not hold as the price of a ceasefire."},
+    "RUS": {"leader": "Vladimir Putin", "defiance": 1.0,
+            "basis": "As 2021; in 2025 kept demanding all four annexed oblasts as a condition for peace."}
+  }
+}

@@ -25,6 +25,7 @@ class EquipmentStock:
     unit_cost: float = 1.0   # For equipment-loss accounting in the cost/reward ledger.
     tonnage: float = 0.0     # Per unit; naval only.
     combat_weight: float = 1.0  # Combat value of one unit relative to one main battle tank.
+    stored: int = 0          # In long-term storage: no combat value until refurbished (Country at war).
 
     @property
     def effective_strength(self) -> float:

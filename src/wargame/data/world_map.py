@@ -25,13 +25,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from wargame.core.enums import ProvinceTag, TerrainType
+from wargame.core.enums import Branch, ProvinceTag, TerrainType
 from wargame.core.mathutil import clamp
 from wargame.data.profile import apply_diplomacy, build_country
 from wargame.data.snapshot import DEFAULT_ROOT, Snapshot, load_snapshot
 from wargame.nation.country import Country
 from wargame.world.province import Province
-from wargame.world.world import World
+from wargame.world.world import FortifiedLine, World
 
 HABITABILITY = {
     TerrainType.PLAINS: 1.0, TerrainType.URBAN: 1.0, TerrainType.HILLS: 0.8, TerrainType.FOREST: 0.5,
@@ -143,6 +143,7 @@ def build_real_world(year: int, root: Path | None = None) -> RealWorld:
             neighbors=tuple(p["neighbors"]),
             sea_links=tuple((j, km) for j, km in p["sea_links"]),
             river_borders=tuple((j, rank) for j, _, rank in p["river_borders"]),
+            border_km=tuple((j, km) for j, km in p["border_km"]),
             coastal=p["coastal"],
             area_km2=float(p["area_km2"]),
         ))
@@ -160,4 +161,39 @@ def build_real_world(year: int, root: Path | None = None) -> RealWorld:
     apply_diplomacy(snapshot, countries)
     for country in countries.values():
         world.add_country(country)
+    _apply_curated_posture(world, year, root)
     return RealWorld(world, snapshot, {k: v for k, v in data.items() if k != "provinces"})
+
+
+def _curated(name: str, root: Path | None) -> dict[str, Any]:
+    raw: dict[str, Any] = json.loads(((root or DEFAULT_ROOT) / "curated" / name).read_text())
+    return raw
+
+
+def _apply_curated_posture(world: World, year: int, root: Path | None) -> None:
+    """Fortified lines, drone saturation, mobilisation and leadership at the start date."""
+    by_name: dict[str, int] = {}
+    for p in world.provinces.values():
+        by_name.setdefault(p.name, p.id)
+    for line in _curated("fortifications.json", root).get(str(year), []):
+        a, b = line["between"]
+        if a not in world.countries or b not in world.countries:
+            continue
+        provinces = frozenset(by_name[n] for n in line["provinces"]) if "provinces" in line else None
+        world.fortified_lines.append(FortifiedLine((a, b), frozenset(line["fortify"]), float(line["level"]), provinces))
+    for tag, posture in _curated("force_posture.json", root).get(str(year), {}).items():
+        if tag in world.countries:
+            world.countries[tag].drone_saturation = float(posture["drone_saturation"])
+            world.countries[tag].mobilised = bool(posture["mobilised"])
+            world.countries[tag].hosts = frozenset(posture.get("hosts", []))
+            world.countries[tag].hosting_days = posture.get("hosting_days")
+            share = posture.get("active_share")
+            if share is not None:
+                for stock in world.countries[tag].oob.equipment.values():
+                    if stock.branch is Branch.LAND:
+                        total = stock.quantity + stock.stored
+                        stock.quantity = round(total * float(share))
+                        stock.stored = total - stock.quantity
+    for tag, leader in _curated("leadership.json", root).get(str(year), {}).items():
+        if tag in world.countries:
+            world.countries[tag].leadership_defiance = float(leader["defiance"])

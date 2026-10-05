@@ -65,6 +65,7 @@ class Province:
     neighbors: tuple[int, ...] = ()                 # Land borders.
     sea_links: tuple[tuple[int, int], ...] = ()     # (province id, crossing length in km).
     river_borders: tuple[tuple[int, int], ...] = () # (neighbour id, Natural Earth river scalerank: 1 = largest).
+    border_km: tuple[tuple[int, int], ...] = ()     # (neighbour id, length of the shared border in km).
     coastal: bool = False
     area_km2: float = 5_000.0          # Land combat progress is measured as share of this area taken.
     damage: float = 0.0                # 0..1 from bombing/fighting; degrades output.
@@ -77,6 +78,11 @@ class Province:
     @property
     def terrain_profile(self) -> TerrainProfile:
         return TERRAIN[self.terrain]
+
+    def border_with(self, neighbor: int) -> float:
+        """Length of the shared border in km. Without map data, the side of a square of this area."""
+        km = next((km for pid, km in self.border_km if pid == neighbor), None)
+        return float(km) if km is not None else math.sqrt(self.area_km2)
 
     def river_rank(self, neighbor: int) -> int | None:
         """Scalerank of the major river along the border with `neighbor`, if there is one."""

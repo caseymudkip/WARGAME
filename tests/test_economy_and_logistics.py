@@ -107,3 +107,25 @@ def test_government_relocates_when_the_capital_falls():
     bor.on_daily_tick(world, DailyContext(now_hour=24, hostile_tags=frozenset({"ARD"})))
     assert bor.government_seat_id != BOR_CAPITAL
     assert world.provinces[bor.government_seat_id].controller == "BOR"
+
+
+# --- aid ------------------------------------------------------------------------------------------
+
+
+def test_at_war_munitions_come_only_as_aid():
+    world = build_world()
+    country = world.country("BOR")
+    country.logistics.base_daily_production = {s: 0.0 for s in SupplyType}
+    country.logistics.stocks = {s: 0.0 for s in SupplyType}
+    country.on_daily_tick(world, DailyContext(now_hour=0, hostile_tags=frozenset({"ARD"}), policy=EscalationPolicy.for_tier(EscalationTier.PROXY_WAR)))
+    filled = country.logistics.last_fulfillment
+    assert filled[SupplyType.AMMUNITION] == 0.0 and filled[SupplyType.SPARE_PARTS] == 0.0  # No arms on the market...
+    assert filled[SupplyType.FUEL] > 0.0                                                    # ...but fuel still trades.
+
+
+def test_aid_fills_the_shortfall_and_no_more():
+    stock = supplies(production_ratio=0.6)
+    gap = stock.shortfall(SupplyType.AMMUNITION, production_factor=1.0)
+    assert gap == pytest.approx(0.4 * stock.base_daily_consumption[SupplyType.AMMUNITION])
+    assert stock.shortfall(SupplyType.AMMUNITION, production_factor=0.5) == pytest.approx(
+        0.7 * stock.base_daily_consumption[SupplyType.AMMUNITION])  # Bombed factories widen the gap.

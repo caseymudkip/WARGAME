@@ -18,6 +18,16 @@ if TYPE_CHECKING:
     from wargame.nation.country import Country
 
 
+@dataclass(frozen=True)
+class FortifiedLine:
+    """Works dug along a border before the war (curated): provinces of `fortify` facing the other side."""
+
+    between: tuple[str, str]
+    fortify: frozenset[str]
+    level: float
+    provinces: frozenset[int] | None = None  # Only these provinces, if given.
+
+
 @dataclass
 class World:
     provinces: dict[int, Province] = field(default_factory=dict)
@@ -25,6 +35,7 @@ class World:
     # Provinces under assault: id -> (leading attacker, progress 0..1 ~ share of the province taken).
     # Written by the land warfare system; read by war ledgers so grinding advances count as gains.
     contested: dict[int, tuple[str, float]] = field(default_factory=dict)
+    fortified_lines: list[FortifiedLine] = field(default_factory=list)
     _by_owner: dict[str, set[int]] = field(default_factory=dict, repr=False)
     _by_controller: dict[str, set[int]] = field(default_factory=dict, repr=False)
 

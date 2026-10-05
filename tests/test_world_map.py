@@ -181,3 +181,21 @@ def test_aggression_hardens_the_victims_friends_in_a_2021_start():
                                         EscalationTier.PROXY_WAR))
     deu = rw.world.country("DEU")
     assert deu.relations["UKR"] > before and deu.relations["RUS"] < 0
+
+
+def test_curated_posture_reaches_the_world():
+    early, late = build_real_world(2021).world, build_real_world(2026).world
+    rus = early.country("RUS").oob.equipment["tanks"]
+    assert rus.quantity == pytest.approx(3_417, rel=0.01)       # IISS: battle-ready tanks, February 2022...
+    assert rus.quantity + rus.stored == 12_420                  # ...out of GFP's count including storage.
+    assert late.country("UKR").drone_saturation == 1.0 and late.country("UKR").mobilised
+    assert early.country("UKR").leadership_defiance == 1.0
+    assert early.country("BLR").hosts == frozenset({"RUS"}) and not late.country("BLR").hosts
+    dmz = [line for line in late.fortified_lines if set(line.between) == {"KOR", "PRK"}]
+    assert dmz and dmz[0].level == 0.6
+
+
+def test_rivers_and_borders_have_lengths(raw_map):
+    for p in raw_map["provinces"]:
+        lengths = {j for j, _ in p["border_km"]}
+        assert lengths == set(p["neighbors"])
