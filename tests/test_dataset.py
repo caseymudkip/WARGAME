@@ -220,3 +220,34 @@ def test_land_power_dominates_for_armies_and_naval_power_for_navies():
     snap = load_snapshot(2026)
     usa, prk = build_country(snap["USA"], 0), build_country(snap["PRK"], 0)
     assert usa.oob.branch_power(Branch.NAVAL) > 10 * prk.oob.branch_power(Branch.NAVAL)
+
+
+# --- GFP 2025 edition: reconciliation of the 2026 snapshot -----------------------------------
+
+
+def test_every_country_has_a_region(snapshot):
+    assert all(rec.region for rec in snapshot.countries.values())
+
+
+def test_budget_that_contradicts_sipri_falls_back_to_the_2025_edition():
+    ago = load_snapshot(2026)["AGO"]
+    assert ago.values["defense_budget_usd"] == 1_101_360_000  # 2026 edition says 31.2bn
+    assert ago.source_of("defense_budget_usd") == "gfp2025"
+
+
+def test_cited_override_beats_automatic_rules():
+    ltu = load_snapshot(2026)["LTU"]
+    assert ltu.source_of("defense_budget_usd") == "override"
+    assert ltu.values["defense_budget_usd"] == 5_651_760_000
+    assert any("kam.lt" in n for n in ltu.notes)
+
+
+def test_estimated_and_redefined_fields_are_never_gap_filled():
+    for rec in load_snapshot(2026).countries.values():
+        assert rec.source_of("armored_vehicles") in ("model",)
+        assert rec.source_of("military_vehicles") == "gfp2026"
+
+
+def test_sharp_one_year_changes_are_flagged():
+    mmr = load_snapshot(2026)["MMR"]  # MLRS 180 (2025) -> 1,520 (2026)
+    assert any(n.startswith("rocket_artillery changes sharply") for n in mmr.notes)

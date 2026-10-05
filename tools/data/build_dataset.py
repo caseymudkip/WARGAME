@@ -25,8 +25,8 @@ CURATED = DATA / "curated"
 OUT = DATA / "snapshots"
 
 SNAPSHOTS = {
-    2021: {"as_of": "2021-01-01", "gfp": "gfp_2022.csv", "gfp_source": "gfp2022", "vdem_year": 2020},
-    2026: {"as_of": "2026-01-01", "gfp": "gfp_2026.csv", "gfp_source": "gfp2026", "vdem_year": 2025},
+    2021: {"as_of": "2021-01-01", "edition": 2022, "vdem_year": 2020},
+    2026: {"as_of": "2026-01-01", "edition": 2026, "vdem_year": 2025},
 }
 
 # --- country identity --------------------------------------------------------------
@@ -39,8 +39,6 @@ NAME_ALIASES = {
     "Democratic Republic of Congo": "COD", "Congo": "COG", "Timor": "TLS", "Eswatini": "SWZ",
     "Bosnia-Herzegovina": "BIH", "Macedonia": "MKD", "Kosovo": "XKX",
 }
-# Regions for countries absent from GFP 2022 (the only source that tags continents).
-EXTRA_REGIONS = {"BLZ": "North America", "BEN": "Africa", "ISL": "Europe", "LUX": "Europe", "SEN": "Africa"}
 
 GFP2026_FIELDS = {
     "global_firepower_rank": "gfp_rank", "power_index": "gfp_power_index",
@@ -106,20 +104,30 @@ PLAUSIBLE_MAX = {
     "frigates": 120, "corvettes": 200, "fighters": 5_000, "attack_aircraft": 3_000,
     "attack_helicopters": 2_000, "tanks": 30_000, "active_personnel": 3_000_000,
 }
-# Fields compared across editions; a >10x change usually means a definitional shift, so it is noted.
+# The 2025 edition has the 2026 layout minus the power-index columns.
+GFP2025_FIELDS = {c: f for c, f in GFP2026_FIELDS.items() if c not in ("global_firepower_rank", "power_index")}
+
+# Fields compared with the nearest other edition. One year apart (2025 vs 2026) a 2x change is
+# suspicious; four years apart, across a major war (2022 vs 2025), only a 10x change is.
 EDITION_COMPARED = (
     "active_personnel", "reserve_personnel", "tanks", "self_propelled_artillery", "towed_artillery",
     "rocket_artillery", "aircraft_total", "fighters", "attack_aircraft", "attack_helicopters",
     "submarines", "destroyers", "frigates", "corvettes",
 )
-EDITION_CHANGE_FACTOR = 10.0
+CHANGE_FACTOR = {2026: 2.0, 2021: 10.0}
+CHANGE_MIN_UNITS = 20
+
+# Budgets are checked against SIPRI's audited 2020 figure (constant 2019 USD), scaled to the snapshot
+# year's nominal dollars. Outside x/3..3x a figure is treated as suspect.
+SIPRI_NOMINAL_SCALE = {2021: 1.05, 2026: 1.25}
+BUDGET_TOLERANCE = 3.0
 
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def number(raw: str) -> float | None:
+def number(raw: str | None) -> float | None:
     raw = (raw or "").strip()
     if not raw:
         return None
@@ -134,14 +142,9 @@ def load_json(path: Path) -> Any:
     return json.loads(path.read_text())
 
 
-def vdem_rows() -> tuple[dict[str, str], dict[tuple[str, int], dict[str, str]]]:
-    names: dict[str, str] = {}
-    by_key: dict[tuple[str, int], dict[str, str]] = {}
-    with open(RAW / "vdem_v16_subset.csv") as f:
-        for row in csv.DictReader(f):
-            names[row["country_name"]] = row["country_text_id"]
-            by_key[(row["country_text_id"], int(row["year"]))] = row
-    return names, by_key
+def read_csv(name: str) -> list[dict[str, str]]:
+    with open(RAW / name) as f:
+        return list(csv.DictReader(f))
 
 
 def resolve(name: str, vdem_names: dict[str, str]) -> str:
@@ -152,174 +155,248 @@ def resolve(name: str, vdem_names: dict[str, str]) -> str:
     raise SystemExit(f"Unmapped country name: {name!r}. Add it to NAME_ALIASES.")
 
 
-def gfp_rows(snapshot: int) -> list[dict[str, str]]:
-    with open(RAW / SNAPSHOTS[snapshot]["gfp"]) as f:
-        return list(csv.DictReader(f))
+class Inputs:
+    """Every raw and curated input, keyed by ISO3."""
+
+    def __init__(self) -> None:
+        vdem_rows = read_csv("vdem_v16_subset.csv")
+        self.vdem_names = {r["country_name"]: r["country_text_id"] for r in vdem_rows}
+        self.vdem = {(r["country_text_id"], int(r["year"])): r for r in vdem_rows}
+        self.gfp = {
+            edition: {resolve(r["country"], self.vdem_names): r for r in read_csv(f"gfp_{edition}.csv")}
+            for edition in (2022, 2025, 2026)
+        }
+        self.sipri_2020: dict[str, tuple[float, float | None]] = {}
+        for r in read_csv("sipri_milex_2015_2020.csv"):
+            iso = NAME_ALIASES.get(r["Entity"]) or self.vdem_names.get(r["Entity"])
+            if iso and r["Year"] == "2020" and r["military_expenditure"]:
+                self.sipri_2020[iso] = (float(r["military_expenditure"]), number(r["military_expenditure_share_gdp"]))
+        self.willingness = load_json(CURATED / "willingness_to_fight.json")
+        self.nuclear = load_json(CURATED / "nuclear.json")
+        self.bmd = load_json(CURATED / "missile_defense.json")
+        self.alliances = load_json(CURATED / "alliances.json")
+        self.overrides = load_json(CURATED / "overrides.json")
+
+    def gfp_value(self, edition: int, iso: str, field: str) -> float | None:
+        """A cleaned value from any GFP edition (zero-as-missing and plausibility rules applied)."""
+        row = self.gfp[edition].get(iso)
+        field_map = {2022: GFP2022_FIELDS, 2025: GFP2025_FIELDS, 2026: GFP2026_FIELDS}[edition]
+        col = next((c for c, f in field_map.items() if f == field), None)
+        if row is None or col is None:
+            return None
+        v = number(row[col])
+        if field in ZERO_IS_MISSING and v == 0:
+            return None
+        bound = PLAUSIBLE_MAX.get(field)
+        return None if v is not None and bound is not None and v > bound else v
 
 
-def regions(vdem_names: dict[str, str]) -> dict[str, str]:
-    out = dict(EXTRA_REGIONS)
-    for row in gfp_rows(2021):
-        out[resolve(row["country"], vdem_names)] = row["Continent"]
-    return out
+class Record:
+    def __init__(self, iso: str) -> None:
+        self.iso = iso
+        self.values: dict[str, Any] = {}
+        self.prov: dict[str, list[str]] = {}
+        self.notes: list[str] = []
+        self.confidence: dict[str, str] = {}
+
+    def put(self, field: str, value: Any, source: str) -> None:
+        for fields in self.prov.values():
+            if field in fields:
+                fields.remove(field)
+        self.prov = {s: f for s, f in self.prov.items() if f}
+        self.values[field] = value
+        self.prov.setdefault(source, []).append(field)
 
 
-def sipri_2020(vdem_names: dict[str, str]) -> dict[str, tuple[float, float | None]]:
-    out: dict[str, tuple[float, float | None]] = {}
-    with open(RAW / "sipri_milex_2015_2020.csv") as f:
-        for row in csv.DictReader(f):
-            if row["Year"] != "2020" or not row["military_expenditure"]:
-                continue
-            name = row["Entity"]
-            iso = NAME_ALIASES.get(name) or vdem_names.get(name)
-            if iso:
-                out[iso] = (float(row["military_expenditure"]), number(row["military_expenditure_share_gdp"]))
-    return out
+# --- stages ------------------------------------------------------------------------------------
+
+def stage_baseline(rec: Record, src: Inputs, snapshot: int) -> None:
+    edition = SNAPSHOTS[snapshot]["edition"]
+    field_map = GFP2026_FIELDS if edition == 2026 else GFP2022_FIELDS
+    row = src.gfp[edition][rec.iso]
+    for col, field in field_map.items():
+        raw = number(row[col])
+        bound = PLAUSIBLE_MAX.get(field)
+        if raw is not None and bound is not None and raw > bound:
+            rec.notes.append(f"rejected implausible {field}={raw} from gfp{edition} (bound {bound})")
+        rec.put(field, src.gfp_value(edition, rec.iso, field), f"gfp{edition}")
 
 
-def willingness(iso: str, curated: dict[str, Any]) -> tuple[float, str, str]:
-    """(pct, provenance id, confidence) with fallback: country -> regional aggregate -> global."""
-    own = curated["countries"].get(iso)
+def stage_armour_definition(rec: Record, src: Inputs) -> None:
+    """GFP 2025/2026 count every military vehicle as 'armored' (US 409,660 vs 45,193 in 2022)."""
+    rec.put("military_vehicles", rec.values["armored_vehicles"], "gfp2026")
+    afv_2022 = src.gfp_value(2022, rec.iso, "armored_vehicles")
+    tanks_2022, tanks_2026 = src.gfp_value(2022, rec.iso, "tanks"), rec.values.get("tanks")
+    if afv_2022 is None:
+        rec.put("armored_vehicles", None, "model")
+        return
+    trend = min(4.0, max(0.25, tanks_2026 / tanks_2022)) if tanks_2022 and tanks_2026 else 1.0
+    rec.put("armored_vehicles", round(afv_2022 * trend), "model")
+    rec.notes.append("armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 "
+                     "(GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)")
+
+
+# Never gap-filled from 2025: estimated fields, and fields whose GFP definition is the inflated one.
+NOT_FILLED = {"armored_vehicles", "military_vehicles"}
+
+
+def stage_fill_from_2025(rec: Record, src: Inputs) -> None:
+    estimated = set(rec.prov.get("model", []))
+    for field in list(rec.values):
+        if field in NOT_FILLED or field in estimated:
+            continue
+        if rec.values[field] is None and rec.iso in src.gfp[2025]:
+            earlier = src.gfp_value(2025, rec.iso, field)
+            if earlier is not None:
+                rec.put(field, earlier, "gfp2025")
+                rec.notes.append(f"{field} missing from the 2026 edition; filled from 2025 ({earlier})")
+
+
+def stage_2021_specifics(rec: Record, src: Inputs) -> None:
+    # The 2022 copy's fighter column is corrupted: estimate from the 2025 fighter share (closest later edition).
+    total, total_25, fighters_25 = (rec.values.get("aircraft_total"), src.gfp_value(2025, rec.iso, "aircraft_total"),
+                                    src.gfp_value(2025, rec.iso, "fighters"))
+    if total is not None and total_25:
+        rec.put("fighters", min(total, round(total * (fighters_25 or 0) / total_25)), "model")
+        rec.notes.append("fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet")
+    else:
+        rec.put("fighters", None, "model")
+    rec.put("naval_tonnage", None, "gfp2022")
+    if rec.iso in src.sipri_2020:
+        spend, share_gdp = src.sipri_2020[rec.iso]
+        rec.put("milex_sipri_usd_2019", round(spend), "sipri_milex")
+        rec.put("milex_share_gdp_pct", share_gdp, "sipri_milex")
+    if rec.iso == "AFG":
+        rec.notes.append("GFP 2022 already reflects the August 2021 collapse of the Afghan National Army (active personnel 0).")
+
+
+def stage_budget(rec: Record, src: Inputs, snapshot: int) -> None:
+    """Reconcile the GFP budget with SIPRI; prefer the 2025 edition when only 2026 contradicts SIPRI."""
+    budget = rec.values.get("defense_budget_usd")
+    if not budget or rec.iso not in src.sipri_2020:
+        return
+    anchor = src.sipri_2020[rec.iso][0] * SIPRI_NOMINAL_SCALE[snapshot]
+    if anchor <= 0:
+        return  # SIPRI reports zero (no armed forces or no estimate): no usable anchor.
+
+    def consistent(v: float | None) -> bool:
+        return v is not None and anchor / BUDGET_TOLERANCE <= v <= anchor * BUDGET_TOLERANCE
+
+    if consistent(budget):
+        return
+    if snapshot == 2026:
+        alt = src.gfp_value(2025, rec.iso, "defense_budget_usd")
+        if consistent(alt):
+            rec.put("defense_budget_usd", alt, "gfp2025")
+            rec.notes.append(f"defense_budget_usd: 2026 edition's {budget:,.0f} is {budget / anchor:.1f}x SIPRI's 2020 level; "
+                             f"used the 2025 edition's {alt:,.0f}, which is consistent with SIPRI")
+            return
+    rec.notes.append(f"defense_budget_usd {budget:,.0f} is {budget / anchor:.1f}x SIPRI's 2020 level; "
+                     "plausible only if spending changed drastically (e.g. war), verify")
+
+
+def stage_edition_notes(rec: Record, src: Inputs, snapshot: int) -> None:
+    other = 2025
+    if rec.iso not in src.gfp[other]:
+        return
+    factor = CHANGE_FACTOR[snapshot]
+    for field in EDITION_COMPARED:
+        here, there = rec.values.get(field), src.gfp_value(other, rec.iso, field)
+        if here is None or there is None or rec.prov.get("model") and field in rec.prov["model"]:
+            continue
+        lo, hi = sorted((here, there))
+        if hi - lo >= CHANGE_MIN_UNITS and (lo == 0 or hi / lo >= factor):
+            edition = SNAPSHOTS[snapshot]["edition"]
+            rec.notes.append(f"{field} changes sharply between GFP editions ({edition}: {here}, {other}: {there}); "
+                             "a reporting or definitional change, or an error in one edition: verify")
+
+
+def stage_consistency_notes(rec: Record) -> None:
+    v = rec.values
+    parts = sum(v.get(k) or 0 for k in ("aircraft_carriers", "helicopter_carriers", "submarines", "destroyers",
+                                         "frigates", "corvettes", "patrol_vessels", "mine_warfare"))
+    if v.get("naval_fleet_total") is not None and parts > v["naval_fleet_total"]:
+        rec.notes.append(f"naval sub-types sum to {parts}, above naval_fleet_total {v['naval_fleet_total']}")
+
+
+def stage_politics(rec: Record, src: Inputs, snapshot: int) -> None:
+    row = src.vdem.get((rec.iso, SNAPSHOTS[snapshot]["vdem_year"]))
+    for col, field in VDEM_FIELDS.items():
+        rec.put(field, number(row[col]) if row else None, "vdem_v16")
+    if not row:
+        rec.notes.append("not covered by V-Dem: regime and stability fall back to engine defaults")
+    wtf = src.willingness
+    own = wtf["countries"].get(rec.iso)
     if own:
-        return own["pct"], "gallup_eoy2023", own["confidence"]
-    for region, agg in curated["regional_aggregates"].items():
-        if iso in agg["members"]:
-            return agg["pct"], f"gallup_eoy2023:{region}_aggregate", "low"
-    return curated["global"]["pct"], "gallup_eoy2023:global_aggregate", "very_low"
+        rec.put("willingness_to_fight_pct", own["pct"], "gallup_eoy2023")
+        rec.confidence["willingness_to_fight_pct"] = own["confidence"]
+        return
+    for region, agg in wtf["regional_aggregates"].items():
+        if rec.iso in agg["members"]:
+            rec.put("willingness_to_fight_pct", agg["pct"], f"gallup_eoy2023:{region}_aggregate")
+            rec.confidence["willingness_to_fight_pct"] = "low"
+            return
+    rec.put("willingness_to_fight_pct", wtf["global"]["pct"], "gallup_eoy2023:global_aggregate")
+    rec.confidence["willingness_to_fight_pct"] = "very_low"
+
+
+def stage_overrides(rec: Record, src: Inputs, snapshot: int) -> None:
+    for field, o in src.overrides.get(str(snapshot), {}).get(rec.iso, {}).items():
+        old = rec.values.get(field)
+        rec.put(field, o["value"], "override")
+        rec.confidence[field] = o.get("confidence", "medium")
+        rec.notes.append(f"{field} overridden ({old} -> {o['value']}): {o['source']}")
 
 
 def build(snapshot: int) -> dict[str, Any]:
-    cfg = SNAPSHOTS[snapshot]
-    vdem_names, vdem = vdem_rows()
-    region_of = regions(vdem_names)
-    wtf = load_json(CURATED / "willingness_to_fight.json")
-    nuclear = load_json(CURATED / "nuclear.json")
-    bmd = load_json(CURATED / "missile_defense.json")
-    alliances = load_json(CURATED / "alliances.json")
-    milex = sipri_2020(vdem_names) if snapshot == 2021 else {}
-    other_gfp = {resolve(r["country"], vdem_names): r for r in gfp_rows(2026)} if snapshot == 2021 else {}
-    gfp2022_by_iso = {resolve(r["country"], vdem_names): r for r in gfp_rows(2021)}
-
-    field_map = GFP2026_FIELDS if snapshot == 2026 else GFP2022_FIELDS
+    src = Inputs()
+    edition = SNAPSHOTS[snapshot]["edition"]
+    nuclear, bmd = src.nuclear[str(snapshot)], src.bmd["deployments"][str(snapshot)]
     countries: dict[str, Any] = {}
-    for row in gfp_rows(snapshot):
-        iso = resolve(row["country"], vdem_names)
-        values: dict[str, Any] = {}
-        prov: dict[str, list[str]] = {}
-        notes: list[str] = []
-        confidence: dict[str, str] = {}
-
-        def put(field: str, value: Any, source: str) -> None:
-            values[field] = value
-            prov.setdefault(source, []).append(field)
-
-        for col, field in field_map.items():
-            v = number(row[col])
-            if field in ZERO_IS_MISSING and v == 0:
-                v = None
-            bound = PLAUSIBLE_MAX.get(field)
-            if v is not None and bound is not None and v > bound:
-                notes.append(f"rejected implausible {field}={v} from {cfg['gfp_source']} (bound {bound})")
-                v = None
-            put(field, v, cfg["gfp_source"])
-
+    for iso, row in src.gfp[edition].items():
+        rec = Record(iso)
+        stage_baseline(rec, src, snapshot)
         if snapshot == 2026:
-            # GFP 2026 counts every military vehicle (Humvees, MRAPs, trucks) as "armored": US 409,660
-            # versus 45,193 in the 2022 edition. Keep it under an honest name and estimate armoured
-            # fighting vehicles from the 2022 count, scaled by the country's tank trend.
-            put("military_vehicles", values.pop("armored_vehicles"), "gfp2026")
-            prov["gfp2026"].remove("armored_vehicles")
-            earlier = gfp2022_by_iso.get(iso)
-            afv_2021 = number(earlier["Armored Vehicles"]) if earlier else None
-            tanks_2021 = number(earlier["Tanks"]) if earlier else None
-            tanks_2026 = values.get("tanks")
-            if afv_2021 is None:
-                put("armored_vehicles", None, "model")
-            else:
-                trend = 1.0
-                if tanks_2021 and tanks_2026:
-                    trend = min(4.0, max(0.25, tanks_2026 / tanks_2021))
-                put("armored_vehicles", round(afv_2021 * trend), "model")
-                notes.append("armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 "
-                             "(GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)")
+            stage_armour_definition(rec, src)
+            stage_fill_from_2025(rec, src)
+        else:
+            stage_2021_specifics(rec, src)
+        stage_budget(rec, src, snapshot)
+        stage_edition_notes(rec, src, snapshot)
+        stage_consistency_notes(rec)
+        stage_politics(rec, src, snapshot)
+        stage_overrides(rec, src, snapshot)
 
-        if snapshot == 2021:
-            # Fighters: estimated from the 2026 fighter share of the air fleet (column corrupted upstream).
-            later = other_gfp.get(iso)
-            total21 = values.get("aircraft_total")
-            if later and number(later["total_military_aircraft"]) and total21 is not None:
-                share = (number(later["fighter_aircraft"]) or 0) / number(later["total_military_aircraft"])  # type: ignore[operator]
-                put("fighters", min(total21, round(total21 * share)), "model")
-                notes.append("fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet")
-            else:
-                put("fighters", None, "model")
-            put("naval_tonnage", None, "gfp2022")
-            if iso in milex:
-                spend, share_gdp = milex[iso]
-                put("milex_sipri_usd_2019", round(spend), "sipri_milex")
-                put("milex_share_gdp_pct", share_gdp, "sipri_milex")
-            if iso == "AFG":
-                notes.append("GFP 2022 already reflects the August 2021 collapse of the Afghan National Army (active personnel 0).")
-
-        other_row, other_map = (other_gfp.get(iso), GFP2026_FIELDS) if snapshot == 2021 else (gfp2022_by_iso.get(iso), GFP2022_FIELDS)
-        if other_row is not None:
-            col_of = {f: c for c, f in other_map.items()}
-            for f in EDITION_COMPARED:
-                here, there = values.get(f), number(other_row[col_of[f]]) if f in col_of else None
-                if here is None or there is None:
-                    continue
-                lo, hi = sorted((here, there))
-                if (lo == 0 and hi >= 50) or (lo > 0 and hi / lo > EDITION_CHANGE_FACTOR):
-                    this_ed, other_ed = ("2022", "2026") if snapshot == 2021 else ("2026", "2022")
-                    notes.append(f"{f} changes sharply between GFP editions ({this_ed}: {here}, {other_ed}: {there}); "
-                                 "often a reporting or definitional change, verify before relying on it")
-
-        naval_parts = sum(values.get(k) or 0 for k in ("aircraft_carriers", "helicopter_carriers", "submarines", "destroyers",
-                                                         "frigates", "corvettes", "patrol_vessels", "mine_warfare"))
-        if values.get("naval_fleet_total") is not None and naval_parts > values["naval_fleet_total"]:
-            notes.append(f"naval sub-types sum to {naval_parts}, above naval_fleet_total {values['naval_fleet_total']}")
-
-        vrow = vdem.get((iso, cfg["vdem_year"]))
-        for col, field in VDEM_FIELDS.items():
-            put(field, number(vrow[col]) if vrow else None, "vdem_v16")
-        if not vrow:
-            notes.append("not covered by V-Dem: regime and stability fall back to engine defaults")
-
-        pct, src, conf = willingness(iso, wtf)
-        put("willingness_to_fight_pct", pct, src)
-        confidence["willingness_to_fight_pct"] = conf
-
+        region_row = src.gfp[2025].get(iso)
         entry: dict[str, Any] = {
-            "name": row["country"] if row["country"] != "Beliz" else "Belize",
-            "region": region_of.get(iso),
-            "values": values,
-            "provenance": prov,
-            "confidence": confidence,
-            "notes": notes,
+            "name": "Belize" if row["country"] == "Beliz" else row["country"],
+            "region": region_row["region"] if region_row else row.get("Continent"),
+            "values": rec.values,
+            "provenance": rec.prov,
+            "confidence": rec.confidence,
+            "notes": rec.notes,
         }
-        if iso in nuclear[str(snapshot)]:
-            n = nuclear[str(snapshot)][iso]
+        if iso in nuclear:
+            n = nuclear[iso]
             entry["nuclear"] = {**{k: n[k] for k in ("stockpile", "deployed", "total_inventory")},
-                                **nuclear["doctrines"][iso], "confidence": n["confidence"],
-                                "source": nuclear[str(snapshot)]["_source"], "note": n.get("note")}
-        deployments = bmd["deployments"][str(snapshot)].get(iso, [])
-        if deployments:
-            entry["missile_defense"] = [{**d, **{k: bmd["systems"][d["system"]][k] for k in
+                                **src.nuclear["doctrines"][iso], "confidence": n["confidence"],
+                                "source": nuclear["_source"], "note": n.get("note")}
+        if iso in bmd:
+            entry["missile_defense"] = [{**d, **{k: src.bmd["systems"][d["system"]][k] for k in
                                                   ("engages", "single_shot_pk", "shots_per_target", "interceptors_per_unit")}}
-                                        for d in deployments]
+                                        for d in bmd[iso]]
         countries[iso] = entry
 
-    unknown = sorted({iso for iso in list(nuclear[str(snapshot)]) + list(bmd["deployments"][str(snapshot)])
-                      if not iso.startswith("_") and iso not in countries})
+    unknown = sorted({iso for iso in list(nuclear) + list(bmd) if not iso.startswith("_") and iso not in countries})
     inputs = sorted(p for p in list(RAW.glob("*.csv")) + list(CURATED.glob("*.json")))
     return {
         "snapshot": snapshot,
-        "as_of": cfg["as_of"],
+        "as_of": SNAPSHOTS[snapshot]["as_of"],
         "generated_by": "tools/data/build_dataset.py",
         "inputs": {str(p.relative_to(DATA)): sha256(p) for p in inputs},
         "curated_entries_without_baseline": unknown,
-        "pacts": alliances["pacts"][str(snapshot)],
-        "relations": alliances["relations"][str(snapshot)],
+        "pacts": src.alliances["pacts"][str(snapshot)],
+        "relations": src.alliances["relations"][str(snapshot)],
         "countries": dict(sorted(countries.items())),
     }
 

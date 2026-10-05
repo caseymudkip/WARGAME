@@ -1,0 +1,13 @@
+{
+  "_doc": "Manual corrections applied after every automatic rule. Format: {\"2026\": {\"ISO3\": {\"field\": {\"value\": number|null, \"source\": \"citation (URL or publication)\", \"confidence\": \"high|medium|low\"}}}}. Every override is recorded in the country's provenance under 'override' and its citation in the notes. Add entries here instead of editing snapshots.",
+  "2021": {},
+  "2026": {
+    "LTU": {
+      "defense_budget_usd": {
+        "value": 5651760000,
+        "source": "Lithuanian Ministry of National Defence: Seimas approved a 2026 defence budget of EUR 4.79bn (5.38% of GDP), https://kam.lt/en/the-seimas-approves-record-defence-budget-of-eur-4-79-billion-or-5-38-of-gdp-in-2026/ (GFP 2026's figure matches; the automatic SIPRI check rejected it because Lithuania's post-2022 build-up exceeds 3x its 2020 level)",
+        "confidence": "high"
+      }
+    }
+  }
+}

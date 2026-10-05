@@ -12,6 +12,7 @@ data/
     missile_defense.json  BMD systems (engagement envelopes, Pk estimates) and who fields them
     alliances.json        treaty pacts (NATO, CSTO, US bilaterals, 2024 RUS-PRK, 2025 SAU-PAK...) and leanings
     willingness_to_fight.json   Gallup International "would you fight for your country?"
+    overrides.json        manual corrections, each with a citation (applied last)
   snapshots/2021.json   built output (tools/data/build_dataset.py); do not edit by hand
   snapshots/2026.json
 ```
@@ -19,6 +20,10 @@ data/
 Browse a country with sources: `python -m wargame.data RUS UKR --year 2026` (add `--all` for every field).
 
 Rebuild after changing raw or curated inputs: `python tools/data/build_dataset.py`.
+
+**Correcting a value:** add it to `curated/overrides.json` with a citation and rebuild. Overrides
+are applied after every automatic rule, and the record keeps the full history (what the rule did,
+what the override changed, and why). Never edit the snapshots by hand.
 `tests/test_dataset.py` fails if a committed snapshot no longer matches its inputs.
 
 ## Sources and how much to trust them
@@ -26,6 +31,7 @@ Rebuild after changing raw or curated inputs: `python tools/data/build_dataset.p
 | Data | Source | As of | Confidence |
 |---|---|---|---|
 | Personnel, equipment counts, budgets, logistics (ports, rail, roads), oil, geography | Global Firepower 2026 / 2022 editions | Jan 2026 / compiled 2021 | medium |
+| Cross-check and repair of the 2026 values, regions | Global Firepower 2025 edition (user-supplied CSV, identity verified against the published 2025 ranking) | Jan 2025 | medium |
 | Regime type, political violence, territorial control, fiscal capacity | V-Dem v16 (academic, expert-coded) | 2025 / 2020 | high |
 | Military expenditure (cross-check, 2021 only) | SIPRI Milex, constant 2019 USD | 2020 | high |
 | Nuclear warheads (stockpile, deployed) | SIPRI Yearbook 2026 / 2021 | Jan 2026 / Jan 2021 | high |
@@ -52,6 +58,9 @@ Cross-checks that pass in the test suite:
 | GFP aircraft sub-categories overlap (multirole jets counted twice) | Documented; the engine never sums sub-categories |
 | Reserves reported as 0 in one edition and large in the other (Germany 15,000 vs 860,000) | Kept, with an automatic "changes sharply between editions" note on the country |
 | GFP 2022 already shows Afghanistan after the August 2021 collapse | Noted on the record |
+| GFP 2026 budgets far from SIPRI's audited level where the 2025 edition agrees (Angola $31.2bn vs $1.1bn; also Mongolia, Nicaragua, Kosovo, Latvia, C.A.R., Ivory Coast, Ghana, Kyrgyzstan) | 2025 value used, with a note. Lithuania was caught by the same rule but its 2026 figure is real (EUR 4.79bn approved): restored by a cited override |
+| Values missing from the 2026 scrape | Filled from the 2025 edition (labelled `gfp2025`), never for estimated or redefined fields |
+| Sharp one-year changes between the 2025 and 2026 editions (e.g. Myanmar MLRS 180 -> 1,520; US SP artillery 671 -> 1,521; Netherlands F-35s moved from "fighter" to "attack") | Kept as published, with a note naming both values |
 
 ## Derived values (computed by the engine, not data)
 

@@ -6,8 +6,10 @@
   "curated/alliances.json": "96a0dd53cd56e1ef0b136ecfdcd50f3a5b71c653d0123f29e19d574cecf6af5a",
   "curated/missile_defense.json": "b4ca7af8f71a9fead82a78f88d61988f00dbce301a4ba1ff9088efb128d1a160",
   "curated/nuclear.json": "30f5af7d5bb90be4162f2b8124ceadbddb67d1eba3a585572c8a4bea10c71362",
+  "curated/overrides.json": "bddbff5d50cf166048537ccc893f6ad67678541b8102b4bd6d97450980d3880a",
   "curated/willingness_to_fight.json": "ff42cba07ea9265f44932da55e0bde664613b039206b25c079fa09afa6ee6bd3",
   "raw/gfp_2022.csv": "19d370b4d4a6e8ad333cbb47a1d153f8aadc8b4c32ad4ee2742ca16298c4db5a",
+  "raw/gfp_2025.csv": "9e4748da36caad04f8c4e9409ef1fee59379e5bf03d367eab3f443a5d5d1a763",
   "raw/gfp_2026.csv": "4a180de3844713c827f6f60ae07e3da43aeba4e39785a720b33804b281def925",
   "raw/sipri_milex_2015_2020.csv": "5357b8b50ffe29663b7406efd65b114b8632201d46e9f2fc79bf2211ca28932d",
   "raw/vdem_v16_subset.csv": "7645b4a0131cfb3e31980753af4e379d09aee619aa380c6a2cadc6b8a19b0c4d"
@@ -459,6 +461,7 @@
     "helicopters": 3,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 530,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -493,7 +496,6 @@
     "border_km": 5987,
     "waterway_km": 1200,
     "military_vehicles": 3902,
-    "armored_vehicles": 530,
     "regime_row": 0,
     "liberal_democracy_index": 0.018,
     "civil_liberties_index": 0.041,
@@ -578,8 +580,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "active_personnel changes sharply between GFP editions (2026: 75000, 2022: 0); often a reporting or definitional change, verify before relying on it",
-    "towed_artillery changes sharply between GFP editions (2026: 0, 2022: 60); often a reporting or definitional change, verify before relying on it"
+    "active_personnel changes sharply between GFP editions (2026: 75000, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "AGO": {
@@ -605,6 +606,7 @@
     "helicopters": 115,
     "attack_helicopters": 14,
     "tanks": 319,
+    "armored_vehicles": 1206,
     "self_propelled_artillery": 25,
     "towed_artillery": 575,
     "rocket_artillery": 116,
@@ -618,7 +620,7 @@
     "corvettes": 0,
     "patrol_vessels": 32,
     "mine_warfare": 0,
-    "defense_budget_usd": 31200000000,
+    "defense_budget_usd": 1101360000,
     "external_debt_usd": 45299000000,
     "ppp_usd": 278239000000,
     "fx_gold_reserves_usd": 14243000000,
@@ -639,7 +641,6 @@
     "border_km": 5369,
     "waterway_km": 1300,
     "military_vehicles": 2258,
-    "armored_vehicles": 1206,
     "regime_row": 1,
     "liberal_democracy_index": 0.163,
     "civil_liberties_index": 0.624,
@@ -682,7 +683,6 @@
      "corvettes",
      "patrol_vessels",
      "mine_warfare",
-     "defense_budget_usd",
      "external_debt_usd",
      "ppp_usd",
      "fx_gold_reserves_usd",
@@ -707,6 +707,9 @@
     "model": [
      "armored_vehicles"
     ],
+    "gfp2025": [
+     "defense_budget_usd"
+    ],
     "vdem_v16": [
      "regime_row",
      "liberal_democracy_index",
@@ -723,7 +726,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "defense_budget_usd: 2026 edition's 31,200,000,000 is 19.2x SIPRI's 2020 level; used the 2025 edition's 1,101,360,000, which is consistent with SIPRI"
    ]
   },
   "ALB": {
@@ -749,6 +753,7 @@
     "helicopters": 19,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 76,
     "self_propelled_artillery": 10,
     "towed_artillery": 0,
     "rocket_artillery": 270,
@@ -783,7 +788,6 @@
     "border_km": 691,
     "waterway_km": 41,
     "military_vehicles": 1492,
-    "armored_vehicles": 76,
     "regime_row": 1,
     "liberal_democracy_index": 0.382,
     "civil_liberties_index": 0.872,
@@ -868,7 +872,10 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "rocket_artillery changes sharply between GFP editions (2026: 270, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 0, 2025: 2000); a reporting or definitional change, or an error in one edition: verify",
+    "tanks changes sharply between GFP editions (2026: 0, 2025: 46); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2026: 0, 2025: 50); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 270, 2025: 135); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "ARE": {
@@ -894,6 +901,7 @@
     "helicopters": 250,
     "attack_helicopters": 30,
     "tanks": 354,
+    "armored_vehicles": 9255,
     "self_propelled_artillery": 165,
     "towed_artillery": 99,
     "rocket_artillery": 49,
@@ -928,7 +936,6 @@
     "border_km": 1066,
     "waterway_km": 0,
     "military_vehicles": 8982,
-    "armored_vehicles": 9255,
     "regime_row": 0,
     "liberal_democracy_index": 0.077,
     "civil_liberties_index": 0.339,
@@ -1013,7 +1020,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 130000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "attack_aircraft changes sharply between GFP editions (2026: 40, 2025: 16); a reporting or definitional change, or an error in one edition: verify"
    ],
    "missile_defense": [
     {
@@ -1065,6 +1072,7 @@
     "helicopters": 96,
     "attack_helicopters": 0,
     "tanks": 362,
+    "armored_vehicles": 830,
     "self_propelled_artillery": 20,
     "towed_artillery": 172,
     "rocket_artillery": 27,
@@ -1099,7 +1107,6 @@
     "border_km": 11968,
     "waterway_km": 11000,
     "military_vehicles": 22432,
-    "armored_vehicles": 830,
     "regime_row": 2,
     "liberal_democracy_index": 0.524,
     "civil_liberties_index": 0.821,
@@ -1184,7 +1191,9 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 12370, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "defense_budget_usd 993,919,790 is 0.3x SIPRI's 2020 level; plausible only if spending changed drastically (e.g. war), verify",
+    "reserve_personnel changes sharply between GFP editions (2026: 12370, 2025: 0); a reporting or definitional change, or an error in one edition: verify",
+    "self_propelled_artillery changes sharply between GFP editions (2026: 20, 2025: 55); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "ARM": {
@@ -1210,6 +1219,7 @@
     "helicopters": 36,
     "attack_helicopters": 20,
     "tanks": 109,
+    "armored_vehicles": 255,
     "self_propelled_artillery": 104,
     "towed_artillery": 193,
     "rocket_artillery": 100,
@@ -1244,7 +1254,6 @@
     "border_km": 1570,
     "waterway_km": 0,
     "military_vehicles": 1412,
-    "armored_vehicles": 255,
     "regime_row": 2,
     "liberal_democracy_index": 0.371,
     "civil_liberties_index": 0.8,
@@ -1354,6 +1363,7 @@
     "helicopters": 72,
     "attack_helicopters": 22,
     "tanks": 46,
+    "armored_vehicles": 1376,
     "self_propelled_artillery": 0,
     "towed_artillery": 48,
     "rocket_artillery": 8,
@@ -1388,7 +1398,6 @@
     "border_km": 0,
     "waterway_km": 2000,
     "military_vehicles": 17118,
-    "armored_vehicles": 1376,
     "regime_row": 3,
     "liberal_democracy_index": 0.793,
     "civil_liberties_index": 0.906,
@@ -1498,6 +1507,7 @@
     "helicopters": 41,
     "attack_helicopters": 0,
     "tanks": 56,
+    "armored_vehicles": 542,
     "self_propelled_artillery": 30,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -1532,7 +1542,6 @@
     "border_km": 2524,
     "waterway_km": 358,
     "military_vehicles": 5160,
-    "armored_vehicles": 542,
     "regime_row": 3,
     "liberal_democracy_index": 0.757,
     "civil_liberties_index": 0.907,
@@ -1642,6 +1651,7 @@
     "helicopters": 87,
     "attack_helicopters": 16,
     "tanks": 1354,
+    "armored_vehicles": 4678,
     "self_propelled_artillery": 135,
     "towed_artillery": 651,
     "rocket_artillery": 696,
@@ -1676,7 +1686,6 @@
     "border_km": 2468,
     "waterway_km": 0,
     "military_vehicles": 14448,
-    "armored_vehicles": 4678,
     "regime_row": 1,
     "liberal_democracy_index": 0.053,
     "civil_liberties_index": 0.291,
@@ -1760,7 +1769,9 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "tanks changes sharply between GFP editions (2026: 1354, 2025: 497); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 696, 2025: 268); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "BEL": {
@@ -1786,6 +1797,7 @@
     "helicopters": 14,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 854,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -1820,7 +1832,6 @@
     "border_km": 1297,
     "waterway_km": 2043,
     "military_vehicles": 3588,
-    "armored_vehicles": 854,
     "regime_row": 3,
     "liberal_democracy_index": 0.794,
     "civil_liberties_index": 0.955,
@@ -1930,6 +1941,7 @@
     "helicopters": 5,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": null,
     "self_propelled_artillery": 0,
     "towed_artillery": 16,
     "rocket_artillery": 0,
@@ -1964,7 +1976,6 @@
     "border_km": 2123,
     "waterway_km": 150,
     "military_vehicles": 92,
-    "armored_vehicles": null,
     "regime_row": 1,
     "liberal_democracy_index": 0.323,
     "civil_liberties_index": 0.836,
@@ -2072,6 +2083,7 @@
     "helicopters": 19,
     "attack_helicopters": 5,
     "tanks": 0,
+    "armored_vehicles": 265,
     "self_propelled_artillery": 0,
     "towed_artillery": 8,
     "rocket_artillery": 9,
@@ -2106,7 +2118,6 @@
     "border_km": 3611,
     "waterway_km": 0,
     "military_vehicles": 876,
-    "armored_vehicles": 265,
     "regime_row": 0,
     "liberal_democracy_index": 0.103,
     "civil_liberties_index": 0.455,
@@ -2190,7 +2201,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "defense_budget_usd 4,590,000,000 is 10.0x SIPRI's 2020 level; plausible only if spending changed drastically (e.g. war), verify"
    ]
   },
   "BGD": {
@@ -2216,6 +2228,7 @@
     "helicopters": 67,
     "attack_helicopters": 0,
     "tanks": 320,
+    "armored_vehicles": 837,
     "self_propelled_artillery": 36,
     "towed_artillery": 487,
     "rocket_artillery": 103,
@@ -2250,7 +2263,6 @@
     "border_km": 4413,
     "waterway_km": 8370,
     "military_vehicles": 11584,
-    "armored_vehicles": 837,
     "regime_row": 0,
     "liberal_democracy_index": 0.116,
     "civil_liberties_index": 0.628,
@@ -2360,6 +2372,7 @@
     "helicopters": 23,
     "attack_helicopters": 4,
     "tanks": 334,
+    "armored_vehicles": 484,
     "self_propelled_artillery": 48,
     "towed_artillery": 24,
     "rocket_artillery": 24,
@@ -2394,7 +2407,6 @@
     "border_km": 1806,
     "waterway_km": 470,
     "military_vehicles": 6724,
-    "armored_vehicles": 484,
     "regime_row": 2,
     "liberal_democracy_index": 0.499,
     "civil_liberties_index": 0.849,
@@ -2479,8 +2491,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "self_propelled_artillery changes sharply between GFP editions (2026: 48, 2022: 506); often a reporting or definitional change, verify before relying on it",
-    "towed_artillery changes sharply between GFP editions (2026: 24, 2022: 350); often a reporting or definitional change, verify before relying on it"
+    "tanks changes sharply between GFP editions (2026: 334, 2025: 90); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "BHR": {
@@ -2506,6 +2517,7 @@
     "helicopters": 66,
     "attack_helicopters": 34,
     "tanks": 150,
+    "armored_vehicles": 694,
     "self_propelled_artillery": 38,
     "towed_artillery": 26,
     "rocket_artillery": 18,
@@ -2540,7 +2552,6 @@
     "border_km": 0,
     "waterway_km": 0,
     "military_vehicles": 5196,
-    "armored_vehicles": 694,
     "regime_row": 0,
     "liberal_democracy_index": 0.062,
     "civil_liberties_index": 0.3,
@@ -2624,8 +2635,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 110000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ]
   },
   "BIH": {
@@ -2651,6 +2661,7 @@
     "helicopters": 15,
     "attack_helicopters": 0,
     "tanks": 45,
+    "armored_vehicles": 83,
     "self_propelled_artillery": 0,
     "towed_artillery": 300,
     "rocket_artillery": 24,
@@ -2685,7 +2696,6 @@
     "border_km": 1543,
     "waterway_km": 990,
     "military_vehicles": 892,
-    "armored_vehicles": 83,
     "regime_row": 1,
     "liberal_democracy_index": 0.339,
     "civil_liberties_index": 0.814,
@@ -2770,8 +2780,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 8000, 2022: 0); often a reporting or definitional change, verify before relying on it",
-    "self_propelled_artillery changes sharply between GFP editions (2026: 0, 2022: 57); often a reporting or definitional change, verify before relying on it"
+    "rocket_artillery changes sharply between GFP editions (2026: 24, 2025: 79); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "BLR": {
@@ -2797,6 +2806,7 @@
     "helicopters": 70,
     "attack_helicopters": 31,
     "tanks": 577,
+    "armored_vehicles": 1450,
     "self_propelled_artillery": 357,
     "towed_artillery": 190,
     "rocket_artillery": 206,
@@ -2831,7 +2841,6 @@
     "border_km": 3599,
     "waterway_km": 2500,
     "military_vehicles": 6820,
-    "armored_vehicles": 1450,
     "regime_row": 0,
     "liberal_democracy_index": 0.038,
     "civil_liberties_index": 0.221,
@@ -2915,7 +2924,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "reserve_personnel changes sharply between GFP editions (2026: 365400, 2025: 145000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "BLZ": {
@@ -2941,6 +2951,7 @@
     "helicopters": 1,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": null,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -2975,7 +2986,6 @@
     "border_km": 542,
     "waterway_km": 825,
     "military_vehicles": 164,
-    "armored_vehicles": null,
     "regime_row": null,
     "liberal_democracy_index": null,
     "civil_liberties_index": null,
@@ -3085,6 +3095,7 @@
     "helicopters": 29,
     "attack_helicopters": 0,
     "tanks": 54,
+    "armored_vehicles": 228,
     "self_propelled_artillery": 0,
     "towed_artillery": 58,
     "rocket_artillery": 0,
@@ -3119,7 +3130,6 @@
     "border_km": 7252,
     "waterway_km": 10000,
     "military_vehicles": 764,
-    "armored_vehicles": 228,
     "regime_row": 2,
     "liberal_democracy_index": 0.352,
     "civil_liberties_index": 0.741,
@@ -3203,8 +3213,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 40000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ]
   },
   "BRA": {
@@ -3230,6 +3239,7 @@
     "helicopters": 186,
     "attack_helicopters": 0,
     "tanks": 294,
+    "armored_vehicles": 1311,
     "self_propelled_artillery": 149,
     "towed_artillery": 412,
     "rocket_artillery": 82,
@@ -3264,7 +3274,6 @@
     "border_km": 16145,
     "waterway_km": 50000,
     "military_vehicles": 22464,
-    "armored_vehicles": 1311,
     "regime_row": 2,
     "liberal_democracy_index": 0.704,
     "civil_liberties_index": 0.871,
@@ -3348,7 +3357,9 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "reserve_personnel changes sharply between GFP editions (2026: 1340000, 2025: 340000); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 82, 2025: 38); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "BTN": {
@@ -3374,6 +3385,7 @@
     "helicopters": 2,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 27,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -3408,7 +3420,6 @@
     "border_km": 1136,
     "waterway_km": 0,
     "military_vehicles": 78,
-    "armored_vehicles": 27,
     "regime_row": 2,
     "liberal_democracy_index": 0.457,
     "civil_liberties_index": 0.701,
@@ -3493,7 +3504,8 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 50000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "active_personnel changes sharply between GFP editions (2026: 16000, 2025: 7500); a reporting or definitional change, or an error in one edition: verify",
+    "reserve_personnel changes sharply between GFP editions (2026: 50000, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "BWA": {
@@ -3519,6 +3531,7 @@
     "helicopters": 16,
     "attack_helicopters": 0,
     "tanks": 45,
+    "armored_vehicles": 223,
     "self_propelled_artillery": 12,
     "towed_artillery": 36,
     "rocket_artillery": 20,
@@ -3553,7 +3566,6 @@
     "border_km": 4347,
     "waterway_km": 0,
     "military_vehicles": 1224,
-    "armored_vehicles": 223,
     "regime_row": 2,
     "liberal_democracy_index": 0.52,
     "civil_liberties_index": 0.845,
@@ -3663,6 +3675,7 @@
     "helicopters": 0,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 89,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -3676,7 +3689,7 @@
     "corvettes": 0,
     "patrol_vessels": 0,
     "mine_warfare": 0,
-    "defense_budget_usd": 300000000,
+    "defense_budget_usd": 45990000,
     "external_debt_usd": 724179000,
     "ppp_usd": 5926000000,
     "fx_gold_reserves_usd": 374405000,
@@ -3697,7 +3710,6 @@
     "border_km": 5920,
     "waterway_km": 2800,
     "military_vehicles": 270,
-    "armored_vehicles": 89,
     "regime_row": 1,
     "liberal_democracy_index": 0.102,
     "civil_liberties_index": 0.438,
@@ -3740,7 +3752,6 @@
      "corvettes",
      "patrol_vessels",
      "mine_warfare",
-     "defense_budget_usd",
      "external_debt_usd",
      "ppp_usd",
      "fx_gold_reserves_usd",
@@ -3765,6 +3776,9 @@
     "model": [
      "armored_vehicles"
     ],
+    "gfp2025": [
+     "defense_budget_usd"
+    ],
     "vdem_v16": [
      "regime_row",
      "liberal_democracy_index",
@@ -3781,7 +3795,9 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "defense_budget_usd: 2026 edition's 300,000,000 is 6.1x SIPRI's 2020 level; used the 2025 edition's 45,990,000, which is consistent with SIPRI",
+    "active_personnel changes sharply between GFP editions (2026: 30000, 2025: 10000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "CAN": {
@@ -3807,6 +3823,7 @@
     "helicopters": 146,
     "attack_helicopters": 0,
     "tanks": 74,
+    "armored_vehicles": 1384,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -3841,7 +3858,6 @@
     "border_km": 8893,
     "waterway_km": 636,
     "military_vehicles": 21780,
-    "armored_vehicles": 1384,
     "regime_row": 2,
     "liberal_democracy_index": 0.736,
     "civil_liberties_index": 0.897,
@@ -3925,8 +3941,7 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "towed_artillery changes sharply between GFP editions (2026: 0, 2022: 163); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ]
   },
   "CHE": {
@@ -3952,6 +3967,7 @@
     "helicopters": 39,
     "attack_helicopters": 0,
     "tanks": 134,
+    "armored_vehicles": 1339,
     "self_propelled_artillery": 133,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -3986,7 +4002,6 @@
     "border_km": 1770,
     "waterway_km": 1292,
     "military_vehicles": 6885,
-    "armored_vehicles": 1339,
     "regime_row": 3,
     "liberal_democracy_index": 0.843,
     "civil_liberties_index": 0.95,
@@ -4071,7 +4086,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 0, 2022: 120000); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 0, 2025: 49715); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "CHL": {
@@ -4097,6 +4112,7 @@
     "helicopters": 86,
     "attack_helicopters": 0,
     "tanks": 386,
+    "armored_vehicles": 1520,
     "self_propelled_artillery": 48,
     "towed_artillery": 249,
     "rocket_artillery": 9,
@@ -4131,7 +4147,6 @@
     "border_km": 7801,
     "waterway_km": 12290,
     "military_vehicles": 7480,
-    "armored_vehicles": 1520,
     "regime_row": 3,
     "liberal_democracy_index": 0.781,
     "civil_liberties_index": 0.93,
@@ -4241,6 +4256,7 @@
     "helicopters": 1007,
     "attack_helicopters": 281,
     "tanks": 5870,
+    "armored_vehicles": 39133,
     "self_propelled_artillery": 2940,
     "towed_artillery": 1400,
     "rocket_artillery": 2770,
@@ -4275,7 +4291,6 @@
     "border_km": 22457,
     "waterway_km": 27700,
     "military_vehicles": 152040,
-    "armored_vehicles": 39133,
     "regime_row": 0,
     "liberal_democracy_index": 0.039,
     "civil_liberties_index": 0.179,
@@ -4436,6 +4451,7 @@
     "helicopters": 14,
     "attack_helicopters": 5,
     "tanks": 0,
+    "armored_vehicles": 85,
     "self_propelled_artillery": 0,
     "towed_artillery": 4,
     "rocket_artillery": 6,
@@ -4449,7 +4465,7 @@
     "corvettes": 0,
     "patrol_vessels": 7,
     "mine_warfare": 0,
-    "defense_budget_usd": 18200000,
+    "defense_budget_usd": 669600935,
     "external_debt_usd": 26576000000,
     "ppp_usd": 215018000000,
     "fx_gold_reserves_usd": 7583484000,
@@ -4470,7 +4486,6 @@
     "border_km": 3458,
     "waterway_km": 980,
     "military_vehicles": 1328,
-    "armored_vehicles": 85,
     "regime_row": 1,
     "liberal_democracy_index": 0.228,
     "civil_liberties_index": 0.7,
@@ -4513,7 +4528,6 @@
      "corvettes",
      "patrol_vessels",
      "mine_warfare",
-     "defense_budget_usd",
      "external_debt_usd",
      "ppp_usd",
      "fx_gold_reserves_usd",
@@ -4538,6 +4552,9 @@
     "model": [
      "armored_vehicles"
     ],
+    "gfp2025": [
+     "defense_budget_usd"
+    ],
     "vdem_v16": [
      "regime_row",
      "liberal_democracy_index",
@@ -4554,7 +4571,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "defense_budget_usd: 2026 edition's 18,200,000 is 0.0x SIPRI's 2020 level; used the 2025 edition's 669,600,935, which is consistent with SIPRI"
    ]
   },
   "CMR": {
@@ -4580,6 +4598,7 @@
     "helicopters": 21,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 253,
     "self_propelled_artillery": 18,
     "towed_artillery": 52,
     "rocket_artillery": 20,
@@ -4614,7 +4633,6 @@
     "border_km": 5018,
     "waterway_km": 0,
     "military_vehicles": 860,
-    "armored_vehicles": 253,
     "regime_row": 1,
     "liberal_democracy_index": 0.114,
     "civil_liberties_index": 0.509,
@@ -4724,6 +4742,7 @@
     "helicopters": 38,
     "attack_helicopters": 9,
     "tanks": 212,
+    "armored_vehicles": 201,
     "self_propelled_artillery": 16,
     "towed_artillery": 125,
     "rocket_artillery": 81,
@@ -4758,7 +4777,6 @@
     "border_km": 10481,
     "waterway_km": 15000,
     "military_vehicles": 7164,
-    "armored_vehicles": 201,
     "regime_row": 1,
     "liberal_democracy_index": 0.115,
     "civil_liberties_index": 0.42,
@@ -4843,7 +4861,9 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 30800, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "tanks changes sharply between GFP editions (2026: 212, 2025: 105); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2026: 125, 2025: 60); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 81, 2025: 25); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "COG": {
@@ -4869,6 +4889,7 @@
     "helicopters": 8,
     "attack_helicopters": 1,
     "tanks": 61,
+    "armored_vehicles": 208,
     "self_propelled_artillery": 3,
     "towed_artillery": 38,
     "rocket_artillery": 30,
@@ -4903,7 +4924,6 @@
     "border_km": 5008,
     "waterway_km": 1120,
     "military_vehicles": 804,
-    "armored_vehicles": 208,
     "regime_row": 1,
     "liberal_democracy_index": 0.115,
     "civil_liberties_index": 0.326,
@@ -4987,7 +5007,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "tanks changes sharply between GFP editions (2026: 61, 2025: 30); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "COL": {
@@ -5013,6 +5034,7 @@
     "helicopters": 255,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 483,
     "self_propelled_artillery": 6,
     "towed_artillery": 110,
     "rocket_artillery": 0,
@@ -5047,7 +5069,6 @@
     "border_km": 6672,
     "waterway_km": 24725,
     "military_vehicles": 12780,
-    "armored_vehicles": 483,
     "regime_row": 2,
     "liberal_democracy_index": 0.555,
     "civil_liberties_index": 0.765,
@@ -5132,7 +5153,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 998000, 2022: 35000); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 998000, 2025: 35000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "CUB": {
@@ -5158,6 +5179,7 @@
     "helicopters": 13,
     "attack_helicopters": 4,
     "tanks": 194,
+    "armored_vehicles": 392,
     "self_propelled_artillery": 140,
     "towed_artillery": 364,
     "rocket_artillery": 200,
@@ -5192,7 +5214,6 @@
     "border_km": 29,
     "waterway_km": 240,
     "military_vehicles": 7792,
-    "armored_vehicles": 392,
     "regime_row": 0,
     "liberal_democracy_index": 0.057,
     "civil_liberties_index": 0.302,
@@ -5276,7 +5297,10 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "self_propelled_artillery changes sharply between GFP editions (2026: 140, 2025: 60); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2026: 364, 2025: 130); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 200, 2025: 15); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "CZE": {
@@ -5302,6 +5326,7 @@
     "helicopters": 42,
     "attack_helicopters": 4,
     "tanks": 20,
+    "armored_vehicles": 173,
     "self_propelled_artillery": 53,
     "towed_artillery": 0,
     "rocket_artillery": 16,
@@ -5336,7 +5361,6 @@
     "border_km": 2046,
     "waterway_km": 664,
     "military_vehicles": 6275,
-    "armored_vehicles": 173,
     "regime_row": 3,
     "liberal_democracy_index": 0.794,
     "civil_liberties_index": 0.948,
@@ -5421,7 +5445,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 4900, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "tanks changes sharply between GFP editions (2026: 20, 2025: 43); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "DEU": {
@@ -5447,6 +5471,7 @@
     "helicopters": 292,
     "attack_helicopters": 49,
     "tanks": 296,
+    "armored_vehicles": 10257,
     "self_propelled_artillery": 134,
     "towed_artillery": 0,
     "rocket_artillery": 33,
@@ -5481,7 +5506,6 @@
     "border_km": 3694,
     "waterway_km": 7300,
     "military_vehicles": 87338,
-    "armored_vehicles": 10257,
     "regime_row": 3,
     "liberal_democracy_index": 0.782,
     "civil_liberties_index": 0.94,
@@ -5566,7 +5590,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 860000, 2022: 15000); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 860000, 2025: 34000); a reporting or definitional change, or an error in one edition: verify"
    ],
    "missile_defense": [
     {
@@ -5619,6 +5643,7 @@
     "helicopters": 34,
     "attack_helicopters": 0,
     "tanks": 44,
+    "armored_vehicles": 997,
     "self_propelled_artillery": 19,
     "towed_artillery": 0,
     "rocket_artillery": 8,
@@ -5653,7 +5678,6 @@
     "border_km": 140,
     "waterway_km": 400,
     "military_vehicles": 5930,
-    "armored_vehicles": 997,
     "regime_row": 3,
     "liberal_democracy_index": 0.884,
     "civil_liberties_index": 0.959,
@@ -5763,6 +5787,7 @@
     "helicopters": 49,
     "attack_helicopters": 0,
     "tanks": 6,
+    "armored_vehicles": 21,
     "self_propelled_artillery": 0,
     "towed_artillery": 14,
     "rocket_artillery": 0,
@@ -5797,7 +5822,6 @@
     "border_km": 376,
     "waterway_km": 0,
     "military_vehicles": 930,
-    "armored_vehicles": 21,
     "regime_row": 2,
     "liberal_democracy_index": 0.505,
     "civil_liberties_index": 0.874,
@@ -5882,7 +5906,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 189000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 189000, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "DZA": {
@@ -5908,6 +5932,7 @@
     "helicopters": 300,
     "attack_helicopters": 74,
     "tanks": 1485,
+    "armored_vehicles": 4369,
     "self_propelled_artillery": 224,
     "towed_artillery": 483,
     "rocket_artillery": 188,
@@ -5942,7 +5967,6 @@
     "border_km": 6734,
     "waterway_km": 0,
     "military_vehicles": 24920,
-    "armored_vehicles": 4369,
     "regime_row": 1,
     "liberal_democracy_index": 0.126,
     "civil_liberties_index": 0.424,
@@ -6026,7 +6050,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "active_personnel changes sharply between GFP editions (2026: 130000, 2025: 325000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "ECU": {
@@ -6052,6 +6077,7 @@
     "helicopters": 43,
     "attack_helicopters": 0,
     "tanks": 202,
+    "armored_vehicles": 560,
     "self_propelled_artillery": 5,
     "towed_artillery": 106,
     "rocket_artillery": 24,
@@ -6086,7 +6112,6 @@
     "border_km": 2237,
     "waterway_km": 1500,
     "military_vehicles": 5322,
-    "armored_vehicles": 560,
     "regime_row": 2,
     "liberal_democracy_index": 0.386,
     "civil_liberties_index": 0.692,
@@ -6170,7 +6195,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "tanks changes sharply between GFP editions (2026: 202, 2025: 54); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "EGY": {
@@ -6196,6 +6222,7 @@
     "helicopters": 348,
     "attack_helicopters": 100,
     "tanks": 3620,
+    "armored_vehicles": 8239,
     "self_propelled_artillery": 1056,
     "towed_artillery": 962,
     "rocket_artillery": 648,
@@ -6230,7 +6257,6 @@
     "border_km": 2612,
     "waterway_km": 3500,
     "military_vehicles": 54694,
-    "armored_vehicles": 8239,
     "regime_row": 1,
     "liberal_democracy_index": 0.115,
     "civil_liberties_index": 0.232,
@@ -6353,6 +6379,7 @@
     "helicopters": 13,
     "attack_helicopters": 6,
     "tanks": 148,
+    "armored_vehicles": 99,
     "self_propelled_artillery": 45,
     "towed_artillery": 89,
     "rocket_artillery": 44,
@@ -6387,7 +6414,6 @@
     "border_km": 1840,
     "waterway_km": 0,
     "military_vehicles": 1040,
-    "armored_vehicles": 99,
     "regime_row": 0,
     "liberal_democracy_index": 0.009,
     "civil_liberties_index": 0.047,
@@ -6471,7 +6497,11 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "active_personnel changes sharply between GFP editions (2026: 350000, 2025: 120000); a reporting or definitional change, or an error in one edition: verify",
+    "reserve_personnel changes sharply between GFP editions (2026: 680000, 2025: 130000); a reporting or definitional change, or an error in one edition: verify",
+    "tanks changes sharply between GFP editions (2026: 148, 2025: 65); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 44, 2025: 22); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "ESP": {
@@ -6497,6 +6527,7 @@
     "helicopters": 169,
     "attack_helicopters": 17,
     "tanks": 298,
+    "armored_vehicles": 4587,
     "self_propelled_artillery": 96,
     "towed_artillery": 188,
     "rocket_artillery": 0,
@@ -6531,7 +6562,6 @@
     "border_km": 1953,
     "waterway_km": 1000,
     "military_vehicles": 49324,
-    "armored_vehicles": 4587,
     "regime_row": 3,
     "liberal_democracy_index": 0.741,
     "civil_liberties_index": 0.942,
@@ -6634,7 +6664,7 @@
   },
   "EST": {
    "name": "Estonia",
-   "region": "Africa",
+   "region": "Europe",
    "values": {
     "gfp_rank": 106,
     "gfp_power_index": 2.3201,
@@ -6655,6 +6685,7 @@
     "helicopters": 0,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 180,
     "self_propelled_artillery": 48,
     "towed_artillery": 0,
     "rocket_artillery": 6,
@@ -6689,7 +6720,6 @@
     "border_km": 657,
     "waterway_km": 335,
     "military_vehicles": 2579,
-    "armored_vehicles": 180,
     "regime_row": 3,
     "liberal_democracy_index": 0.837,
     "civil_liberties_index": 0.963,
@@ -6774,13 +6804,12 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 230000, 2022: 12000); often a reporting or definitional change, verify before relying on it",
-    "towed_artillery changes sharply between GFP editions (2026: 0, 2022: 66); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 230000, 2025: 78800); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "ETH": {
    "name": "Ethiopia",
-   "region": "Europe",
+   "region": "Africa",
    "values": {
     "gfp_rank": 47,
     "gfp_power_index": 0.8525,
@@ -6801,6 +6830,7 @@
     "helicopters": 33,
     "attack_helicopters": 7,
     "tanks": 338,
+    "armored_vehicles": 109,
     "self_propelled_artillery": 142,
     "towed_artillery": 469,
     "rocket_artillery": 79,
@@ -6835,7 +6865,6 @@
     "border_km": 5925,
     "waterway_km": 0,
     "military_vehicles": 8586,
-    "armored_vehicles": 109,
     "regime_row": 1,
     "liberal_democracy_index": 0.1,
     "civil_liberties_index": 0.304,
@@ -6920,7 +6949,10 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 138000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "defense_budget_usd 3,720,968,976 is 6.5x SIPRI's 2020 level; plausible only if spending changed drastically (e.g. war), verify",
+    "active_personnel changes sharply between GFP editions (2026: 503000, 2025: 162000); a reporting or definitional change, or an error in one edition: verify",
+    "reserve_personnel changes sharply between GFP editions (2026: 138000, 2025: 0); a reporting or definitional change, or an error in one edition: verify",
+    "self_propelled_artillery changes sharply between GFP editions (2026: 142, 2025: 35); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "FIN": {
@@ -6946,6 +6978,7 @@
     "helicopters": 27,
     "attack_helicopters": 0,
     "tanks": 200,
+    "armored_vehicles": 2090,
     "self_propelled_artillery": 125,
     "towed_artillery": 667,
     "rocket_artillery": 76,
@@ -6980,7 +7013,6 @@
     "border_km": 2563,
     "waterway_km": 8000,
     "military_vehicles": 14866,
-    "armored_vehicles": 2090,
     "regime_row": 3,
     "liberal_democracy_index": 0.808,
     "civil_liberties_index": 0.947,
@@ -7090,6 +7122,7 @@
     "helicopters": 452,
     "attack_helicopters": 67,
     "tanks": 427,
+    "armored_vehicles": 6897,
     "self_propelled_artillery": 74,
     "towed_artillery": 0,
     "rocket_artillery": 9,
@@ -7124,7 +7157,6 @@
     "border_km": 4072,
     "waterway_km": 8501,
     "military_vehicles": 110784,
-    "armored_vehicles": 6897,
     "regime_row": 3,
     "liberal_democracy_index": 0.8,
     "civil_liberties_index": 0.917,
@@ -7208,8 +7240,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "towed_artillery changes sharply between GFP editions (2026: 0, 2022: 105); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ],
    "nuclear": {
     "stockpile": 290,
@@ -7263,6 +7294,7 @@
     "helicopters": 16,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 150,
     "self_propelled_artillery": 0,
     "towed_artillery": 4,
     "rocket_artillery": 28,
@@ -7297,7 +7329,6 @@
     "border_km": 3261,
     "waterway_km": 1600,
     "military_vehicles": 424,
-    "armored_vehicles": 150,
     "regime_row": 1,
     "liberal_democracy_index": 0.178,
     "civil_liberties_index": 0.788,
@@ -7407,6 +7438,7 @@
     "helicopters": 262,
     "attack_helicopters": 50,
     "tanks": 288,
+    "armored_vehicles": 6363,
     "self_propelled_artillery": 14,
     "towed_artillery": 126,
     "rocket_artillery": 43,
@@ -7441,7 +7473,6 @@
     "border_km": 499,
     "waterway_km": 3200,
     "military_vehicles": 94064,
-    "armored_vehicles": 6363,
     "regime_row": 2,
     "liberal_democracy_index": 0.689,
     "civil_liberties_index": 0.844,
@@ -7525,7 +7556,9 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "reserve_personnel changes sharply between GFP editions (2026: 31940, 2025: 924000); a reporting or definitional change, or an error in one edition: verify",
+    "self_propelled_artillery changes sharply between GFP editions (2026: 14, 2025: 71); a reporting or definitional change, or an error in one edition: verify"
    ],
    "nuclear": {
     "stockpile": 225,
@@ -7565,6 +7598,7 @@
     "helicopters": 44,
     "attack_helicopters": 11,
     "tanks": 132,
+    "armored_vehicles": 511,
     "self_propelled_artillery": 67,
     "towed_artillery": 121,
     "rocket_artillery": 42,
@@ -7599,7 +7633,6 @@
     "border_km": 1814,
     "waterway_km": 0,
     "military_vehicles": 5974,
-    "armored_vehicles": 511,
     "regime_row": 1,
     "liberal_democracy_index": 0.275,
     "civil_liberties_index": 0.7,
@@ -7684,7 +7717,6 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 205500, 2022: 0); often a reporting or definitional change, verify before relying on it",
     "naval sub-types sum to 35, above naval_fleet_total 19"
    ]
   },
@@ -7711,6 +7743,7 @@
     "helicopters": 9,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 343,
     "self_propelled_artillery": 0,
     "towed_artillery": 6,
     "rocket_artillery": 6,
@@ -7724,7 +7757,7 @@
     "corvettes": 0,
     "patrol_vessels": 20,
     "mine_warfare": 0,
-    "defense_budget_usd": 954423756,
+    "defense_budget_usd": 308500000,
     "external_debt_usd": 29241000000,
     "ppp_usd": 243124000000,
     "fx_gold_reserves_usd": 3624000000,
@@ -7745,7 +7778,6 @@
     "border_km": 2420,
     "waterway_km": 1293,
     "military_vehicles": 3648,
-    "armored_vehicles": 343,
     "regime_row": 2,
     "liberal_democracy_index": 0.606,
     "civil_liberties_index": 0.912,
@@ -7788,7 +7820,6 @@
      "corvettes",
      "patrol_vessels",
      "mine_warfare",
-     "defense_budget_usd",
      "external_debt_usd",
      "ppp_usd",
      "fx_gold_reserves_usd",
@@ -7813,6 +7844,9 @@
     "model": [
      "armored_vehicles"
     ],
+    "gfp2025": [
+     "defense_budget_usd"
+    ],
     "vdem_v16": [
      "regime_row",
      "liberal_democracy_index",
@@ -7829,7 +7863,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "defense_budget_usd: 2026 edition's 954,423,756 is 3.2x SIPRI's 2020 level; used the 2025 edition's 308,500,000, which is consistent with SIPRI"
    ]
   },
   "GRC": {
@@ -7855,6 +7890,7 @@
     "helicopters": 285,
     "attack_helicopters": 28,
     "tanks": 1344,
+    "armored_vehicles": 6632,
     "self_propelled_artillery": 589,
     "towed_artillery": 698,
     "rocket_artillery": 152,
@@ -7889,7 +7925,6 @@
     "border_km": 1110,
     "waterway_km": 6,
     "military_vehicles": 56416,
-    "armored_vehicles": 6632,
     "regime_row": 2,
     "liberal_democracy_index": 0.568,
     "civil_liberties_index": 0.878,
@@ -8013,6 +8048,7 @@
     "helicopters": 20,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 140,
     "self_propelled_artillery": 0,
     "towed_artillery": 110,
     "rocket_artillery": 0,
@@ -8047,7 +8083,6 @@
     "border_km": 1667,
     "waterway_km": 990,
     "military_vehicles": 3268,
-    "armored_vehicles": 140,
     "regime_row": 2,
     "liberal_democracy_index": 0.523,
     "civil_liberties_index": 0.766,
@@ -8131,7 +8166,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "towed_artillery changes sharply between GFP editions (2026: 110, 2025: 50); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "HND": {
@@ -8157,6 +8193,7 @@
     "helicopters": 11,
     "attack_helicopters": 0,
     "tanks": 22,
+    "armored_vehicles": 107,
     "self_propelled_artillery": 0,
     "towed_artillery": 48,
     "rocket_artillery": 0,
@@ -8191,7 +8228,6 @@
     "border_km": 1575,
     "waterway_km": 465,
     "military_vehicles": 4666,
-    "armored_vehicles": 107,
     "regime_row": 2,
     "liberal_democracy_index": 0.38,
     "civil_liberties_index": 0.819,
@@ -8276,7 +8312,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 0, 2022: 60000); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 0, 2025: 60000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "HRV": {
@@ -8302,6 +8338,7 @@
     "helicopters": 37,
     "attack_helicopters": 0,
     "tanks": 55,
+    "armored_vehicles": 497,
     "self_propelled_artillery": 25,
     "towed_artillery": 42,
     "rocket_artillery": 42,
@@ -8336,7 +8373,6 @@
     "border_km": 2237,
     "waterway_km": 4714,
     "military_vehicles": 4874,
-    "armored_vehicles": 497,
     "regime_row": 2,
     "liberal_democracy_index": 0.593,
     "civil_liberties_index": 0.886,
@@ -8446,6 +8482,7 @@
     "helicopters": 50,
     "attack_helicopters": 8,
     "tanks": 220,
+    "armored_vehicles": 638,
     "self_propelled_artillery": 24,
     "towed_artillery": 295,
     "rocket_artillery": 0,
@@ -8480,7 +8517,6 @@
     "border_km": 2106,
     "waterway_km": 1622,
     "military_vehicles": 11502,
-    "armored_vehicles": 638,
     "regime_row": 1,
     "liberal_democracy_index": 0.315,
     "civil_liberties_index": 0.793,
@@ -8564,8 +8600,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "towed_artillery changes sharply between GFP editions (2026: 295, 2022: 12); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ]
   },
   "IDN": {
@@ -8591,6 +8626,7 @@
     "helicopters": 212,
     "attack_helicopters": 15,
     "tanks": 331,
+    "armored_vehicles": 1522,
     "self_propelled_artillery": 153,
     "towed_artillery": 396,
     "rocket_artillery": 67,
@@ -8625,7 +8661,6 @@
     "border_km": 2958,
     "waterway_km": 21579,
     "military_vehicles": 28064,
-    "armored_vehicles": 1522,
     "regime_row": 1,
     "liberal_democracy_index": 0.296,
     "civil_liberties_index": 0.63,
@@ -8735,6 +8770,7 @@
     "helicopters": 594,
     "attack_helicopters": 79,
     "tanks": 3913,
+    "armored_vehicles": 10177,
     "self_propelled_artillery": 100,
     "towed_artillery": 5640,
     "rocket_artillery": 300,
@@ -8769,7 +8805,6 @@
     "border_km": 13888,
     "waterway_km": 14500,
     "military_vehicles": 163554,
-    "armored_vehicles": 10177,
     "regime_row": 1,
     "liberal_democracy_index": 0.26,
     "civil_liberties_index": 0.534,
@@ -8921,6 +8956,7 @@
     "helicopters": 8,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 122,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -8955,7 +8991,6 @@
     "border_km": 443,
     "waterway_km": 956,
     "military_vehicles": 3296,
-    "armored_vehicles": 122,
     "regime_row": 3,
     "liberal_democracy_index": 0.822,
     "civil_liberties_index": 0.956,
@@ -9065,6 +9100,7 @@
     "helicopters": 129,
     "attack_helicopters": 13,
     "tanks": 2675,
+    "armored_vehicles": 7181,
     "self_propelled_artillery": 424,
     "towed_artillery": 1803,
     "rocket_artillery": 1550,
@@ -9099,7 +9135,6 @@
     "border_km": 5894,
     "waterway_km": 850,
     "military_vehicles": 75939,
-    "armored_vehicles": 7181,
     "regime_row": 1,
     "liberal_democracy_index": 0.103,
     "civil_liberties_index": 0.248,
@@ -9234,6 +9269,7 @@
     "helicopters": 183,
     "attack_helicopters": 39,
     "tanks": 1188,
+    "armored_vehicles": 7263,
     "self_propelled_artillery": 434,
     "towed_artillery": 610,
     "rocket_artillery": 572,
@@ -9268,7 +9304,6 @@
     "border_km": 3809,
     "waterway_km": 5279,
     "military_vehicles": 37496,
-    "armored_vehicles": 7263,
     "regime_row": 1,
     "liberal_democracy_index": 0.22,
     "civil_liberties_index": 0.521,
@@ -9378,6 +9413,7 @@
     "helicopters": 0,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": null,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -9412,7 +9448,6 @@
     "border_km": 0,
     "waterway_km": 0,
     "military_vehicles": 350,
-    "armored_vehicles": null,
     "regime_row": 3,
     "liberal_democracy_index": 0.72,
     "civil_liberties_index": 0.95,
@@ -9520,6 +9555,7 @@
     "helicopters": 127,
     "attack_helicopters": 48,
     "tanks": 1300,
+    "armored_vehicles": 5504,
     "self_propelled_artillery": 323,
     "towed_artillery": 171,
     "rocket_artillery": 228,
@@ -9554,7 +9590,6 @@
     "border_km": 1068,
     "waterway_km": 0,
     "military_vehicles": 62380,
-    "armored_vehicles": 5504,
     "regime_row": 2,
     "liberal_democracy_index": 0.588,
     "civil_liberties_index": 0.787,
@@ -9726,6 +9761,7 @@
     "helicopters": 352,
     "attack_helicopters": 37,
     "tanks": 203,
+    "armored_vehicles": 7012,
     "self_propelled_artillery": 64,
     "towed_artillery": 108,
     "rocket_artillery": 21,
@@ -9760,7 +9796,6 @@
     "border_km": 1836,
     "waterway_km": 2400,
     "military_vehicles": 87364,
-    "armored_vehicles": 7012,
     "regime_row": 3,
     "liberal_democracy_index": 0.642,
     "civil_liberties_index": 0.9,
@@ -9883,6 +9918,7 @@
     "helicopters": 159,
     "attack_helicopters": 44,
     "tanks": 1508,
+    "armored_vehicles": 3975,
     "self_propelled_artillery": 478,
     "towed_artillery": 80,
     "rocket_artillery": 84,
@@ -9917,7 +9953,6 @@
     "border_km": 1744,
     "waterway_km": 0,
     "military_vehicles": 25278,
-    "armored_vehicles": 3975,
     "regime_row": 0,
     "liberal_democracy_index": 0.274,
     "civil_liberties_index": 0.672,
@@ -10027,6 +10062,7 @@
     "helicopters": 583,
     "attack_helicopters": 118,
     "tanks": 734,
+    "armored_vehicles": 4021,
     "self_propelled_artillery": 193,
     "towed_artillery": 480,
     "rocket_artillery": 99,
@@ -10061,7 +10097,6 @@
     "border_km": 0,
     "waterway_km": 1770,
     "military_vehicles": 54390,
-    "armored_vehicles": 4021,
     "regime_row": 3,
     "liberal_democracy_index": 0.734,
     "civil_liberties_index": 0.925,
@@ -10196,6 +10231,7 @@
     "helicopters": 72,
     "attack_helicopters": 12,
     "tanks": 353,
+    "armored_vehicles": 1384,
     "self_propelled_artillery": 126,
     "towed_artillery": 194,
     "rocket_artillery": 287,
@@ -10230,7 +10266,6 @@
     "border_km": 13364,
     "waterway_km": 43983,
     "military_vehicles": 17460,
-    "armored_vehicles": 1384,
     "regime_row": 1,
     "liberal_democracy_index": 0.131,
     "civil_liberties_index": 0.513,
@@ -10314,8 +10349,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 135000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ]
   },
   "KEN": {
@@ -10341,6 +10375,7 @@
     "helicopters": 84,
     "attack_helicopters": 2,
     "tanks": 188,
+    "armored_vehicles": 1654,
     "self_propelled_artillery": 18,
     "towed_artillery": 53,
     "rocket_artillery": 0,
@@ -10375,7 +10410,6 @@
     "border_km": 3457,
     "waterway_km": 0,
     "military_vehicles": 9114,
-    "armored_vehicles": 1654,
     "regime_row": 2,
     "liberal_democracy_index": 0.446,
     "civil_liberties_index": 0.74,
@@ -10485,6 +10519,7 @@
     "helicopters": 7,
     "attack_helicopters": 2,
     "tanks": 215,
+    "armored_vehicles": 685,
     "self_propelled_artillery": 30,
     "towed_artillery": 174,
     "rocket_artillery": 21,
@@ -10498,7 +10533,7 @@
     "corvettes": 0,
     "patrol_vessels": 0,
     "mine_warfare": 0,
-    "defense_budget_usd": 654000000,
+    "defense_budget_usd": 221800000,
     "external_debt_usd": 3617000000,
     "ppp_usd": 50907000000,
     "fx_gold_reserves_usd": 5089000000,
@@ -10519,7 +10554,6 @@
     "border_km": 4573,
     "waterway_km": 576,
     "military_vehicles": 5372,
-    "armored_vehicles": 685,
     "regime_row": 1,
     "liberal_democracy_index": 0.178,
     "civil_liberties_index": 0.478,
@@ -10562,7 +10596,6 @@
      "corvettes",
      "patrol_vessels",
      "mine_warfare",
-     "defense_budget_usd",
      "external_debt_usd",
      "ppp_usd",
      "fx_gold_reserves_usd",
@@ -10587,6 +10620,9 @@
     "model": [
      "armored_vehicles"
     ],
+    "gfp2025": [
+     "defense_budget_usd"
+    ],
     "vdem_v16": [
      "regime_row",
      "liberal_democracy_index",
@@ -10603,7 +10639,9 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "defense_budget_usd: 2026 edition's 654,000,000 is 4.0x SIPRI's 2020 level; used the 2025 edition's 221,800,000, which is consistent with SIPRI",
+    "reserve_personnel changes sharply between GFP editions (2026: 0, 2025: 300000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "KHM": {
@@ -10629,6 +10667,7 @@
     "helicopters": 20,
     "attack_helicopters": 0,
     "tanks": 520,
+    "armored_vehicles": 433,
     "self_propelled_artillery": 30,
     "towed_artillery": 525,
     "rocket_artillery": 521,
@@ -10663,7 +10702,6 @@
     "border_km": 2530,
     "waterway_km": 3700,
     "military_vehicles": 5439,
-    "armored_vehicles": 433,
     "regime_row": 1,
     "liberal_democracy_index": 0.051,
     "civil_liberties_index": 0.26,
@@ -10773,6 +10811,7 @@
     "helicopters": 827,
     "attack_helicopters": 113,
     "tanks": 1831,
+    "armored_vehicles": 9762,
     "self_propelled_artillery": 2780,
     "towed_artillery": 5800,
     "rocket_artillery": 525,
@@ -10807,7 +10846,6 @@
     "border_km": 237,
     "waterway_km": 1600,
     "military_vehicles": 117460,
-    "armored_vehicles": 9762,
     "regime_row": 3,
     "liberal_democracy_index": 0.739,
     "civil_liberties_index": 0.912,
@@ -10942,6 +10980,7 @@
     "helicopters": 68,
     "attack_helicopters": 16,
     "tanks": 367,
+    "armored_vehicles": 909,
     "self_propelled_artillery": 51,
     "towed_artillery": 0,
     "rocket_artillery": 27,
@@ -10976,7 +11015,6 @@
     "border_km": 475,
     "waterway_km": 0,
     "military_vehicles": 7472,
-    "armored_vehicles": 909,
     "regime_row": 0,
     "liberal_democracy_index": 0.127,
     "civil_liberties_index": 0.488,
@@ -11100,6 +11138,7 @@
     "helicopters": 20,
     "attack_helicopters": 0,
     "tanks": 160,
+    "armored_vehicles": 246,
     "self_propelled_artillery": 50,
     "towed_artillery": 97,
     "rocket_artillery": 64,
@@ -11134,7 +11173,6 @@
     "border_km": 5274,
     "waterway_km": 4600,
     "military_vehicles": 7725,
-    "armored_vehicles": 246,
     "regime_row": 0,
     "liberal_democracy_index": 0.11,
     "civil_liberties_index": 0.144,
@@ -11218,8 +11256,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 30000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ]
   },
   "LBN": {
@@ -11245,6 +11282,7 @@
     "helicopters": 68,
     "attack_helicopters": 0,
     "tanks": 334,
+    "armored_vehicles": 1812,
     "self_propelled_artillery": 12,
     "towed_artillery": 350,
     "rocket_artillery": 11,
@@ -11279,7 +11317,6 @@
     "border_km": 484,
     "waterway_km": 0,
     "military_vehicles": 6912,
-    "armored_vehicles": 1812,
     "regime_row": 1,
     "liberal_democracy_index": 0.267,
     "civil_liberties_index": 0.689,
@@ -11364,7 +11401,8 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 15000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 15000, 2025: 35000); a reporting or definitional change, or an error in one edition: verify",
+    "tanks changes sharply between GFP editions (2026: 334, 2025: 116); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "LBR": {
@@ -11390,6 +11428,7 @@
     "helicopters": 0,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 50,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -11424,7 +11463,6 @@
     "border_km": 1667,
     "waterway_km": 0,
     "military_vehicles": 550,
-    "armored_vehicles": 50,
     "regime_row": 2,
     "liberal_democracy_index": 0.417,
     "civil_liberties_index": 0.838,
@@ -11534,6 +11572,7 @@
     "helicopters": 22,
     "attack_helicopters": 4,
     "tanks": 55,
+    "armored_vehicles": 1251,
     "self_propelled_artillery": 20,
     "towed_artillery": 38,
     "rocket_artillery": 25,
@@ -11568,7 +11607,6 @@
     "border_km": 4339,
     "waterway_km": 0,
     "military_vehicles": 2728,
-    "armored_vehicles": 1251,
     "regime_row": 0,
     "liberal_democracy_index": 0.098,
     "civil_liberties_index": 0.323,
@@ -11652,8 +11690,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "rocket_artillery changes sharply between GFP editions (2026: 25, 2022: 450); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ]
   },
   "LKA": {
@@ -11679,6 +11716,7 @@
     "helicopters": 49,
     "attack_helicopters": 8,
     "tanks": 87,
+    "armored_vehicles": 287,
     "self_propelled_artillery": 0,
     "towed_artillery": 96,
     "rocket_artillery": 28,
@@ -11713,7 +11751,6 @@
     "border_km": 0,
     "waterway_km": 160,
     "military_vehicles": 15021,
-    "armored_vehicles": 287,
     "regime_row": 2,
     "liberal_democracy_index": 0.613,
     "civil_liberties_index": 0.816,
@@ -11797,8 +11834,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 90000, 2022: 5500); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ]
   },
   "LTU": {
@@ -11824,6 +11860,7 @@
     "helicopters": 4,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 572,
     "self_propelled_artillery": 16,
     "towed_artillery": 54,
     "rocket_artillery": 0,
@@ -11858,7 +11895,6 @@
     "border_km": 1545,
     "waterway_km": 441,
     "military_vehicles": 4553,
-    "armored_vehicles": 572,
     "regime_row": 3,
     "liberal_democracy_index": 0.712,
     "civil_liberties_index": 0.913,
@@ -11901,7 +11937,6 @@
      "corvettes",
      "patrol_vessels",
      "mine_warfare",
-     "defense_budget_usd",
      "external_debt_usd",
      "ppp_usd",
      "fx_gold_reserves_usd",
@@ -11936,13 +11971,19 @@
     ],
     "gallup_eoy2023:EU_aggregate": [
      "willingness_to_fight_pct"
+    ],
+    "override": [
+     "defense_budget_usd"
     ]
    },
    "confidence": {
-    "willingness_to_fight_pct": "low"
+    "willingness_to_fight_pct": "low",
+    "defense_budget_usd": "high"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "defense_budget_usd: 2026 edition's 5,651,760,000 is 4.0x SIPRI's 2020 level; used the 2025 edition's 2,388,900,000, which is consistent with SIPRI",
+    "defense_budget_usd overridden (2388900000 -> 5651760000): Lithuanian Ministry of National Defence: Seimas approved a 2026 defence budget of EUR 4.79bn (5.38% of GDP), https://kam.lt/en/the-seimas-approves-record-defence-budget-of-eur-4-79-billion-or-5-38-of-gdp-in-2026/ (GFP 2026's figure matches; the automatic SIPRI check rejected it because Lithuania's post-2022 build-up exceeds 3x its 2020 level)"
    ]
   },
   "LUX": {
@@ -11968,6 +12009,7 @@
     "helicopters": 0,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": null,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -12002,7 +12044,6 @@
     "border_km": 327,
     "waterway_km": 37,
     "military_vehicles": 476,
-    "armored_vehicles": null,
     "regime_row": 3,
     "liberal_democracy_index": 0.777,
     "civil_liberties_index": 0.946,
@@ -12110,6 +12151,7 @@
     "helicopters": 3,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 297,
     "self_propelled_artillery": 47,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -12123,7 +12165,7 @@
     "corvettes": 0,
     "patrol_vessels": 11,
     "mine_warfare": 6,
-    "defense_budget_usd": 42000000,
+    "defense_budget_usd": 1138000000,
     "external_debt_usd": 48598440000,
     "ppp_usd": 72516000000,
     "fx_gold_reserves_usd": 5141000000,
@@ -12144,7 +12186,6 @@
     "border_km": 1370,
     "waterway_km": 300,
     "military_vehicles": 3410,
-    "armored_vehicles": 297,
     "regime_row": 3,
     "liberal_democracy_index": 0.751,
     "civil_liberties_index": 0.94,
@@ -12187,7 +12228,6 @@
      "corvettes",
      "patrol_vessels",
      "mine_warfare",
-     "defense_budget_usd",
      "external_debt_usd",
      "ppp_usd",
      "fx_gold_reserves_usd",
@@ -12212,6 +12252,9 @@
     "model": [
      "armored_vehicles"
     ],
+    "gfp2025": [
+     "defense_budget_usd"
+    ],
     "vdem_v16": [
      "regime_row",
      "liberal_democracy_index",
@@ -12228,7 +12271,8 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "defense_budget_usd: 2026 edition's 42,000,000 is 0.0x SIPRI's 2020 level; used the 2025 edition's 1,138,000,000, which is consistent with SIPRI"
    ]
   },
   "MAR": {
@@ -12254,6 +12298,7 @@
     "helicopters": 73,
     "attack_helicopters": 6,
     "tanks": 1346,
+    "armored_vehicles": 1413,
     "self_propelled_artillery": 544,
     "towed_artillery": 188,
     "rocket_artillery": 185,
@@ -12288,7 +12333,6 @@
     "border_km": 2363,
     "waterway_km": 0,
     "military_vehicles": 17594,
-    "armored_vehicles": 1413,
     "regime_row": 0,
     "liberal_democracy_index": 0.251,
     "civil_liberties_index": 0.645,
@@ -12372,7 +12416,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "active_personnel changes sharply between GFP editions (2026: 400000, 2025: 195800); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "MDA": {
@@ -12398,6 +12443,7 @@
     "helicopters": 2,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 381,
     "self_propelled_artillery": 4,
     "towed_artillery": 67,
     "rocket_artillery": 11,
@@ -12432,7 +12478,6 @@
     "border_km": 1885,
     "waterway_km": 558,
     "military_vehicles": 1598,
-    "armored_vehicles": 381,
     "regime_row": 2,
     "liberal_democracy_index": 0.449,
     "civil_liberties_index": 0.842,
@@ -12516,7 +12561,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "reserve_personnel changes sharply between GFP editions (2026: 2000, 2025: 67000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "MDG": {
@@ -12542,6 +12588,7 @@
     "helicopters": 5,
     "attack_helicopters": 0,
     "tanks": 12,
+    "armored_vehicles": 109,
     "self_propelled_artillery": 0,
     "towed_artillery": 17,
     "rocket_artillery": 0,
@@ -12576,7 +12623,6 @@
     "border_km": 0,
     "waterway_km": 600,
     "military_vehicles": 316,
-    "armored_vehicles": 109,
     "regime_row": 1,
     "liberal_democracy_index": 0.187,
     "civil_liberties_index": 0.652,
@@ -12686,6 +12732,7 @@
     "helicopters": 173,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 3435,
     "self_propelled_artillery": 35,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -12720,7 +12767,6 @@
     "border_km": 4389,
     "waterway_km": 2900,
     "military_vehicles": 23548,
-    "armored_vehicles": 3435,
     "regime_row": 1,
     "liberal_democracy_index": 0.221,
     "civil_liberties_index": 0.626,
@@ -12805,7 +12851,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "towed_artillery changes sharply between GFP editions (2026: 0, 2022: 200); often a reporting or definitional change, verify before relying on it"
+    "towed_artillery changes sharply between GFP editions (2026: 0, 2025: 70); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "MKD": {
@@ -12831,6 +12877,7 @@
     "helicopters": 10,
     "attack_helicopters": 4,
     "tanks": 0,
+    "armored_vehicles": 228,
     "self_propelled_artillery": 0,
     "towed_artillery": 156,
     "rocket_artillery": 18,
@@ -12865,7 +12912,6 @@
     "border_km": 838,
     "waterway_km": 0,
     "military_vehicles": 1878,
-    "armored_vehicles": 228,
     "regime_row": 2,
     "liberal_democracy_index": 0.374,
     "civil_liberties_index": 0.789,
@@ -12950,7 +12996,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 60000, 2022: 3000); often a reporting or definitional change, verify before relying on it"
+    "tanks changes sharply between GFP editions (2026: 0, 2025: 20); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "MLI": {
@@ -12976,6 +13022,7 @@
     "helicopters": 10,
     "attack_helicopters": 8,
     "tanks": 0,
+    "armored_vehicles": 264,
     "self_propelled_artillery": 0,
     "towed_artillery": 50,
     "rocket_artillery": 30,
@@ -13010,7 +13057,6 @@
     "border_km": 7908,
     "waterway_km": 1800,
     "military_vehicles": 3717,
-    "armored_vehicles": 264,
     "regime_row": 0,
     "liberal_democracy_index": 0.15,
     "civil_liberties_index": 0.609,
@@ -13095,7 +13141,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "tanks changes sharply between GFP editions (2026: 0, 2022: 80); often a reporting or definitional change, verify before relying on it"
+    "towed_artillery changes sharply between GFP editions (2026: 50, 2025: 10); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "MMR": {
@@ -13121,6 +13167,7 @@
     "helicopters": 86,
     "attack_helicopters": 9,
     "tanks": 1040,
+    "armored_vehicles": 2486,
     "self_propelled_artillery": 225,
     "towed_artillery": 1680,
     "rocket_artillery": 1520,
@@ -13155,7 +13202,6 @@
     "border_km": 6522,
     "waterway_km": 12800,
     "military_vehicles": 11576,
-    "armored_vehicles": 2486,
     "regime_row": 0,
     "liberal_democracy_index": 0.015,
     "civil_liberties_index": 0.102,
@@ -13240,7 +13286,10 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 19000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "tanks changes sharply between GFP editions (2026: 1040, 2025: 445); a reporting or definitional change, or an error in one edition: verify",
+    "self_propelled_artillery changes sharply between GFP editions (2026: 225, 2025: 95); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2026: 1680, 2025: 210); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 1520, 2025: 180); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "MNE": {
@@ -13266,6 +13315,7 @@
     "helicopters": 10,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 100,
     "self_propelled_artillery": 0,
     "towed_artillery": 12,
     "rocket_artillery": 12,
@@ -13300,7 +13350,6 @@
     "border_km": 680,
     "waterway_km": 0,
     "military_vehicles": 946,
-    "armored_vehicles": 100,
     "regime_row": 2,
     "liberal_democracy_index": 0.5,
     "civil_liberties_index": 0.881,
@@ -13410,6 +13459,7 @@
     "helicopters": 3,
     "attack_helicopters": 0,
     "tanks": 420,
+    "armored_vehicles": 688,
     "self_propelled_artillery": 0,
     "towed_artillery": 500,
     "rocket_artillery": 130,
@@ -13423,7 +13473,7 @@
     "corvettes": 0,
     "patrol_vessels": 0,
     "mine_warfare": 0,
-    "defense_budget_usd": 1590000000,
+    "defense_budget_usd": 165110000,
     "external_debt_usd": 8379000000,
     "ppp_usd": 59221000000,
     "fx_gold_reserves_usd": 5508000000,
@@ -13444,7 +13494,6 @@
     "border_km": 8082,
     "waterway_km": 580,
     "military_vehicles": 11040,
-    "armored_vehicles": 688,
     "regime_row": 2,
     "liberal_democracy_index": 0.424,
     "civil_liberties_index": 0.801,
@@ -13487,7 +13536,6 @@
      "corvettes",
      "patrol_vessels",
      "mine_warfare",
-     "defense_budget_usd",
      "external_debt_usd",
      "ppp_usd",
      "fx_gold_reserves_usd",
@@ -13512,6 +13560,9 @@
     "model": [
      "armored_vehicles"
     ],
+    "gfp2025": [
+     "defense_budget_usd"
+    ],
     "vdem_v16": [
      "regime_row",
      "liberal_democracy_index",
@@ -13528,7 +13579,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "defense_budget_usd: 2026 edition's 1,590,000,000 is 11.9x SIPRI's 2020 level; used the 2025 edition's 165,110,000, which is consistent with SIPRI"
    ]
   },
   "MOZ": {
@@ -13554,6 +13606,7 @@
     "helicopters": 7,
     "attack_helicopters": 2,
     "tanks": 60,
+    "armored_vehicles": 211,
     "self_propelled_artillery": 0,
     "towed_artillery": 104,
     "rocket_artillery": 12,
@@ -13588,7 +13641,6 @@
     "border_km": 4783,
     "waterway_km": 460,
     "military_vehicles": 3488,
-    "armored_vehicles": 211,
     "regime_row": 1,
     "liberal_democracy_index": 0.175,
     "civil_liberties_index": 0.483,
@@ -13672,7 +13724,9 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "tanks changes sharply between GFP editions (2026: 60, 2025: 30); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2026: 104, 2025: 52); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "MRT": {
@@ -13698,6 +13752,7 @@
     "helicopters": 4,
     "attack_helicopters": 0,
     "tanks": 51,
+    "armored_vehicles": 170,
     "self_propelled_artillery": 0,
     "towed_artillery": 75,
     "rocket_artillery": 0,
@@ -13732,7 +13787,6 @@
     "border_km": 5002,
     "waterway_km": 1086,
     "military_vehicles": 5024,
-    "armored_vehicles": 170,
     "regime_row": 1,
     "liberal_democracy_index": 0.127,
     "civil_liberties_index": 0.513,
@@ -13817,7 +13871,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 66000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "tanks changes sharply between GFP editions (2026: 51, 2025: 25); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "MYS": {
@@ -13843,6 +13897,7 @@
     "helicopters": 45,
     "attack_helicopters": 0,
     "tanks": 48,
+    "armored_vehicles": 1708,
     "self_propelled_artillery": 0,
     "towed_artillery": 196,
     "rocket_artillery": 36,
@@ -13877,7 +13932,6 @@
     "border_km": 2742,
     "waterway_km": 7200,
     "military_vehicles": 15415,
-    "armored_vehicles": 1708,
     "regime_row": 2,
     "liberal_democracy_index": 0.355,
     "civil_liberties_index": 0.739,
@@ -13987,6 +14041,7 @@
     "helicopters": 7,
     "attack_helicopters": 2,
     "tanks": 7,
+    "armored_vehicles": 685,
     "self_propelled_artillery": 0,
     "towed_artillery": 50,
     "rocket_artillery": 55,
@@ -14021,7 +14076,6 @@
     "border_km": 4220,
     "waterway_km": 0,
     "military_vehicles": 2402,
-    "armored_vehicles": 685,
     "regime_row": 2,
     "liberal_democracy_index": 0.519,
     "civil_liberties_index": 0.883,
@@ -14106,6 +14160,8 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "towed_artillery changes sharply between GFP editions (2026: 50, 2025: 25); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 55, 2025: 25); a reporting or definitional change, or an error in one edition: verify",
     "naval sub-types sum to 17, above naval_fleet_total 15"
    ]
   },
@@ -14132,6 +14188,7 @@
     "helicopters": 13,
     "attack_helicopters": 2,
     "tanks": 0,
+    "armored_vehicles": 182,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -14166,7 +14223,6 @@
     "border_km": 5834,
     "waterway_km": 300,
     "military_vehicles": 1550,
-    "armored_vehicles": 182,
     "regime_row": 0,
     "liberal_democracy_index": 0.177,
     "civil_liberties_index": 0.65,
@@ -14276,6 +14332,7 @@
     "helicopters": 69,
     "attack_helicopters": 15,
     "tanks": 330,
+    "armored_vehicles": 1772,
     "self_propelled_artillery": 40,
     "towed_artillery": 339,
     "rocket_artillery": 37,
@@ -14310,7 +14367,6 @@
     "border_km": 4477,
     "waterway_km": 8600,
     "military_vehicles": 12219,
-    "armored_vehicles": 1772,
     "regime_row": 2,
     "liberal_democracy_index": 0.311,
     "civil_liberties_index": 0.674,
@@ -14420,6 +14476,7 @@
     "helicopters": 12,
     "attack_helicopters": 0,
     "tanks": 186,
+    "armored_vehicles": 286,
     "self_propelled_artillery": 0,
     "towed_artillery": 347,
     "rocket_artillery": 151,
@@ -14433,7 +14490,7 @@
     "corvettes": 0,
     "patrol_vessels": 23,
     "mine_warfare": 0,
-    "defense_budget_usd": 1311600000,
+    "defense_budget_usd": 92000000,
     "external_debt_usd": 6753000000,
     "ppp_usd": 52989000000,
     "fx_gold_reserves_usd": 6105000000,
@@ -14454,7 +14511,6 @@
     "border_km": 1253,
     "waterway_km": 2220,
     "military_vehicles": 6344,
-    "armored_vehicles": 286,
     "regime_row": 1,
     "liberal_democracy_index": 0.019,
     "civil_liberties_index": 0.077,
@@ -14497,7 +14553,6 @@
      "corvettes",
      "patrol_vessels",
      "mine_warfare",
-     "defense_budget_usd",
      "external_debt_usd",
      "ppp_usd",
      "fx_gold_reserves_usd",
@@ -14522,6 +14577,9 @@
     "model": [
      "armored_vehicles"
     ],
+    "gfp2025": [
+     "defense_budget_usd"
+    ],
     "vdem_v16": [
      "regime_row",
      "liberal_democracy_index",
@@ -14538,7 +14596,11 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "defense_budget_usd: 2026 edition's 1,311,600,000 is 13.4x SIPRI's 2020 level; used the 2025 edition's 92,000,000, which is consistent with SIPRI",
+    "tanks changes sharply between GFP editions (2026: 186, 2025: 89); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2026: 347, 2025: 0); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 151, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "NLD": {
@@ -14564,6 +14626,7 @@
     "helicopters": 67,
     "attack_helicopters": 16,
     "tanks": 18,
+    "armored_vehicles": 2806,
     "self_propelled_artillery": 46,
     "towed_artillery": 0,
     "rocket_artillery": 4,
@@ -14598,7 +14661,6 @@
     "border_km": 1053,
     "waterway_km": 6237,
     "military_vehicles": 6689,
-    "armored_vehicles": 2806,
     "regime_row": 3,
     "liberal_democracy_index": 0.774,
     "civil_liberties_index": 0.912,
@@ -14682,7 +14744,9 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "fighters changes sharply between GFP editions (2026: 0, 2025: 32); a reporting or definitional change, or an error in one edition: verify",
+    "attack_aircraft changes sharply between GFP editions (2026: 38, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ],
    "missile_defense": [
     {
@@ -14722,6 +14786,7 @@
     "helicopters": 34,
     "attack_helicopters": 0,
     "tanks": 36,
+    "armored_vehicles": 700,
     "self_propelled_artillery": 28,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -14756,7 +14821,6 @@
     "border_km": 2566,
     "waterway_km": 1577,
     "military_vehicles": 11441,
-    "armored_vehicles": 700,
     "regime_row": 3,
     "liberal_democracy_index": 0.847,
     "civil_liberties_index": 0.947,
@@ -14841,7 +14905,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 20100, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 20100, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "NPL": {
@@ -14867,6 +14931,7 @@
     "helicopters": 10,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 277,
     "self_propelled_artillery": 0,
     "towed_artillery": 14,
     "rocket_artillery": 0,
@@ -14901,7 +14966,6 @@
     "border_km": 3159,
     "waterway_km": 0,
     "military_vehicles": 1108,
-    "armored_vehicles": 277,
     "regime_row": 2,
     "liberal_democracy_index": 0.505,
     "civil_liberties_index": 0.742,
@@ -14986,7 +15050,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 82000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 82000, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "NZL": {
@@ -15012,6 +15076,7 @@
     "helicopters": 21,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 500,
     "self_propelled_artillery": 0,
     "towed_artillery": 31,
     "rocket_artillery": 0,
@@ -15046,7 +15111,6 @@
     "border_km": 0,
     "waterway_km": 0,
     "military_vehicles": 3378,
-    "armored_vehicles": 500,
     "regime_row": 3,
     "liberal_democracy_index": 0.787,
     "civil_liberties_index": 0.948,
@@ -15156,6 +15220,7 @@
     "helicopters": 31,
     "attack_helicopters": 0,
     "tanks": 264,
+    "armored_vehicles": 2103,
     "self_propelled_artillery": 24,
     "towed_artillery": 144,
     "rocket_artillery": 0,
@@ -15190,7 +15255,6 @@
     "border_km": 1561,
     "waterway_km": 0,
     "military_vehicles": 11380,
-    "armored_vehicles": 2103,
     "regime_row": 0,
     "liberal_democracy_index": 0.14,
     "civil_liberties_index": 0.446,
@@ -15274,7 +15338,9 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "active_personnel changes sharply between GFP editions (2026: 100000, 2025: 42600); a reporting or definitional change, or an error in one edition: verify",
+    "reserve_personnel changes sharply between GFP editions (2026: 0, 2025: 100000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "PAK": {
@@ -15300,6 +15366,7 @@
     "helicopters": 379,
     "attack_helicopters": 55,
     "tanks": 2677,
+    "armored_vehicles": 9432,
     "self_propelled_artillery": 662,
     "towed_artillery": 2629,
     "rocket_artillery": 652,
@@ -15334,7 +15401,6 @@
     "border_km": 7257,
     "waterway_km": 0,
     "military_vehicles": 59044,
-    "armored_vehicles": 9432,
     "regime_row": 1,
     "liberal_democracy_index": 0.176,
     "civil_liberties_index": 0.466,
@@ -15459,6 +15525,7 @@
     "helicopters": 23,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 50,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -15493,7 +15560,6 @@
     "border_km": 687,
     "waterway_km": 800,
     "military_vehicles": 1550,
-    "armored_vehicles": 50,
     "regime_row": 2,
     "liberal_democracy_index": 0.575,
     "civil_liberties_index": 0.874,
@@ -15578,7 +15644,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "active_personnel changes sharply between GFP editions (2026: 16300, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "active_personnel changes sharply between GFP editions (2026: 16300, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "PER": {
@@ -15604,6 +15670,7 @@
     "helicopters": 112,
     "attack_helicopters": 16,
     "tanks": 355,
+    "armored_vehicles": 1342,
     "self_propelled_artillery": 12,
     "towed_artillery": 290,
     "rocket_artillery": 61,
@@ -15638,7 +15705,6 @@
     "border_km": 7062,
     "waterway_km": 8808,
     "military_vehicles": 9168,
-    "armored_vehicles": 1342,
     "regime_row": 2,
     "liberal_democracy_index": 0.506,
     "civil_liberties_index": 0.8,
@@ -15748,6 +15814,7 @@
     "helicopters": 130,
     "attack_helicopters": 6,
     "tanks": 18,
+    "armored_vehicles": 600,
     "self_propelled_artillery": 12,
     "towed_artillery": 296,
     "rocket_artillery": 0,
@@ -15782,7 +15849,6 @@
     "border_km": 0,
     "waterway_km": 3219,
     "military_vehicles": 20551,
-    "armored_vehicles": 600,
     "regime_row": 1,
     "liberal_democracy_index": 0.291,
     "civil_liberties_index": 0.561,
@@ -15866,8 +15932,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 1500000, 2022: 100000); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ]
   },
   "POL": {
@@ -15893,6 +15958,7 @@
     "helicopters": 224,
     "attack_helicopters": 29,
     "tanks": 798,
+    "armored_vehicles": 4426,
     "self_propelled_artillery": 593,
     "towed_artillery": 0,
     "rocket_artillery": 298,
@@ -15927,7 +15993,6 @@
     "border_km": 2845,
     "waterway_km": 3997,
     "military_vehicles": 57972,
-    "armored_vehicles": 4426,
     "regime_row": 2,
     "liberal_democracy_index": 0.645,
     "civil_liberties_index": 0.918,
@@ -16012,7 +16077,8 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 350000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "defense_budget_usd 55,865,141,600 is 3.5x SIPRI's 2020 level; plausible only if spending changed drastically (e.g. war), verify",
+    "attack_aircraft changes sharply between GFP editions (2026: 12, 2025: 44); a reporting or definitional change, or an error in one edition: verify"
    ],
    "missile_defense": [
     {
@@ -16065,6 +16131,7 @@
     "helicopters": 205,
     "attack_helicopters": 20,
     "tanks": 4895,
+    "armored_vehicles": 3416,
     "self_propelled_artillery": 1300,
     "towed_artillery": 700,
     "rocket_artillery": 1500,
@@ -16099,7 +16166,6 @@
     "border_km": 1607,
     "waterway_km": 2250,
     "military_vehicles": 47792,
-    "armored_vehicles": 3416,
     "regime_row": 0,
     "liberal_democracy_index": 0.014,
     "civil_liberties_index": 0.024,
@@ -16225,6 +16291,7 @@
     "helicopters": 36,
     "attack_helicopters": 0,
     "tanks": 34,
+    "armored_vehicles": 666,
     "self_propelled_artillery": 23,
     "towed_artillery": 54,
     "rocket_artillery": 0,
@@ -16259,7 +16326,6 @@
     "border_km": 1224,
     "waterway_km": 764,
     "military_vehicles": 10419,
-    "armored_vehicles": 666,
     "regime_row": 2,
     "liberal_democracy_index": 0.717,
     "civil_liberties_index": 0.836,
@@ -16343,7 +16409,9 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "reserve_personnel changes sharply between GFP editions (2026: 23500, 2025: 211700); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2026: 54, 2025: 115); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "PRY": {
@@ -16369,6 +16437,7 @@
     "helicopters": 18,
     "attack_helicopters": 0,
     "tanks": 10,
+    "armored_vehicles": 94,
     "self_propelled_artillery": 6,
     "towed_artillery": 50,
     "rocket_artillery": 0,
@@ -16403,7 +16472,6 @@
     "border_km": 4655,
     "waterway_km": 3100,
     "military_vehicles": 2876,
-    "armored_vehicles": 94,
     "regime_row": 2,
     "liberal_democracy_index": 0.376,
     "civil_liberties_index": 0.805,
@@ -16487,7 +16555,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "towed_artillery changes sharply between GFP editions (2026: 50, 2025: 25); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "QAT": {
@@ -16513,6 +16582,7 @@
     "helicopters": 85,
     "attack_helicopters": 24,
     "tanks": 62,
+    "armored_vehicles": 1434,
     "self_propelled_artillery": 46,
     "towed_artillery": 12,
     "rocket_artillery": 16,
@@ -16547,7 +16617,6 @@
     "border_km": 87,
     "waterway_km": 0,
     "military_vehicles": 5576,
-    "armored_vehicles": 1434,
     "regime_row": 0,
     "liberal_democracy_index": 0.091,
     "civil_liberties_index": 0.357,
@@ -16632,7 +16701,8 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 4000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "active_personnel changes sharply between GFP editions (2026: 26550, 2025: 66550); a reporting or definitional change, or an error in one edition: verify",
+    "reserve_personnel changes sharply between GFP editions (2026: 4000, 2025: 15000); a reporting or definitional change, or an error in one edition: verify"
    ],
    "missile_defense": [
     {
@@ -16672,6 +16742,7 @@
     "helicopters": 66,
     "attack_helicopters": 0,
     "tanks": 451,
+    "armored_vehicles": 1392,
     "self_propelled_artillery": 0,
     "towed_artillery": 720,
     "rocket_artillery": 243,
@@ -16706,7 +16777,6 @@
     "border_km": 2844,
     "waterway_km": 1731,
     "military_vehicles": 13266,
-    "armored_vehicles": 1392,
     "regime_row": 2,
     "liberal_democracy_index": 0.464,
     "civil_liberties_index": 0.877,
@@ -16821,7 +16891,7 @@
   },
   "RUS": {
    "name": "Russia",
-   "region": "Europe",
+   "region": "Asia",
    "values": {
     "gfp_rank": 2,
     "gfp_power_index": 0.0791,
@@ -16842,6 +16912,7 @@
     "helicopters": 1643,
     "attack_helicopters": 556,
     "tanks": 5630,
+    "armored_vehicles": 13654,
     "self_propelled_artillery": 3603,
     "towed_artillery": 5920,
     "rocket_artillery": 2486,
@@ -16876,7 +16947,6 @@
     "border_km": 22407,
     "waterway_km": 102000,
     "military_vehicles": 126512,
-    "armored_vehicles": 13654,
     "regime_row": 1,
     "liberal_democracy_index": 0.056,
     "civil_liberties_index": 0.265,
@@ -17030,6 +17100,7 @@
     "helicopters": 264,
     "attack_helicopters": 34,
     "tanks": 1085,
+    "armored_vehicles": 6336,
     "self_propelled_artillery": 380,
     "towed_artillery": 557,
     "rocket_artillery": 327,
@@ -17064,7 +17135,6 @@
     "border_km": 4272,
     "waterway_km": 0,
     "military_vehicles": 22370,
-    "armored_vehicles": 6336,
     "regime_row": 0,
     "liberal_democracy_index": 0.047,
     "civil_liberties_index": 0.178,
@@ -17201,6 +17271,7 @@
     "helicopters": 64,
     "attack_helicopters": 35,
     "tanks": 1055,
+    "armored_vehicles": 607,
     "self_propelled_artillery": 100,
     "towed_artillery": 1150,
     "rocket_artillery": 800,
@@ -17235,7 +17306,6 @@
     "border_km": 6819,
     "waterway_km": 4068,
     "military_vehicles": 8890,
-    "armored_vehicles": 607,
     "regime_row": 0,
     "liberal_democracy_index": 0.034,
     "civil_liberties_index": 0.171,
@@ -17320,7 +17390,11 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "rocket_artillery changes sharply between GFP editions (2026: 800, 2022: 30); often a reporting or definitional change, verify before relying on it"
+    "active_personnel changes sharply between GFP editions (2026: 300000, 2025: 92000); a reporting or definitional change, or an error in one edition: verify",
+    "reserve_personnel changes sharply between GFP editions (2026: 200000, 2025: 85000); a reporting or definitional change, or an error in one edition: verify",
+    "tanks changes sharply between GFP editions (2026: 1055, 2025: 224); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2026: 1150, 2025: 287); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 800, 2025: 192); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "SEN": {
@@ -17346,6 +17420,7 @@
     "helicopters": 19,
     "attack_helicopters": 5,
     "tanks": 0,
+    "armored_vehicles": null,
     "self_propelled_artillery": 0,
     "towed_artillery": 20,
     "rocket_artillery": 6,
@@ -17380,7 +17455,6 @@
     "border_km": 2684,
     "waterway_km": 1000,
     "military_vehicles": 1860,
-    "armored_vehicles": null,
     "regime_row": 2,
     "liberal_democracy_index": 0.484,
     "civil_liberties_index": 0.812,
@@ -17488,6 +17562,7 @@
     "helicopters": 75,
     "attack_helicopters": 20,
     "tanks": 170,
+    "armored_vehicles": 3517,
     "self_propelled_artillery": 48,
     "towed_artillery": 89,
     "rocket_artillery": 24,
@@ -17522,7 +17597,6 @@
     "border_km": 0,
     "waterway_km": 0,
     "military_vehicles": 17244,
-    "armored_vehicles": 3517,
     "regime_row": 1,
     "liberal_democracy_index": 0.36,
     "civil_liberties_index": 0.717,
@@ -17632,6 +17706,7 @@
     "helicopters": 1,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 20,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -17666,7 +17741,6 @@
     "border_km": 1093,
     "waterway_km": 800,
     "military_vehicles": 350,
-    "armored_vehicles": 20,
     "regime_row": 1,
     "liberal_democracy_index": 0.348,
     "civil_liberties_index": 0.792,
@@ -17750,12 +17824,13 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "defense_budget_usd 450,000,000 is 17.8x SIPRI's 2020 level; plausible only if spending changed drastically (e.g. war), verify"
    ]
   },
   "SLV": {
    "name": "El Salvador",
-   "region": "South America",
+   "region": "North America",
    "values": {
     "gfp_rank": 129,
     "gfp_power_index": 2.9973,
@@ -17776,6 +17851,7 @@
     "helicopters": 28,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 125,
     "self_propelled_artillery": 0,
     "towed_artillery": 76,
     "rocket_artillery": 0,
@@ -17810,7 +17886,6 @@
     "border_km": 590,
     "waterway_km": 422,
     "military_vehicles": 2144,
-    "armored_vehicles": 125,
     "regime_row": 1,
     "liberal_democracy_index": 0.09,
     "civil_liberties_index": 0.511,
@@ -17895,7 +17970,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 0, 2022: 10000); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 0, 2025: 10000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "SOM": {
@@ -17921,6 +17996,7 @@
     "helicopters": 6,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 65,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -17955,7 +18031,6 @@
     "border_km": 2385,
     "waterway_km": 0,
     "military_vehicles": 1104,
-    "armored_vehicles": 65,
     "regime_row": 0,
     "liberal_democracy_index": 0.128,
     "civil_liberties_index": 0.454,
@@ -18039,7 +18114,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "active_personnel changes sharply between GFP editions (2026: 30000, 2025: 15000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "SRB": {
@@ -18065,6 +18141,7 @@
     "helicopters": 51,
     "attack_helicopters": 4,
     "tanks": 242,
+    "armored_vehicles": 849,
     "self_propelled_artillery": 96,
     "towed_artillery": 150,
     "rocket_artillery": 73,
@@ -18099,7 +18176,6 @@
     "border_km": 2322,
     "waterway_km": 587,
     "military_vehicles": 7190,
-    "armored_vehicles": 849,
     "regime_row": 1,
     "liberal_democracy_index": 0.208,
     "civil_liberties_index": 0.73,
@@ -18183,8 +18259,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 2000, 2022: 50000); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ]
   },
   "SSD": {
@@ -18210,6 +18285,7 @@
     "helicopters": 15,
     "attack_helicopters": 6,
     "tanks": 122,
+    "armored_vehicles": 333,
     "self_propelled_artillery": 24,
     "towed_artillery": 0,
     "rocket_artillery": 15,
@@ -18244,7 +18320,6 @@
     "border_km": 6018,
     "waterway_km": 0,
     "military_vehicles": 2550,
-    "armored_vehicles": 333,
     "regime_row": 0,
     "liberal_democracy_index": 0.064,
     "civil_liberties_index": 0.228,
@@ -18328,7 +18403,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "tanks changes sharply between GFP editions (2026: 122, 2025: 30); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "SUR": {
@@ -18354,6 +18430,7 @@
     "helicopters": 3,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 100,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -18388,7 +18465,6 @@
     "border_km": 1907,
     "waterway_km": 1200,
     "military_vehicles": 1250,
-    "armored_vehicles": 100,
     "regime_row": 2,
     "liberal_democracy_index": 0.626,
     "civil_liberties_index": 0.913,
@@ -18498,6 +18574,7 @@
     "helicopters": 22,
     "attack_helicopters": 0,
     "tanks": 45,
+    "armored_vehicles": 1022,
     "self_propelled_artillery": 35,
     "towed_artillery": 9,
     "rocket_artillery": 25,
@@ -18532,7 +18609,6 @@
     "border_km": 1587,
     "waterway_km": 172,
     "military_vehicles": 6636,
-    "armored_vehicles": 1022,
     "regime_row": 2,
     "liberal_democracy_index": 0.573,
     "civil_liberties_index": 0.857,
@@ -18642,6 +18718,7 @@
     "helicopters": 16,
     "attack_helicopters": 0,
     "tanks": 54,
+    "armored_vehicles": 466,
     "self_propelled_artillery": 17,
     "towed_artillery": 18,
     "rocket_artillery": 0,
@@ -18676,7 +18753,6 @@
     "border_km": 1211,
     "waterway_km": 710,
     "military_vehicles": 4636,
-    "armored_vehicles": 466,
     "regime_row": 2,
     "liberal_democracy_index": 0.589,
     "civil_liberties_index": 0.883,
@@ -18760,8 +18836,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 26000, 2022: 2000); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ]
   },
   "SWE": {
@@ -18787,6 +18862,7 @@
     "helicopters": 53,
     "attack_helicopters": 0,
     "tanks": 110,
+    "armored_vehicles": 3065,
     "self_propelled_artillery": 24,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -18821,7 +18897,6 @@
     "border_km": 2211,
     "waterway_km": 2052,
     "military_vehicles": 27576,
-    "armored_vehicles": 3065,
     "regime_row": 3,
     "liberal_democracy_index": 0.853,
     "civil_liberties_index": 0.96,
@@ -18905,8 +18980,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 34000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ],
    "missile_defense": [
     {
@@ -18946,6 +19020,7 @@
     "helicopters": 39,
     "attack_helicopters": 7,
     "tanks": 168,
+    "armored_vehicles": 1343,
     "self_propelled_artillery": 60,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -18980,7 +19055,6 @@
     "border_km": 2363,
     "waterway_km": 900,
     "military_vehicles": 18736,
-    "armored_vehicles": 1343,
     "regime_row": 0,
     "liberal_democracy_index": 0.054,
     "civil_liberties_index": 0.321,
@@ -19065,9 +19139,11 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "tanks changes sharply between GFP editions (2026: 168, 2022: 3540); often a reporting or definitional change, verify before relying on it",
-    "towed_artillery changes sharply between GFP editions (2026: 0, 2022: 2210); often a reporting or definitional change, verify before relying on it",
-    "rocket_artillery changes sharply between GFP editions (2026: 0, 2022: 629); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 0, 2025: 50000); a reporting or definitional change, or an error in one edition: verify",
+    "tanks changes sharply between GFP editions (2026: 168, 2025: 365); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2026: 0, 2025: 641); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 0, 2025: 204); a reporting or definitional change, or an error in one edition: verify",
+    "fighters changes sharply between GFP editions (2026: 52, 2025: 104); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "TCD": {
@@ -19093,6 +19169,7 @@
     "helicopters": 16,
     "attack_helicopters": 3,
     "tanks": 90,
+    "armored_vehicles": 691,
     "self_propelled_artillery": 10,
     "towed_artillery": 13,
     "rocket_artillery": 16,
@@ -19127,7 +19204,6 @@
     "border_km": 6406,
     "waterway_km": 12400,
     "military_vehicles": 4345,
-    "armored_vehicles": 691,
     "regime_row": 1,
     "liberal_democracy_index": 0.062,
     "civil_liberties_index": 0.284,
@@ -19237,6 +19313,7 @@
     "helicopters": 258,
     "attack_helicopters": 7,
     "tanks": 744,
+    "armored_vehicles": 3312,
     "self_propelled_artillery": 59,
     "towed_artillery": 595,
     "rocket_artillery": 17,
@@ -19271,7 +19348,6 @@
     "border_km": 5673,
     "waterway_km": 4000,
     "military_vehicles": 52590,
-    "armored_vehicles": 3312,
     "regime_row": 1,
     "liberal_democracy_index": 0.314,
     "civil_liberties_index": 0.478,
@@ -19381,6 +19457,7 @@
     "helicopters": 20,
     "attack_helicopters": 6,
     "tanks": 38,
+    "armored_vehicles": 81,
     "self_propelled_artillery": 3,
     "towed_artillery": 13,
     "rocket_artillery": 24,
@@ -19415,7 +19492,6 @@
     "border_km": 4130,
     "waterway_km": 200,
     "military_vehicles": 6782,
-    "armored_vehicles": 81,
     "regime_row": 1,
     "liberal_democracy_index": 0.043,
     "civil_liberties_index": 0.169,
@@ -19500,8 +19576,8 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "active_personnel changes sharply between GFP editions (2026: 150000, 2022: 9500); often a reporting or definitional change, verify before relying on it",
-    "reserve_personnel changes sharply between GFP editions (2026: 600000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "defense_budget_usd 450,460,000 is 4.5x SIPRI's 2020 level; plausible only if spending changed drastically (e.g. war), verify",
+    "active_personnel changes sharply between GFP editions (2026: 150000, 2025: 9500); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "TKM": {
@@ -19527,6 +19603,7 @@
     "helicopters": 26,
     "attack_helicopters": 10,
     "tanks": 654,
+    "armored_vehicles": 1972,
     "self_propelled_artillery": 73,
     "towed_artillery": 457,
     "rocket_artillery": 164,
@@ -19561,7 +19638,6 @@
     "border_km": 4158,
     "waterway_km": 1300,
     "military_vehicles": 11588,
-    "armored_vehicles": 1972,
     "regime_row": 0,
     "liberal_democracy_index": 0.034,
     "civil_liberties_index": 0.112,
@@ -19671,6 +19747,7 @@
     "helicopters": 101,
     "attack_helicopters": 0,
     "tanks": 145,
+    "armored_vehicles": 954,
     "self_propelled_artillery": 0,
     "towed_artillery": 105,
     "rocket_artillery": 0,
@@ -19705,7 +19782,6 @@
     "border_km": 1495,
     "waterway_km": 0,
     "military_vehicles": 13927,
-    "armored_vehicles": 954,
     "regime_row": 1,
     "liberal_democracy_index": 0.265,
     "civil_liberties_index": 0.685,
@@ -19815,6 +19891,7 @@
     "helicopters": 509,
     "attack_helicopters": 111,
     "tanks": 2284,
+    "armored_vehicles": 10029,
     "self_propelled_artillery": 1045,
     "towed_artillery": 635,
     "rocket_artillery": 237,
@@ -19849,7 +19926,6 @@
     "border_km": 2816,
     "waterway_km": 1200,
     "military_vehicles": 98193,
-    "armored_vehicles": 10029,
     "regime_row": 1,
     "liberal_democracy_index": 0.11,
     "civil_liberties_index": 0.402,
@@ -19933,7 +20009,8 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "towed_artillery changes sharply between GFP editions (2026: 635, 2025: 1707); a reporting or definitional change, or an error in one edition: verify"
    ],
    "missile_defense": [
     {
@@ -19973,6 +20050,7 @@
     "helicopters": 239,
     "attack_helicopters": 91,
     "tanks": 1090,
+    "armored_vehicles": 3409,
     "self_propelled_artillery": 488,
     "towed_artillery": 1360,
     "rocket_artillery": 223,
@@ -20007,7 +20085,6 @@
     "border_km": 0,
     "waterway_km": 0,
     "military_vehicles": 24067,
-    "armored_vehicles": 3409,
     "regime_row": 3,
     "liberal_democracy_index": 0.704,
     "civil_liberties_index": 0.93,
@@ -20142,6 +20219,7 @@
     "helicopters": 15,
     "attack_helicopters": 0,
     "tanks": 200,
+    "armored_vehicles": 356,
     "self_propelled_artillery": 0,
     "towed_artillery": 205,
     "rocket_artillery": 70,
@@ -20176,7 +20254,6 @@
     "border_km": 4161,
     "waterway_km": 0,
     "military_vehicles": 8408,
-    "armored_vehicles": 356,
     "regime_row": 1,
     "liberal_democracy_index": 0.297,
     "civil_liberties_index": 0.673,
@@ -20261,9 +20338,10 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 0, 2022: 40000); often a reporting or definitional change, verify before relying on it",
-    "towed_artillery changes sharply between GFP editions (2026: 205, 2022: 0); often a reporting or definitional change, verify before relying on it",
-    "rocket_artillery changes sharply between GFP editions (2026: 70, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "reserve_personnel changes sharply between GFP editions (2026: 0, 2025: 80000); a reporting or definitional change, or an error in one edition: verify",
+    "tanks changes sharply between GFP editions (2026: 200, 2025: 62); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2026: 205, 2025: 0); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 70, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "UGA": {
@@ -20289,6 +20367,7 @@
     "helicopters": 30,
     "attack_helicopters": 6,
     "tanks": 259,
+    "armored_vehicles": 1154,
     "self_propelled_artillery": 6,
     "towed_artillery": 26,
     "rocket_artillery": 12,
@@ -20323,7 +20402,6 @@
     "border_km": 2729,
     "waterway_km": 0,
     "military_vehicles": 9702,
-    "armored_vehicles": 1154,
     "regime_row": 1,
     "liberal_democracy_index": 0.165,
     "civil_liberties_index": 0.315,
@@ -20407,8 +20485,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 0, 2022: 10000); often a reporting or definitional change, verify before relying on it"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
    ]
   },
   "UKR": {
@@ -20434,6 +20511,7 @@
     "helicopters": 140,
     "attack_helicopters": 39,
     "tanks": 1121,
+    "armored_vehicles": 5313,
     "self_propelled_artillery": 682,
     "towed_artillery": 625,
     "rocket_artillery": 288,
@@ -20468,7 +20546,6 @@
     "border_km": 5581,
     "waterway_km": 1672,
     "military_vehicles": 45458,
-    "armored_vehicles": 5313,
     "regime_row": 1,
     "liberal_democracy_index": 0.24,
     "civil_liberties_index": 0.578,
@@ -20553,7 +20630,8 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 4000000, 2022: 250000); often a reporting or definitional change, verify before relying on it"
+    "defense_budget_usd 45,000,000,000 is 6.0x SIPRI's 2020 level; plausible only if spending changed drastically (e.g. war), verify",
+    "reserve_personnel changes sharply between GFP editions (2026: 4000000, 2025: 1200000); a reporting or definitional change, or an error in one edition: verify"
    ],
    "missile_defense": [
     {
@@ -20616,6 +20694,7 @@
     "helicopters": 12,
     "attack_helicopters": 0,
     "tanks": 62,
+    "armored_vehicles": 372,
     "self_propelled_artillery": 16,
     "towed_artillery": 83,
     "rocket_artillery": 4,
@@ -20650,7 +20729,6 @@
     "border_km": 1591,
     "waterway_km": 1600,
     "military_vehicles": 5968,
-    "armored_vehicles": 372,
     "regime_row": 3,
     "liberal_democracy_index": 0.79,
     "civil_liberties_index": 0.932,
@@ -20734,7 +20812,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "tanks changes sharply between GFP editions (2026: 62, 2025: 31); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "USA": {
@@ -20760,6 +20839,7 @@
     "helicopters": 5913,
     "attack_helicopters": 1024,
     "tanks": 4666,
+    "armored_vehicles": 31892,
     "self_propelled_artillery": 1521,
     "towed_artillery": 1878,
     "rocket_artillery": 1731,
@@ -20794,7 +20874,6 @@
     "border_km": 12002,
     "waterway_km": 41009,
     "military_vehicles": 409660,
-    "armored_vehicles": 31892,
     "regime_row": 2,
     "liberal_democracy_index": 0.571,
     "civil_liberties_index": 0.826,
@@ -20878,7 +20957,9 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "self_propelled_artillery changes sharply between GFP editions (2026: 1521, 2025: 671); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 1731, 2025: 641); a reporting or definitional change, or an error in one edition: verify"
    ],
    "nuclear": {
     "stockpile": 3700,
@@ -20968,6 +21049,7 @@
     "helicopters": 101,
     "attack_helicopters": 34,
     "tanks": 470,
+    "armored_vehicles": 1360,
     "self_propelled_artillery": 177,
     "towed_artillery": 236,
     "rocket_artillery": 108,
@@ -21002,7 +21084,6 @@
     "border_km": 6893,
     "waterway_km": 1100,
     "military_vehicles": 8692,
-    "armored_vehicles": 1360,
     "regime_row": 0,
     "liberal_democracy_index": 0.079,
     "civil_liberties_index": 0.369,
@@ -21086,7 +21167,9 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "active_personnel changes sharply between GFP editions (2026: 120000, 2025: 48000); a reporting or definitional change, or an error in one edition: verify",
+    "fighters changes sharply between GFP editions (2026: 26, 2025: 58); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "VEN": {
@@ -21112,6 +21195,7 @@
     "helicopters": 85,
     "attack_helicopters": 10,
     "tanks": 282,
+    "armored_vehicles": 2382,
     "self_propelled_artillery": 60,
     "towed_artillery": 92,
     "rocket_artillery": 56,
@@ -21146,7 +21230,6 @@
     "border_km": 5267,
     "waterway_km": 7100,
     "military_vehicles": 15168,
-    "armored_vehicles": 2382,
     "regime_row": 1,
     "liberal_democracy_index": 0.042,
     "civil_liberties_index": 0.307,
@@ -21256,6 +21339,7 @@
     "helicopters": 101,
     "attack_helicopters": 0,
     "tanks": 1999,
+    "armored_vehicles": 4323,
     "self_propelled_artillery": 30,
     "towed_artillery": 3250,
     "rocket_artillery": 774,
@@ -21290,7 +21374,6 @@
     "border_km": 4616,
     "waterway_km": 47130,
     "military_vehicles": 69914,
-    "armored_vehicles": 4323,
     "regime_row": 0,
     "liberal_democracy_index": 0.102,
     "civil_liberties_index": 0.384,
@@ -21375,7 +21458,8 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "reserve_personnel changes sharply between GFP editions (2026: 5000000, 2022: 0); often a reporting or definitional change, verify before relying on it"
+    "towed_artillery changes sharply between GFP editions (2026: 3250, 2025: 535); a reporting or definitional change, or an error in one edition: verify",
+    "attack_aircraft changes sharply between GFP editions (2026: 0, 2025: 32); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "XKX": {
@@ -21401,6 +21485,7 @@
     "helicopters": 0,
     "attack_helicopters": 0,
     "tanks": 0,
+    "armored_vehicles": 152,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -21414,7 +21499,7 @@
     "corvettes": 0,
     "patrol_vessels": 0,
     "mine_warfare": 0,
-    "defense_budget_usd": 1177450000,
+    "defense_budget_usd": 260715150,
     "external_debt_usd": 785739000,
     "ppp_usd": 25019000000,
     "fx_gold_reserves_usd": 1310000000,
@@ -21435,7 +21520,6 @@
     "border_km": 714,
     "waterway_km": 0,
     "military_vehicles": 1357,
-    "armored_vehicles": 152,
     "regime_row": 2,
     "liberal_democracy_index": 0.457,
     "civil_liberties_index": 0.814,
@@ -21478,7 +21562,6 @@
      "corvettes",
      "patrol_vessels",
      "mine_warfare",
-     "defense_budget_usd",
      "external_debt_usd",
      "ppp_usd",
      "fx_gold_reserves_usd",
@@ -21503,6 +21586,9 @@
     "model": [
      "armored_vehicles"
     ],
+    "gfp2025": [
+     "defense_budget_usd"
+    ],
     "vdem_v16": [
      "regime_row",
      "liberal_democracy_index",
@@ -21519,7 +21605,9 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "defense_budget_usd: 2026 edition's 1,177,450,000 is 12.2x SIPRI's 2020 level; used the 2025 edition's 260,715,150, which is consistent with SIPRI",
+    "active_personnel changes sharply between GFP editions (2026: 4000, 2025: 10000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "YEM": {
@@ -21545,6 +21633,7 @@
     "helicopters": 59,
     "attack_helicopters": 14,
     "tanks": 0,
+    "armored_vehicles": 300,
     "self_propelled_artillery": 12,
     "towed_artillery": 60,
     "rocket_artillery": 30,
@@ -21579,7 +21668,6 @@
     "border_km": 1601,
     "waterway_km": 0,
     "military_vehicles": 1550,
-    "armored_vehicles": 300,
     "regime_row": 0,
     "liberal_democracy_index": 0.043,
     "civil_liberties_index": 0.192,
@@ -21664,7 +21752,10 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "tanks changes sharply between GFP editions (2026: 0, 2022: 200); often a reporting or definitional change, verify before relying on it"
+    "active_personnel changes sharply between GFP editions (2026: 33350, 2025: 66700); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2026: 60, 2025: 15); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 30, 2025: 10); a reporting or definitional change, or an error in one edition: verify",
+    "fighters changes sharply between GFP editions (2026: 68, 2025: 27); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "ZAF": {
@@ -21690,6 +21781,7 @@
     "helicopters": 87,
     "attack_helicopters": 10,
     "tanks": 248,
+    "armored_vehicles": 3262,
     "self_propelled_artillery": 52,
     "towed_artillery": 434,
     "rocket_artillery": 201,
@@ -21724,7 +21816,6 @@
     "border_km": 5244,
     "waterway_km": 0,
     "military_vehicles": 23024,
-    "armored_vehicles": 3262,
     "regime_row": 2,
     "liberal_democracy_index": 0.633,
     "civil_liberties_index": 0.857,
@@ -21808,7 +21899,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "towed_artillery changes sharply between GFP editions (2026: 434, 2025: 134); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "ZMB": {
@@ -21834,6 +21926,7 @@
     "helicopters": 33,
     "attack_helicopters": 0,
     "tanks": 75,
+    "armored_vehicles": 226,
     "self_propelled_artillery": 12,
     "towed_artillery": 60,
     "rocket_artillery": 50,
@@ -21868,7 +21961,6 @@
     "border_km": 6043,
     "waterway_km": 0,
     "military_vehicles": 848,
-    "armored_vehicles": 226,
     "regime_row": 1,
     "liberal_democracy_index": 0.375,
     "civil_liberties_index": 0.773,
@@ -21952,7 +22044,10 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)"
+    "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
+    "tanks changes sharply between GFP editions (2026: 75, 2025: 35); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2026: 60, 2025: 30); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2026: 50, 2025: 25); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "ZWE": {
@@ -21978,6 +22073,7 @@
     "helicopters": 28,
     "attack_helicopters": 6,
     "tanks": 60,
+    "armored_vehicles": 382,
     "self_propelled_artillery": 0,
     "towed_artillery": 0,
     "rocket_artillery": 0,
@@ -22012,7 +22108,6 @@
     "border_km": 3229,
     "waterway_km": 0,
     "military_vehicles": 1248,
-    "armored_vehicles": 382,
     "regime_row": 1,
     "liberal_democracy_index": 0.147,
     "civil_liberties_index": 0.381,
@@ -22097,7 +22192,7 @@
    },
    "notes": [
     "armored_vehicles estimated: 2022-edition AFV count x tank trend to 2026 (GFP 2026 'armored vehicles' covers all military vehicles; kept as military_vehicles)",
-    "towed_artillery changes sharply between GFP editions (2026: 0, 2022: 60); often a reporting or definitional change, verify before relying on it"
+    "tanks changes sharply between GFP editions (2026: 60, 2025: 15); a reporting or definitional change, or an error in one edition: verify"
    ]
   }
  }

@@ -122,5 +122,26 @@
     "notes": [
       "Pact membership is factual. Relation strengths are curated judgements on a -1..1 scale; each listed pair can be challenged and tuned."
     ]
+  },
+  "gfp2025": {
+    "title": "Global Firepower 2025 Military Strength Ranking (145 countries)",
+    "publisher": "GlobalFirePower.com",
+    "as_of": "2025 edition (published January 2025)",
+    "via": "User-supplied CSV global_military_firepower_2025.csv (sha256 9e4748da36caad04f8c4e9409ef1fee59379e5bf03d367eab3f443a5d5d1a763), vendored as data/raw/gfp_2025.csv",
+    "url": "https://www.globalfirepower.com/countries-listing.php",
+    "confidence": "medium",
+    "license": "As gfp2026.",
+    "notes": [
+      "Identified as the 2025 edition: its rank order (UK 6, France 7, Japan 8, Turkiye 9, Italy 10) matches the published 2025 ranking and differs from 2026 (France 6, Japan 7, UK 8).",
+      "Used to (a) cross-check the 2026 edition one year apart, (b) fill values missing from the 2026 scrape, (c) replace 2026 budgets that contradict SIPRI while the 2025 value does not, (d) supply regions for every country."
+    ]
+  },
+  "override": {
+    "title": "Manual corrections (data/curated/overrides.json)",
+    "publisher": "This project; each override carries its own citation",
+    "confidence": "per entry",
+    "notes": [
+      "Applied last. Use to correct any value with a better source."
+    ]
   }
 }

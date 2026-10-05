@@ -6,8 +6,10 @@
   "curated/alliances.json": "96a0dd53cd56e1ef0b136ecfdcd50f3a5b71c653d0123f29e19d574cecf6af5a",
   "curated/missile_defense.json": "b4ca7af8f71a9fead82a78f88d61988f00dbce301a4ba1ff9088efb128d1a160",
   "curated/nuclear.json": "30f5af7d5bb90be4162f2b8124ceadbddb67d1eba3a585572c8a4bea10c71362",
+  "curated/overrides.json": "bddbff5d50cf166048537ccc893f6ad67678541b8102b4bd6d97450980d3880a",
   "curated/willingness_to_fight.json": "ff42cba07ea9265f44932da55e0bde664613b039206b25c079fa09afa6ee6bd3",
   "raw/gfp_2022.csv": "19d370b4d4a6e8ad333cbb47a1d153f8aadc8b4c32ad4ee2742ca16298c4db5a",
+  "raw/gfp_2025.csv": "9e4748da36caad04f8c4e9409ef1fee59379e5bf03d367eab3f443a5d5d1a763",
   "raw/gfp_2026.csv": "4a180de3844713c827f6f60ae07e3da43aeba4e39785a720b33804b281def925",
   "raw/sipri_milex_2015_2020.csv": "5357b8b50ffe29663b7406efd65b114b8632201d46e9f2fc79bf2211ca28932d",
   "raw/vdem_v16_subset.csv": "7645b4a0131cfb3e31980753af4e379d09aee619aa380c6a2cadc6b8a19b0c4d"
@@ -459,10 +461,9 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
     "GFP 2022 already reflects the August 2021 collapse of the Afghan National Army (active personnel 0).",
-    "active_personnel changes sharply between GFP editions (2022: 0, 2026: 75000); often a reporting or definitional change, verify before relying on it",
-    "towed_artillery changes sharply between GFP editions (2022: 60, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "towed_artillery changes sharply between GFP editions (2022: 60, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "AGO": {
@@ -515,7 +516,7 @@
     "land_area_km2": 1246700,
     "coastline_km": 1600,
     "border_km": 5369,
-    "fighters": 72,
+    "fighters": 71,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 1300872545,
     "milex_share_gdp_pct": 1.62,
@@ -600,7 +601,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "ALB": {
@@ -738,8 +739,11 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "rocket_artillery changes sharply between GFP editions (2022: 0, 2026: 270); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 2000); a reporting or definitional change, or an error in one edition: verify",
+    "tanks changes sharply between GFP editions (2022: 0, 2025: 46); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2022: 0, 2025: 50); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2022: 0, 2025: 135); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "ARE": {
@@ -792,7 +796,7 @@
     "land_area_km2": 83600,
     "coastline_km": 1318,
     "border_km": 1066,
-    "fighters": 94,
+    "fighters": 100,
     "naval_tonnage": null,
     "regime_row": 0,
     "liberal_democracy_index": 0.09,
@@ -871,8 +875,8 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 130000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 130000); a reporting or definitional change, or an error in one edition: verify"
    ],
    "missile_defense": [
     {
@@ -1036,8 +1040,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 12370); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "ARM": {
@@ -1175,7 +1178,7 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "AUS": {
@@ -1228,7 +1231,7 @@
     "land_area_km2": 7741220,
     "coastline_km": 25760,
     "border_km": 0,
-    "fighters": 30,
+    "fighters": 32,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 27617686554,
     "milex_share_gdp_pct": 2.06,
@@ -1313,7 +1316,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "AUT": {
@@ -1366,7 +1369,7 @@
     "land_area_km2": 83871,
     "coastline_km": 0,
     "border_km": 2524,
-    "fighters": 17,
+    "fighters": 18,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 3494175818,
     "milex_share_gdp_pct": 0.84,
@@ -1451,7 +1454,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "AZE": {
@@ -1504,7 +1507,7 @@
     "land_area_km2": 86600,
     "coastline_km": 713,
     "border_km": 2468,
-    "fighters": 11,
+    "fighters": 12,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 2172590799,
     "milex_share_gdp_pct": 5.39,
@@ -1589,7 +1592,7 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
     "naval sub-types sum to 25, above naval_fleet_total 24"
    ]
   },
@@ -1643,7 +1646,7 @@
     "land_area_km2": 30528,
     "coastline_km": 67,
     "border_km": 1297,
-    "fighters": 49,
+    "fighters": 46,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 5330043077,
     "milex_share_gdp_pct": 1.08,
@@ -1728,7 +1731,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "BFA": {
@@ -1866,7 +1869,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "BGD": {
@@ -2004,7 +2007,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "BGR": {
@@ -2142,9 +2145,9 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "self_propelled_artillery changes sharply between GFP editions (2022: 506, 2026: 48); often a reporting or definitional change, verify before relying on it",
-    "towed_artillery changes sharply between GFP editions (2022: 350, 2026: 24); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "self_propelled_artillery changes sharply between GFP editions (2022: 506, 2025: 48); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2022: 350, 2025: 24); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "BHR": {
@@ -2197,7 +2200,7 @@
     "land_area_km2": 760,
     "coastline_km": 161,
     "border_km": 0,
-    "fighters": 22,
+    "fighters": 20,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 1404787234,
     "milex_share_gdp_pct": 4.07,
@@ -2282,8 +2285,8 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 110000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 110000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "BIH": {
@@ -2421,9 +2424,9 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 8000); often a reporting or definitional change, verify before relying on it",
-    "self_propelled_artillery changes sharply between GFP editions (2022: 57, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 6000); a reporting or definitional change, or an error in one edition: verify",
+    "self_propelled_artillery changes sharply between GFP editions (2022: 57, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "BLR": {
@@ -2476,7 +2479,7 @@
     "land_area_km2": 207600,
     "coastline_km": 0,
     "border_km": 3599,
-    "fighters": 45,
+    "fighters": 39,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 785018880,
     "milex_share_gdp_pct": 1.25,
@@ -2561,7 +2564,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "BOL": {
@@ -2699,8 +2702,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 40000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 40000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "BRA": {
@@ -2753,7 +2756,7 @@
     "land_area_km2": 8514877,
     "coastline_km": 7491,
     "border_km": 16145,
-    "fighters": 60,
+    "fighters": 57,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 25101252046,
     "milex_share_gdp_pct": 1.44,
@@ -2838,7 +2841,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "BTN": {
@@ -2970,8 +2973,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 50000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "BWA": {
@@ -3024,7 +3026,7 @@
     "land_area_km2": 581730,
     "coastline_km": 0,
     "border_km": 4347,
-    "fighters": 10,
+    "fighters": 11,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 571041826,
     "milex_share_gdp_pct": 3.5,
@@ -3109,7 +3111,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "CAF": {
@@ -3247,7 +3249,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "CAN": {
@@ -3385,8 +3387,8 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "towed_artillery changes sharply between GFP editions (2022: 163, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "towed_artillery changes sharply between GFP editions (2022: 163, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "CHE": {
@@ -3439,7 +3441,7 @@
     "land_area_km2": 41277,
     "coastline_km": 0,
     "border_km": 1770,
-    "fighters": 45,
+    "fighters": 47,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 5428081383,
     "milex_share_gdp_pct": 0.78,
@@ -3524,8 +3526,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 120000, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "CHL": {
@@ -3578,7 +3579,7 @@
     "land_area_km2": 756102,
     "coastline_km": 6435,
     "border_km": 7801,
-    "fighters": 48,
+    "fighters": 47,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 5036441830,
     "milex_share_gdp_pct": 1.85,
@@ -3663,7 +3664,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "CHN": {
@@ -3716,7 +3717,7 @@
     "land_area_km2": 9596961,
     "coastline_km": 14500,
     "border_km": 22457,
-    "fighters": 1343,
+    "fighters": 1203,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 244933509535,
     "milex_share_gdp_pct": 1.75,
@@ -3801,7 +3802,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "nuclear": {
     "stockpile": 350,
@@ -3990,7 +3991,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "CMR": {
@@ -4128,7 +4129,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "COD": {
@@ -4181,7 +4182,7 @@
     "land_area_km2": 2344858,
     "coastline_km": 37,
     "border_km": 10481,
-    "fighters": 0,
+    "fighters": 1,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 364338889,
     "milex_share_gdp_pct": 0.75,
@@ -4266,8 +4267,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 30800); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 31000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "COG": {
@@ -4405,7 +4406,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "COL": {
@@ -4543,8 +4544,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 35000, 2026: 998000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "CUB": {
@@ -4597,7 +4597,7 @@
     "land_area_km2": 110860,
     "coastline_km": 3735,
     "border_km": 29,
-    "fighters": 44,
+    "fighters": 28,
     "naval_tonnage": null,
     "regime_row": 0,
     "liberal_democracy_index": 0.06,
@@ -4676,7 +4676,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "tanks changes sharply between GFP editions (2022: 1230, 2025: 113); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "CZE": {
@@ -4814,8 +4815,8 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 4900); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 4200); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "DEU": {
@@ -4868,7 +4869,7 @@
     "land_area_km2": 357022,
     "coastline_km": 2389,
     "border_km": 3694,
-    "fighters": 138,
+    "fighters": 136,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 51570203502,
     "milex_share_gdp_pct": 1.4,
@@ -4953,8 +4954,7 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 15000, 2026: 860000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -5021,7 +5021,7 @@
     "land_area_km2": 43094,
     "coastline_km": 7314,
     "border_km": 140,
-    "fighters": 25,
+    "fighters": 30,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 4838203273,
     "milex_share_gdp_pct": 1.44,
@@ -5106,7 +5106,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "DOM": {
@@ -5244,8 +5244,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 189000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "DZA": {
@@ -5298,7 +5297,7 @@
     "land_area_km2": 2381741,
     "coastline_km": 998,
     "border_km": 6734,
-    "fighters": 99,
+    "fighters": 93,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 9957840537,
     "milex_share_gdp_pct": 6.66,
@@ -5383,7 +5382,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "ECU": {
@@ -5521,7 +5520,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "EGY": {
@@ -5574,7 +5573,7 @@
     "land_area_km2": 1001450,
     "coastline_km": 2450,
     "border_km": 2612,
-    "fighters": 236,
+    "fighters": 231,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 4015802872,
     "milex_share_gdp_pct": 1.22,
@@ -5659,7 +5658,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -5805,7 +5804,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "ESP": {
@@ -5858,7 +5857,7 @@
     "land_area_km2": 505370,
     "coastline_km": 4964,
     "border_km": 1953,
-    "fighters": 155,
+    "fighters": 149,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 17160268854,
     "milex_share_gdp_pct": 1.4,
@@ -5943,7 +5942,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -5962,7 +5961,7 @@
   },
   "EST": {
    "name": "Estonia",
-   "region": "Africa",
+   "region": "Europe",
    "values": {
     "gfp_power_index": 2.6527,
     "population": 1220042,
@@ -6095,14 +6094,13 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 12000, 2026: 230000); often a reporting or definitional change, verify before relying on it",
-    "towed_artillery changes sharply between GFP editions (2022: 66, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "towed_artillery changes sharply between GFP editions (2022: 66, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "ETH": {
    "name": "Ethiopia",
-   "region": "Europe",
+   "region": "Africa",
    "values": {
     "gfp_power_index": 1.0789,
     "population": 110871031,
@@ -6235,8 +6233,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 138000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "FIN": {
@@ -6289,7 +6286,7 @@
     "land_area_km2": 338145,
     "coastline_km": 1250,
     "border_km": 2563,
-    "fighters": 63,
+    "fighters": 64,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 3985993311,
     "milex_share_gdp_pct": 1.53,
@@ -6374,7 +6371,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "FRA": {
@@ -6427,7 +6424,7 @@
     "land_area_km2": 643801,
     "coastline_km": 4853,
     "border_km": 4072,
-    "fighters": 242,
+    "fighters": 244,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 51572230107,
     "milex_share_gdp_pct": 2.07,
@@ -6512,8 +6509,8 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "towed_artillery changes sharply between GFP editions (2022: 105, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "towed_artillery changes sharply between GFP editions (2022: 105, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ],
    "nuclear": {
     "stockpile": 290,
@@ -6679,7 +6676,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "GBR": {
@@ -6732,7 +6729,7 @@
     "land_area_km2": 243610,
     "coastline_km": 12429,
     "border_km": 443,
-    "fighters": 114,
+    "fighters": 124,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 58484918359,
     "milex_share_gdp_pct": 2.25,
@@ -6817,7 +6814,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 37000, 2025: 924000); a reporting or definitional change, or an error in one edition: verify"
    ],
    "nuclear": {
     "stockpile": 225,
@@ -6969,8 +6967,8 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 205500); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 152500); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "GHA": {
@@ -7108,7 +7106,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
     "naval sub-types sum to 23, above naval_fleet_total 20"
    ]
   },
@@ -7162,7 +7160,7 @@
     "land_area_km2": 131957,
     "coastline_km": 13676,
     "border_km": 1110,
-    "fighters": 201,
+    "fighters": 202,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 5236970762,
     "milex_share_gdp_pct": 2.8,
@@ -7247,7 +7245,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -7399,7 +7397,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "HND": {
@@ -7452,7 +7450,7 @@
     "land_area_km2": 112090,
     "coastline_km": 832,
     "border_km": 1575,
-    "fighters": 6,
+    "fighters": 4,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 392467588,
     "milex_share_gdp_pct": 1.66,
@@ -7537,8 +7535,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 60000, 2026: 0); often a reporting or definitional change, verify before relying on it",
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
     "naval sub-types sum to 60, above naval_fleet_total 55"
    ]
   },
@@ -7592,7 +7589,7 @@
     "land_area_km2": 56594,
     "coastline_km": 5835,
     "border_km": 2237,
-    "fighters": 14,
+    "fighters": 12,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 1030843390,
     "milex_share_gdp_pct": 1.85,
@@ -7677,7 +7674,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "HUN": {
@@ -7730,7 +7727,7 @@
     "land_area_km2": 103000,
     "coastline_km": 0,
     "border_km": 2106,
-    "fighters": 8,
+    "fighters": 10,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 2463029604,
     "milex_share_gdp_pct": 1.61,
@@ -7815,8 +7812,9 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "towed_artillery changes sharply between GFP editions (2022: 12, 2026: 295); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "self_propelled_artillery changes sharply between GFP editions (2022: 0, 2025: 24); a reporting or definitional change, or an error in one edition: verify",
+    "towed_artillery changes sharply between GFP editions (2022: 12, 2025: 295); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "IDN": {
@@ -7954,7 +7952,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "IND": {
@@ -8007,7 +8005,7 @@
     "land_area_km2": 3287263,
     "coastline_km": 7000,
     "border_km": 13888,
-    "fighters": 476,
+    "fighters": 502,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 73000865183,
     "milex_share_gdp_pct": 2.88,
@@ -8092,7 +8090,7 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "nuclear": {
     "stockpile": 156,
@@ -8260,7 +8258,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "IRN": {
@@ -8398,7 +8396,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -8476,7 +8474,7 @@
     "land_area_km2": 438317,
     "coastline_km": 58,
     "border_km": 3809,
-    "fighters": 26,
+    "fighters": 24,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 6994394036,
     "milex_share_gdp_pct": 4.05,
@@ -8561,7 +8559,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "ISR": {
@@ -8614,7 +8612,7 @@
     "land_area_km2": 20770,
     "coastline_km": 273,
     "border_km": 1068,
-    "fighters": 239,
+    "fighters": 235,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 21065020776,
     "milex_share_gdp_pct": 5.62,
@@ -8699,7 +8697,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "nuclear": {
     "stockpile": 90,
@@ -8827,7 +8825,7 @@
     "land_area_km2": 301340,
     "coastline_km": 7600,
     "border_km": 1836,
-    "fighters": 106,
+    "fighters": 105,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 28369663676,
     "milex_share_gdp_pct": 1.57,
@@ -8912,7 +8910,7 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -8978,7 +8976,7 @@
     "land_area_km2": 89342,
     "coastline_km": 26,
     "border_km": 1744,
-    "fighters": 40,
+    "fighters": 41,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 2082917903,
     "milex_share_gdp_pct": 4.96,
@@ -9063,7 +9061,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "JPN": {
@@ -9116,7 +9114,7 @@
     "land_area_km2": 377915,
     "coastline_km": 29751,
     "border_km": 0,
-    "fighters": 220,
+    "fighters": 218,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 48159534537,
     "milex_share_gdp_pct": 1,
@@ -9201,7 +9199,7 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -9280,7 +9278,7 @@
     "land_area_km2": 2724900,
     "coastline_km": 26,
     "border_km": 13364,
-    "fighters": 52,
+    "fighters": 75,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 1751553909,
     "milex_share_gdp_pct": 1.05,
@@ -9365,8 +9363,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 135000); often a reporting or definitional change, verify before relying on it",
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 135000); a reporting or definitional change, or an error in one edition: verify",
     "naval sub-types sum to 17, above naval_fleet_total 15"
    ]
   },
@@ -9420,7 +9418,7 @@
     "land_area_km2": 580367,
     "coastline_km": 536,
     "border_km": 3457,
-    "fighters": 17,
+    "fighters": 16,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 1096954051,
     "milex_share_gdp_pct": 1.1,
@@ -9505,7 +9503,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "KGZ": {
@@ -9643,7 +9641,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 300000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "KHM": {
@@ -9781,7 +9780,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "self_propelled_artillery changes sharply between GFP editions (2022: 0, 2025: 30); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "KOR": {
@@ -9834,7 +9834,7 @@
     "land_area_km2": 99720,
     "coastline_km": 2413,
     "border_km": 237,
-    "fighters": 251,
+    "fighters": 316,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 46055696813,
     "milex_share_gdp_pct": 2.85,
@@ -9919,7 +9919,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -9997,7 +9997,7 @@
     "land_area_km2": 17818,
     "coastline_km": 499,
     "border_km": 475,
-    "fighters": 35,
+    "fighters": 33,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 6940123899,
     "milex_share_gdp_pct": 6.5,
@@ -10082,7 +10082,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -10228,8 +10228,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 30000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 30000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "LBN": {
@@ -10367,8 +10367,8 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 15000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 35000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "LBR": {
@@ -10557,7 +10557,7 @@
     "land_area_km2": 1759540,
     "coastline_km": 1770,
     "border_km": 4339,
-    "fighters": 15,
+    "fighters": 9,
     "naval_tonnage": null,
     "regime_row": 0,
     "liberal_democracy_index": 0.145,
@@ -10636,8 +10636,9 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "rocket_artillery changes sharply between GFP editions (2022: 450, 2026: 25); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "self_propelled_artillery changes sharply between GFP editions (2022: 183, 2025: 15); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2022: 450, 2025: 25); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "LKA": {
@@ -10690,7 +10691,7 @@
     "land_area_km2": 65610,
     "coastline_km": 1340,
     "border_km": 0,
-    "fighters": 6,
+    "fighters": 5,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 1559970001,
     "milex_share_gdp_pct": 1.93,
@@ -10776,8 +10777,8 @@
    },
    "notes": [
     "rejected implausible aircraft_carriers=2022 from gfp2022 (bound 15)",
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 5500, 2026: 90000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 5500, 2025: 90000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "LTU": {
@@ -10915,7 +10916,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "LVA": {
@@ -11053,7 +11054,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "MAR": {
@@ -11106,7 +11107,7 @@
     "land_area_km2": 446550,
     "coastline_km": 1835,
     "border_km": 2363,
-    "fighters": 77,
+    "fighters": 79,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 4794028978,
     "milex_share_gdp_pct": 4.28,
@@ -11191,7 +11192,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "MDA": {
@@ -11329,7 +11330,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "MDG": {
@@ -11467,7 +11468,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
     "naval sub-types sum to 9, above naval_fleet_total 8"
    ]
   },
@@ -11521,7 +11522,7 @@
     "land_area_km2": 1964375,
     "coastline_km": 9330,
     "border_km": 4389,
-    "fighters": 2,
+    "fighters": 3,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 6606958740,
     "milex_share_gdp_pct": 0.57,
@@ -11606,8 +11607,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "towed_artillery changes sharply between GFP editions (2022: 200, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "self_propelled_artillery changes sharply between GFP editions (2022: 0, 2025: 20); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "MKD": {
@@ -11745,8 +11746,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 3000, 2026: 60000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 3000, 2025: 60000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "MLI": {
@@ -11884,8 +11885,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "tanks changes sharply between GFP editions (2022: 80, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "MMR": {
@@ -11938,7 +11938,7 @@
     "land_area_km2": 676578,
     "coastline_km": 1930,
     "border_km": 6522,
-    "fighters": 59,
+    "fighters": 51,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 3140977788,
     "milex_share_gdp_pct": 2.89,
@@ -12023,8 +12023,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 19000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 20000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "MNE": {
@@ -12162,7 +12162,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "MNG": {
@@ -12300,7 +12300,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "MOZ": {
@@ -12353,7 +12353,7 @@
     "land_area_km2": 799380,
     "coastline_km": 2470,
     "border_km": 4783,
-    "fighters": 6,
+    "fighters": 7,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 166203580,
     "milex_share_gdp_pct": 1.08,
@@ -12438,7 +12438,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "MRT": {
@@ -12576,8 +12576,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 66000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 66000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "MYS": {
@@ -12630,7 +12630,7 @@
     "land_area_km2": 329847,
     "coastline_km": 4675,
     "border_km": 2742,
-    "fighters": 27,
+    "fighters": 28,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 3909694459,
     "milex_share_gdp_pct": 1.14,
@@ -12715,7 +12715,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "NAM": {
@@ -12768,7 +12768,7 @@
     "land_area_km2": 824292,
     "coastline_km": 1572,
     "border_km": 4220,
-    "fighters": 9,
+    "fighters": 10,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 416900906,
     "milex_share_gdp_pct": 3.28,
@@ -12853,7 +12853,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "NER": {
@@ -12991,7 +12991,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "NGA": {
@@ -13129,7 +13129,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "NIC": {
@@ -13267,7 +13267,9 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "towed_artillery changes sharply between GFP editions (2022: 630, 2025: 0); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2022: 163, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "NLD": {
@@ -13320,7 +13322,7 @@
     "land_area_km2": 41543,
     "coastline_km": 451,
     "border_km": 1053,
-    "fighters": 0,
+    "fighters": 42,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 12210857142,
     "milex_share_gdp_pct": 1.42,
@@ -13405,7 +13407,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -13557,8 +13559,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 20100); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "NPL": {
@@ -13696,8 +13697,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 82000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "NZL": {
@@ -13835,7 +13835,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "OMN": {
@@ -13973,7 +13973,9 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 100000); a reporting or definitional change, or an error in one edition: verify",
+    "self_propelled_artillery changes sharply between GFP editions (2022: 0, 2025: 24); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "PAK": {
@@ -14026,7 +14028,7 @@
     "land_area_km2": 796095,
     "coastline_km": 1046,
     "border_km": 7257,
-    "fighters": 329,
+    "fighters": 325,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 10097221387,
     "milex_share_gdp_pct": 4.02,
@@ -14111,7 +14113,7 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "nuclear": {
     "stockpile": 165,
@@ -14264,8 +14266,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "active_personnel changes sharply between GFP editions (2022: 0, 2026: 16300); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "PER": {
@@ -14403,7 +14404,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "PHL": {
@@ -14541,8 +14542,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 100000, 2026: 1500000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 100000, 2025: 1200000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "POL": {
@@ -14595,7 +14596,7 @@
     "land_area_km2": 312685,
     "coastline_km": 440,
     "border_km": 2845,
-    "fighters": 57,
+    "fighters": 56,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 12815477288,
     "milex_share_gdp_pct": 2.22,
@@ -14680,8 +14681,9 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 350000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 350000); a reporting or definitional change, or an error in one edition: verify",
+    "attack_aircraft changes sharply between GFP editions (2022: 0, 2025: 44); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "PRK": {
@@ -14734,7 +14736,7 @@
     "land_area_km2": 120538,
     "coastline_km": 2495,
     "border_km": 1607,
-    "fighters": 385,
+    "fighters": 404,
     "naval_tonnage": null,
     "regime_row": 0,
     "liberal_democracy_index": 0.014,
@@ -14813,7 +14815,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "nuclear": {
     "stockpile": 45,
@@ -14882,7 +14884,7 @@
     "land_area_km2": 92090,
     "coastline_km": 1793,
     "border_km": 1224,
-    "fighters": 21,
+    "fighters": 24,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 4556714046,
     "milex_share_gdp_pct": 2.14,
@@ -14967,7 +14969,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "PRY": {
@@ -15105,7 +15107,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "QAT": {
@@ -15158,7 +15160,7 @@
     "land_area_km2": 11586,
     "coastline_km": 563,
     "border_km": 87,
-    "fighters": 72,
+    "fighters": 67,
     "naval_tonnage": null,
     "regime_row": 0,
     "liberal_democracy_index": 0.083,
@@ -15237,8 +15239,8 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 4000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 15000); a reporting or definitional change, or an error in one edition: verify"
    ],
    "missile_defense": [
     {
@@ -15305,7 +15307,7 @@
     "land_area_km2": 238391,
     "coastline_km": 225,
     "border_km": 2844,
-    "fighters": 29,
+    "fighters": 22,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 5579061001,
     "milex_share_gdp_pct": 2.31,
@@ -15390,7 +15392,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -15421,7 +15423,7 @@
   },
   "RUS": {
    "name": "Russia",
-   "region": "Europe",
+   "region": "Asia",
    "values": {
     "gfp_power_index": 0.0501,
     "population": 142320790,
@@ -15469,7 +15471,7 @@
     "land_area_km2": 17098242,
     "coastline_km": 37653,
     "border_km": 22408,
-    "fighters": 848,
+    "fighters": 810,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 66838181926,
     "milex_share_gdp_pct": 4.26,
@@ -15554,7 +15556,7 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "nuclear": {
     "stockpile": 4495,
@@ -15736,7 +15738,7 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -15803,7 +15805,7 @@
     "land_area_km2": 1861484,
     "coastline_km": 853,
     "border_km": 6819,
-    "fighters": 39,
+    "fighters": 43,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 456959569,
     "milex_share_gdp_pct": 1.13,
@@ -15888,8 +15890,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "rocket_artillery changes sharply between GFP editions (2022: 30, 2026: 800); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "self_propelled_artillery changes sharply between GFP editions (2022: 10, 2025: 100); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "SGP": {
@@ -15942,7 +15944,7 @@
     "land_area_km2": 697,
     "coastline_km": 193,
     "border_km": 0,
-    "fighters": 104,
+    "fighters": 106,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 11019813986,
     "milex_share_gdp_pct": 3.2,
@@ -16027,7 +16029,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "SLE": {
@@ -16165,12 +16167,12 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "SLV": {
    "name": "El Salvador",
-   "region": "South America",
+   "region": "North America",
    "values": {
     "gfp_power_index": 4.3558,
     "population": 6528135,
@@ -16303,8 +16305,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 10000, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "SOM": {
@@ -16357,7 +16358,7 @@
     "land_area_km2": 637657,
     "coastline_km": 3025,
     "border_km": 2385,
-    "fighters": 0,
+    "fighters": null,
     "naval_tonnage": null,
     "regime_row": 0,
     "liberal_democracy_index": 0.105,
@@ -16436,7 +16437,6 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
     "naval sub-types sum to 11, above naval_fleet_total 3"
    ]
   },
@@ -16490,7 +16490,7 @@
     "land_area_km2": 77474,
     "coastline_km": 0,
     "border_km": 2322,
-    "fighters": 11,
+    "fighters": 12,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 1086064873,
     "milex_share_gdp_pct": 2.11,
@@ -16575,8 +16575,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 50000, 2026: 2000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 50000, 2025: 2000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "SSD": {
@@ -16708,7 +16708,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "SUR": {
@@ -16840,7 +16840,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "SVK": {
@@ -16893,7 +16893,7 @@
     "land_area_km2": 49035,
     "coastline_km": 0,
     "border_km": 1587,
-    "fighters": 7,
+    "fighters": 2,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 1777597366,
     "milex_share_gdp_pct": 1.81,
@@ -16978,7 +16978,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "SVN": {
@@ -17116,8 +17116,8 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 2000, 2026: 26000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 2000, 2025: 26000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "SWE": {
@@ -17170,7 +17170,7 @@
     "land_area_km2": 450295,
     "coastline_km": 3218,
     "border_km": 2211,
-    "fighters": 87,
+    "fighters": 86,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 6233806559,
     "milex_share_gdp_pct": 1.22,
@@ -17255,8 +17255,8 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 34000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 32900); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "SYR": {
@@ -17309,7 +17309,7 @@
     "land_area_km2": 185180,
     "coastline_km": 193,
     "border_km": 2363,
-    "fighters": 226,
+    "fighters": 227,
     "naval_tonnage": null,
     "regime_row": 0,
     "liberal_democracy_index": 0.031,
@@ -17388,10 +17388,8 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "tanks changes sharply between GFP editions (2022: 3540, 2026: 168); often a reporting or definitional change, verify before relying on it",
-    "towed_artillery changes sharply between GFP editions (2022: 2210, 2026: 0); often a reporting or definitional change, verify before relying on it",
-    "rocket_artillery changes sharply between GFP editions (2022: 629, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 50000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "TCD": {
@@ -17529,7 +17527,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "THA": {
@@ -17582,7 +17580,7 @@
     "land_area_km2": 513120,
     "coastline_km": 3219,
     "border_km": 5673,
-    "fighters": 69,
+    "fighters": 68,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 7362140899,
     "milex_share_gdp_pct": 1.47,
@@ -17667,7 +17665,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "TJK": {
@@ -17805,9 +17803,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "active_personnel changes sharply between GFP editions (2022: 9500, 2026: 150000); often a reporting or definitional change, verify before relying on it",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 600000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 600000); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "TKM": {
@@ -17860,7 +17857,7 @@
     "land_area_km2": 488100,
     "coastline_km": 1768,
     "border_km": 4158,
-    "fighters": 20,
+    "fighters": 22,
     "naval_tonnage": null,
     "regime_row": 1,
     "liberal_democracy_index": 0.033,
@@ -17939,7 +17936,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "TUN": {
@@ -18077,7 +18074,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "TUR": {
@@ -18130,7 +18127,7 @@
     "land_area_km2": 783562,
     "coastline_km": 7200,
     "border_km": 2816,
-    "fighters": 193,
+    "fighters": 196,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 19567211572,
     "milex_share_gdp_pct": 2.77,
@@ -18215,7 +18212,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -18283,7 +18280,7 @@
     "land_area_km2": 35980,
     "coastline_km": 1566,
     "border_km": 0,
-    "fighters": 266,
+    "fighters": 278,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 11596968723,
     "milex_share_gdp_pct": 1.92,
@@ -18368,7 +18365,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -18446,7 +18443,7 @@
     "land_area_km2": 947300,
     "coastline_km": 1424,
     "border_km": 4161,
-    "fighters": 11,
+    "fighters": 13,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 639035577,
     "milex_share_gdp_pct": 1.03,
@@ -18531,10 +18528,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 40000, 2026: 0); often a reporting or definitional change, verify before relying on it",
-    "towed_artillery changes sharply between GFP editions (2022: 0, 2026: 205); often a reporting or definitional change, verify before relying on it",
-    "rocket_artillery changes sharply between GFP editions (2022: 0, 2026: 70); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "UGA": {
@@ -18672,8 +18666,8 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 10000, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 10000, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "UKR": {
@@ -18726,7 +18720,7 @@
     "land_area_km2": 603550,
     "coastline_km": 2782,
     "border_km": 5618,
-    "fighters": 81,
+    "fighters": 69,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 5995031272,
     "milex_share_gdp_pct": 4.13,
@@ -18811,8 +18805,7 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 250000, 2026: 4000000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "missile_defense": [
     {
@@ -18964,7 +18957,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "USA": {
@@ -19017,7 +19010,7 @@
     "land_area_km2": 9826675,
     "coastline_km": 19924,
     "border_km": 12048,
-    "fighters": 1821,
+    "fighters": 1818,
     "naval_tonnage": null,
     "milex_sipri_usd_2019": 766582825358,
     "milex_share_gdp_pct": 3.74,
@@ -19102,7 +19095,7 @@
     "willingness_to_fight_pct": "medium"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ],
    "nuclear": {
     "stockpile": 3800,
@@ -19221,7 +19214,7 @@
     "land_area_km2": 447400,
     "coastline_km": 420,
     "border_km": 6893,
-    "fighters": 33,
+    "fighters": 60,
     "naval_tonnage": null,
     "regime_row": 0,
     "liberal_democracy_index": 0.083,
@@ -19300,7 +19293,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "VEN": {
@@ -19432,7 +19425,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "VNM": {
@@ -19485,7 +19478,7 @@
     "land_area_km2": 331210,
     "coastline_km": 3444,
     "border_km": 4616,
-    "fighters": 50,
+    "fighters": 36,
     "naval_tonnage": null,
     "regime_row": 1,
     "liberal_democracy_index": 0.106,
@@ -19564,8 +19557,9 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "reserve_personnel changes sharply between GFP editions (2022: 0, 2026: 5000000); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "reserve_personnel changes sharply between GFP editions (2022: 0, 2025: 5000000); a reporting or definitional change, or an error in one edition: verify",
+    "attack_aircraft changes sharply between GFP editions (2022: 0, 2025: 32); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "XKX": {
@@ -19754,7 +19748,7 @@
     "land_area_km2": 527968,
     "coastline_km": 1906,
     "border_km": 1601,
-    "fighters": 75,
+    "fighters": 57,
     "naval_tonnage": null,
     "regime_row": 0,
     "liberal_democracy_index": 0.033,
@@ -19833,8 +19827,8 @@
     "willingness_to_fight_pct": "low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "tanks changes sharply between GFP editions (2022: 200, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "tanks changes sharply between GFP editions (2022: 200, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   },
   "ZAF": {
@@ -19972,7 +19966,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "ZMB": {
@@ -20110,7 +20104,7 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet"
    ]
   },
   "ZWE": {
@@ -20163,7 +20157,7 @@
     "land_area_km2": 390757,
     "coastline_km": 0,
     "border_km": 3229,
-    "fighters": 10,
+    "fighters": 12,
     "naval_tonnage": null,
     "regime_row": 1,
     "liberal_democracy_index": 0.192,
@@ -20242,8 +20236,9 @@
     "willingness_to_fight_pct": "very_low"
    },
    "notes": [
-    "fighters estimated: 2026 fighter share of total aircraft applied to the 2022-edition fleet",
-    "towed_artillery changes sharply between GFP editions (2022: 60, 2026: 0); often a reporting or definitional change, verify before relying on it"
+    "fighters estimated: 2025 fighter share of total aircraft applied to the 2022-edition fleet",
+    "towed_artillery changes sharply between GFP editions (2022: 60, 2025: 0); a reporting or definitional change, or an error in one edition: verify",
+    "rocket_artillery changes sharply between GFP editions (2022: 23, 2025: 0); a reporting or definitional change, or an error in one edition: verify"
    ]
   }
  }
