@@ -196,6 +196,7 @@ def missile_defenses(r: CountryRecord) -> list[MissileDefenseSystem]:
             single_shot_pk=d["single_shot_pk"],
             interceptors=int(d["units"] * d["interceptors_per_unit"]),
             shots_per_target=d["shots_per_target"],
+            batteries=int(d["units"]),
         )
         for d in r.missile_defense
     ]

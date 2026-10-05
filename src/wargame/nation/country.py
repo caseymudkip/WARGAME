@@ -181,6 +181,7 @@ class Country:
     hosts: frozenset[str] = frozenset()    # Belligerents allowed to attack from our soil (Belarus 2022)...
     hosting_days: int | None = None        # ...for this many days into their war (None: for its duration).
     aid_coverage: float = 0.0              # Share of our munitions and spares that arrived as aid today.
+    strategic_damage: float = 0.0          # Mean damage of our most valuable provinces (air war): coercive leverage.
     rallied: bool = False                  # Has rallied against an existential invasion.
 
     # War-time state

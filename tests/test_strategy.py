@@ -37,9 +37,10 @@ def start(world: World, goal: WarGoal | None = None) -> Simulation:
 
 
 def _thin_sector(world: World) -> tuple[Simulation, float]:
-    """ARD holds two Borovian provinces with a screen of 20, its main force (2,000) kept elsewhere."""
-    occupy(world, [1, 2], "ARD")
+    """ARD has taken two Borovian provinces in this war and holds them with a screen of 20, its main
+    force (2,000) kept elsewhere."""
     sim = start(world)
+    occupy(world, [1, 2], "ARD")
     sim.land.deployments["ARD"].stationed = {2: 20.0, 12: 2_000.0}
     return sim, lw.ground_power(world.country("BOR")) * lw.COMMITMENT_EXISTENTIAL_DEFENCE
 

@@ -12,6 +12,7 @@ from wargame.world.world import World
 EXISTENTIAL_GOALS = frozenset({WarGoalType.REGIME_CHANGE, WarGoalType.TOTAL_CAPITULATION})
 PROVINCE_GOALS = frozenset({WarGoalType.BORDER_SKIRMISH, WarGoalType.TERRITORIAL_CONQUEST})
 COERCION_SUCCESS_LEVERAGE = 0.75
+STRIKE_LEVERAGE_FULL = 0.5   # Half-wrecked key provinces force concessions (Belgrade conceded after 78 days, 1999).
 
 
 @dataclass(frozen=True)
@@ -52,7 +53,9 @@ class WarGoal:
         if self.type is WarGoalType.REGIME_CHANGE:
             return 1.0 if world.provinces[target.capital_province_id].controller in holder_side else 0.0
         if self.type is WarGoalType.COERCION:
-            return clamp(max(target.blockade_interdiction, target.spirit.war_exhaustion) / COERCION_SUCCESS_LEVERAGE)
+            # A blockade coerces through the shortages and exhaustion it causes, over months, not at once.
+            return clamp(max(target.spirit.war_exhaustion / COERCION_SUCCESS_LEVERAGE,
+                             target.strategic_damage / STRIKE_LEVERAGE_FULL))
         return target.collapse_progress  # TOTAL_CAPITULATION
 
     def is_achieved(self, world: World, holder_side: Collection[str]) -> bool:

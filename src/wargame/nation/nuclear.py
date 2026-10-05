@@ -64,6 +64,7 @@ class MissileDefenseSystem:
     interceptors: int
     shots_per_target: int = 2                      # Shoot-shoot doctrine.
     covered_provinces: frozenset[int] = frozenset()  # Empty = national coverage.
+    batteries: int = 0                             # Fire units (battalions/batteries); air defence weight.
 
     def covers(self, province_id: int) -> bool:
         return not self.covered_provinces or province_id in self.covered_provinces

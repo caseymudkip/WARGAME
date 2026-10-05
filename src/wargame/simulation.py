@@ -12,6 +12,7 @@ from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from datetime import datetime
 
+from wargame.conflict.air_war import AirWar
 from wargame.conflict.land_warfare import LandWarfare
 from wargame.conflict.war import War, WarEvent
 from wargame.conflict.war_goal import WarGoal
@@ -36,7 +37,7 @@ class ScenarioConfig:
     attacker_motivation: Motivation = Motivation.CAUTIOUS
     defender_motivation: Motivation = Motivation.CAUTIOUS
     seed: int = 0
-    land_combat: bool = True  # False for scripted scenarios that move fronts themselves.
+    land_combat: bool = True  # Land and air combat. False for scripted scenarios that move fronts themselves.
 
 
 class Simulation:
@@ -63,9 +64,12 @@ class Simulation:
             Cadence.WEEKLY: [Simulation._diplomacy_weekly],
         }
         self.land = LandWarfare()
+        self.air = AirWar()
         if scenario.land_combat:
             self._systems[Cadence.HOURLY].append(lambda sim: sim.land.hourly(sim))
+            self._systems[Cadence.DAILY].append(lambda sim: sim.air.daily(sim))
             self._systems[Cadence.DAILY].append(lambda sim: sim.land.daily(sim))
+            self.air.daily(self)
             self.land.daily(self)  # Forces start deployed.
 
     # --- spectator controls -------------------------------------------------

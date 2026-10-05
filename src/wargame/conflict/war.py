@@ -21,7 +21,7 @@ from collections import deque
 from dataclasses import dataclass, field
 
 from wargame.conflict.treaty import PeaceTreaty, TreatyTerm, apply_treaty, draft_treaty, white_peace
-from wargame.conflict.war_goal import WarGoal
+from wargame.conflict.war_goal import EXISTENTIAL_GOALS, WarGoal
 from wargame.core.enums import EscalationTier, Motivation, ParticipantRole, Side, SupplyType, TermType, WarGoalType
 from wargame.core.escalation import EscalationPolicy
 from wargame.core.mathutil import clamp, noisy_or
@@ -66,6 +66,9 @@ LEDGER_WINDOW_DAYS = 14
 MIN_CASUALTIES_TO_JUDGE = 200
 MAX_OVERSHOOT_PENALTY = 3.0
 MIN_HALT_DAYS = 14                   # A halted offensive regroups for at least two weeks...
+OPENING_CAMPAIGN_DAYS = 30           # An all-out invasion's opening campaign runs to its plan before it is
+                                     # reassessed (Russia declared its "first stage" complete on 25 March
+                                     # 2022, day 30). Limited operations are judged as they go.
 RESUME_FRACTION = 0.5                # ...and resumes once losses fall well below what halted it.
 DEFIANCE_RESOLVE_SHIELD = 0.5        # A defiant leader halves how fast a costly offensive loses will...
 DEFIANCE_RESOLVE_FLOOR = 0.4         # ...and never lets it break: he halts, mobilises and tries again (Russia 2022-23).
@@ -344,10 +347,14 @@ class War:
     def _controlled_value(world: World, tag: str) -> float:
         return sum(p.strategic_value() for p in world.controlled_by(tag))
 
-    @classmethod
-    def _held_value(cls, world: World, tag: str) -> float:
-        """Controlled value plus ground taken inside provinces still being fought over."""
-        return cls._controlled_value(world, tag) + world.partial_gains(tag)
+    def _held_value(self, world: World, tag: str) -> float:
+        """Controlled value plus ground taken inside provinces still being fought over. For a coercion
+        war's holder, the leverage gained counts too: concessions are what it fights for."""
+        value = self._controlled_value(world, tag) + world.partial_gains(tag)
+        if (self.goal.type is WarGoalType.COERCION and tag in self.participants
+                and self.side_of(tag) is self.side_of(self.goal.holder) and self.goal.target in world.countries):
+            value += self.goal.progress(world, self.tags_on(self.side_of(tag))) * world.owned_value(self.goal.target)
+        return value
 
     @staticmethod
     def _occupation_share(world: World, owners: frozenset[str], holders: frozenset[str]) -> float:
@@ -509,8 +516,10 @@ class War:
                     p.resolve -= p.motivation.resolve_decay * min(overshoot - 1.0, MAX_OVERSHOOT_PENALTY) * shield
                 else:
                     p.resolve += p.motivation.resolve_recovery * (1.0 - overshoot)
+            opening = (self.goal.type in EXISTENTIAL_GOALS and p.claim is None
+                       and now_hour - max(self.started_hour, p.joined_hour) < OPENING_CAMPAIGN_DAYS * 24)
             if not p.offensive_halted:
-                if overshoot is not None and overshoot > p.motivation.halt_ratio:
+                if overshoot is not None and overshoot > p.motivation.halt_ratio and not opening:
                     p.offensive_halted, p.halted_hour = True, now_hour
             elif now_hour - p.halted_hour >= MIN_HALT_DAYS * 24 and (
                     overshoot is None or overshoot < RESUME_FRACTION * p.motivation.halt_ratio):

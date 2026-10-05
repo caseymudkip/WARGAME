@@ -83,7 +83,7 @@ def offensive_share(land: LandWarfare, world: World, wars: list[War], tag: str, 
             edge = clamp((power / max(enemy, 1.0) - COUNTEROFFENSIVE_FROM) / (COUNTEROFFENSIVE_FULL - COUNTEROFFENSIVE_FROM))
             share = COUNTERATTACK_SHARE + (max(full, COUNTERATTACK_SHARE) - COUNTERATTACK_SHARE) * edge
             why = Posture.COUNTEROFFENSIVE if edge > 0 else Posture.ACTIVE_DEFENCE
-            opening = _weakest_sector_share(land, world, tag, power, foes, effectiveness)
+            opening = _weakest_sector_share(land, world, tag, power, foes, effectiveness, war.prewar_occupation)
             if opening > share:
                 share, why = opening, Posture.COUNTEROFFENSIVE
         if share > best:
@@ -104,8 +104,11 @@ def worth_attacking(land: LandWarfare, world: World, wars: list[War], tag: str, 
 
 
 def _weakest_sector_share(land: LandWarfare, world: World, tag: str, power: float, foes: set[str],
-                          effectiveness: float) -> float:
-    """Share of our force needed to hit the enemy's thinnest adjacent sector at OPPORTUNITY_RATIO, if affordable."""
+                          effectiveness: float, prewar_occupation: dict[int, str] | None = None) -> float:
+    """Share of our force needed to hit the enemy's thinnest adjacent sector at OPPORTUNITY_RATIO, if affordable.
+
+    Only ground lost in this war opens a counteroffensive; what the enemy held before it began waits."""
+    prewar = prewar_occupation or {}
     if power <= 0 or effectiveness <= 0:
         return 0.0
     cheapest = None
@@ -113,7 +116,7 @@ def _weakest_sector_share(land: LandWarfare, world: World, tag: str, power: floa
     for p in world.controlled_by(tag):
         for n in p.neighbors:
             q = world.provinces[n]
-            if q.controller in foes and q.owner in friends:  # Liberation: our own occupied soil.
+            if q.controller in foes and q.owner in friends and prewar.get(n) != q.controller:  # Liberation.
                 if land.depth_km_per_day(world, n, OPPORTUNITY_RATIO) < OPPORTUNITY_MIN_DEPTH_KM:
                     continue
                 defence, _ = land.defence_of(world, n, foes)
