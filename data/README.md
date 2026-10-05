@@ -26,6 +26,38 @@ are applied after every automatic rule, and the record keeps the full history (w
 what the override changed, and why). Never edit the snapshots by hand.
 `tests/test_dataset.py` fails if a committed snapshot no longer matches its inputs.
 
+## The province map (`map/world_map.json`)
+
+3,604 provinces covering the whole world, built by `tools/map/build_map.py` (dev dependencies:
+shapely, pyproj, pyshp; inputs are downloaded pinned and sha256-checked) from:
+
+- **Natural Earth 5.1.2** admin-1 boundaries (public domain). Over-fragmented countries are merged to
+  Natural Earth regions (UK 234 units to 17, Slovenia 193 to 12, Italy 110 to 20, Philippines, Latvia,
+  North Macedonia, Malta, Uganda). Duplicate names are disambiguated ("Washington (Federal District)").
+- **Adjacency** from shared borders, **coast** from borders not shared with another province, and
+  **sea crossings** up to 250 km with their length (Kerch Strait 3 km, Taiwan Strait 126–142 km, Kinmen 8 km).
+- **Terrain** from Natural Earth physical regions (mountain ranges, deserts, plateaus, wetlands), latitude
+  where no region applies, and urban terrain for dense city provinces. Coarse: forests outside the boreal
+  belt are not detected yet (needs land-cover data).
+- **Cities and capitals** (Natural Earth populated places), **ports**, **airports** (incl. military),
+  **power plants** (WRI Global Power Plant Database, CC BY 4.0) and curated **naval bases**.
+- **Control at each start date** (`curated/map_control.json`): ownership is de jure, control de facto.
+  Crimea and Sevastopol are Ukrainian and Russian-held in both snapshots. For 2026, Donetsk, Luhansk,
+  Zaporizhzhia, Kherson and Kharkiv are split along **DeepStateMap's real front line of 1 January 2026**
+  (116,219 km2 occupied, ~19%). For 2021, Donetsk and Luhansk are split along the 2015–2022 line of contact
+  (approximated from front-line settlements, ±10 km). Abkhazia and Transnistria are Russian-controlled;
+  Stepanakert, Khojaly and Khojavend are Armenian-backed in 2021 and Azerbaijani in 2026.
+- Dependencies belong to their sovereign state (Guam and Puerto Rico to the US, Greenland to Denmark,
+  Hong Kong to China, the Falklands and Diego Garcia to the UK).
+
+The map stores geography and facts only. Population per province, industry, infrastructure and the
+INDUSTRIAL / FARMLAND tags depend on the snapshot and are modelled by `wargame.data.world_map`
+(formulas in its docstring). `build_real_world(2026)` assembles a playable World in under 0.1 s.
+
+Not modelled yet (listed in `map_control.json`): the Golan Heights and South Ossetia (not separable in
+Natural Earth), and territory held by non-state actors (Houthis, RSF, Myanmar's resistance, Hamas), since
+the engine has no non-state actors.
+
 ## Sources and how much to trust them
 
 | Data | Source | As of | Confidence |
@@ -39,6 +71,10 @@ what the override changed, and why). Never edit the snapshots by hand.
 | Willingness to fight (used as patriotism) | Gallup International End of Year 2023 | Oct–Dec 2023 | medium/low |
 | Missile defence deployments and Pk | official announcements and press (curated) | Jan 2026 / Jan 2021 | low |
 | Defensive pacts | treaty texts | Jan 2026 / Jan 2021 | high |
+| Province geography, cities, ports, airports | Natural Earth 5.1.2 | 2022 release | high |
+| Power plants | WRI Global Power Plant Database 1.3 | ~2020 | high |
+| Front line in Ukraine | DeepStateMap.Live via cyterat/deepstate-map-data | 1 Jan 2026 | high |
+| 2015–2022 Donbas line, other de facto control, naval bases | curated | — | low–medium |
 | Relations (−1..1) | curated judgement | Jan 2026 / Jan 2021 | medium |
 
 Cross-checks that pass in the test suite:
@@ -89,6 +125,8 @@ would let the next pass replace estimates with data.
 
 ## Licensing
 
-V-Dem is CC BY-SA 4.0; OWID packaging is CC BY 4.0; SIPRI data is free with attribution. Global
+V-Dem is CC BY-SA 4.0; OWID packaging is CC BY 4.0; SIPRI data is free with attribution. Natural Earth
+is public domain; the WRI power plant database is CC BY 4.0. The DeepState archive repository is GPL-3.0
+and DeepStateMap's own terms apply to the underlying data. Global
 Firepower content is © GlobalFirePower.com and the scrape repositories carry no licence: factual counts
 with attribution are used here, but **confirm terms before any commercial release**.

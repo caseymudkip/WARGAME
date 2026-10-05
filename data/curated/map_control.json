@@ -1,0 +1,582 @@
+{
+  "_doc": "De jure ownership fixes, de facto control at each snapshot, and point features no open dataset provides. Applied by tools/map/build_map.py on top of Natural Earth admin-1. Province owner = de jure (internationally recognised); controller = de facto. Non-state actors (Houthis, RSF, SDF, Myanmar resistance, Hamas) are not modelled by the engine; their territory stays with the recognised state and is listed under not_modelled.",
+  "_source": "curated_control",
+  "ne_country_codes": {
+    "_doc": "Natural Earth adm0_a3 -> ISO3 used by the snapshots. Dependencies and overseas territories map to their sovereign state (de jure), e.g. Guam and Puerto Rico -> USA, Greenland -> DNK, Hong Kong -> CHN, Falklands and Diego Garcia (British Indian Ocean Territory) -> GBR.",
+    "KOS": "XKX",
+    "SDS": "SSD",
+    "ALD": "FIN",
+    "KAB": "KAZ",
+    "SOL": "SOM",
+    "KAS": "IND",
+    "ESB": "GBR",
+    "WSB": "GBR",
+    "USG": "CUB",
+    "SAH": "MAR",
+    "GRL": "DNK",
+    "FRO": "DNK",
+    "PRI": "USA",
+    "GUM": "USA",
+    "ASM": "USA",
+    "VIR": "USA",
+    "MNP": "USA",
+    "UMI": "USA",
+    "HKG": "CHN",
+    "MAC": "CHN",
+    "NCL": "FRA",
+    "PYF": "FRA",
+    "WLF": "FRA",
+    "SPM": "FRA",
+    "BLM": "FRA",
+    "MAF": "FRA",
+    "ATF": "FRA",
+    "CLP": "FRA",
+    "FLK": "GBR",
+    "GIB": "GBR",
+    "BMU": "GBR",
+    "CYM": "GBR",
+    "VGB": "GBR",
+    "TCA": "GBR",
+    "MSR": "GBR",
+    "AIA": "GBR",
+    "SHN": "GBR",
+    "PCN": "GBR",
+    "IOT": "GBR",
+    "SGS": "GBR",
+    "GGY": "GBR",
+    "JEY": "GBR",
+    "IMN": "GBR",
+    "ABW": "NLD",
+    "CUW": "NLD",
+    "SXM": "NLD",
+    "NFK": "AUS",
+    "HMD": "AUS",
+    "IOA": "AUS",
+    "ATC": "AUS"
+  },
+  "owner_fixes": {
+    "_doc": "Natural Earth 5.1 assigns these to the de facto holder; ownership here is de jure.",
+    "RUS-283": {
+      "owner": "UKR",
+      "name": "Autonomous Republic of Crimea",
+      "basis": "UN General Assembly resolution 68/262 (2014)"
+    },
+    "RUS-5482": {
+      "owner": "UKR",
+      "name": "Sevastopol",
+      "basis": "UN General Assembly resolution 68/262 (2014)"
+    }
+  },
+  "control": {
+    "2021": {
+      "RUS-283": {
+        "controller": "RUS",
+        "basis": "Annexed by Russia, March 2014",
+        "confidence": "high"
+      },
+      "RUS-5482": {
+        "controller": "RUS",
+        "basis": "Annexed by Russia, March 2014",
+        "confidence": "high"
+      },
+      "GEO-3015": {
+        "controller": "RUS",
+        "basis": "Abkhazia: Russian-backed breakaway region, Russian bases since 2008",
+        "confidence": "medium"
+      },
+      "MDA-1628": {
+        "controller": "RUS",
+        "basis": "Transnistria: Russian-backed breakaway region, Russian Operational Group of Forces",
+        "confidence": "low"
+      },
+      "MDA-1638": {
+        "controller": "RUS",
+        "basis": "Transnistria (as above)",
+        "confidence": "low"
+      },
+      "MDA-1650": {
+        "controller": "RUS",
+        "basis": "Bender/Tiraspol area of Transnistria (as above)",
+        "confidence": "low"
+      },
+      "AZE-4838": {
+        "controller": "ARM",
+        "basis": "Stepanakert: held by the Armenian-backed Artsakh authorities under the November 2020 ceasefire (Armenia used as proxy)",
+        "confidence": "medium"
+      },
+      "AZE-1739": {
+        "controller": "ARM",
+        "basis": "Khojaly district: Artsakh-held after November 2020",
+        "confidence": "medium"
+      },
+      "AZE-1734": {
+        "controller": "ARM",
+        "basis": "Khojavend district: Martuni area Artsakh-held, Hadrut area retaken by Azerbaijan in 2020 (split not modelled)",
+        "confidence": "low"
+      }
+    },
+    "2026": {
+      "GEO-3015": {
+        "controller": "RUS",
+        "basis": "Abkhazia (as 2021)",
+        "confidence": "medium"
+      },
+      "MDA-1628": {
+        "controller": "RUS",
+        "basis": "Transnistria (as 2021)",
+        "confidence": "low"
+      },
+      "MDA-1638": {
+        "controller": "RUS",
+        "basis": "Transnistria (as 2021)",
+        "confidence": "low"
+      },
+      "MDA-1650": {
+        "controller": "RUS",
+        "basis": "Transnistria (as 2021)",
+        "confidence": "low"
+      }
+    }
+  },
+  "occupation_zones": {
+    "_doc": "Polygons that split provinces between owner and controller. Ukraine 2026 uses DeepStateMap's occupied-territory polygon for 1 January 2026; Ukraine 2021 uses Crimea plus the 2015-2022 Donbas line of contact, approximated from front-line settlements (+/- ~10 km) and clipped to the 2026 occupied area.",
+    "2026": [
+      {
+        "owner": "UKR",
+        "controller": "RUS",
+        "geometry": "deepstate_20260101",
+        "confidence": "high"
+      }
+    ],
+    "2021": [
+      {
+        "owner": "UKR",
+        "controller": "RUS",
+        "geometry": "donbas_contact_line_2015",
+        "confidence": "low"
+      }
+    ]
+  },
+  "donbas_contact_line_2015": {
+    "_doc": "Polyline lon/lat, north-east to south. Separatist-held side lies east of the line. Points sit between settlements held by each side, e.g. between Ukrainian-held Popasna and separatist-held Kirovsk, Svitlodarsk/Debaltseve, Toretsk/Horlivka, Avdiivka/Yasynuvata, Marinka/Donetsk, Novotroitske/Dokuchaievsk, Shyrokyne/Novoazovsk. Endpoints are extended past the border and into the Sea of Azov so the line fully cuts the oblasts.",
+    "line": [
+      [
+        40.4,
+        48.62
+      ],
+      [
+        39.6,
+        48.63
+      ],
+      [
+        39.49,
+        48.62
+      ],
+      [
+        39.23,
+        48.71
+      ],
+      [
+        38.8,
+        48.66
+      ],
+      [
+        38.53,
+        48.66
+      ],
+      [
+        38.45,
+        48.57
+      ],
+      [
+        38.28,
+        48.42
+      ],
+      [
+        37.98,
+        48.36
+      ],
+      [
+        37.8,
+        48.13
+      ],
+      [
+        37.7,
+        48.05
+      ],
+      [
+        37.55,
+        47.92
+      ],
+      [
+        37.63,
+        47.78
+      ],
+      [
+        37.8,
+        47.45
+      ],
+      [
+        37.88,
+        47.2
+      ],
+      [
+        37.93,
+        47.07
+      ],
+      [
+        37.95,
+        46.8
+      ]
+    ],
+    "occupied_reference_points": [
+      [
+        37.8,
+        48.0
+      ],
+      [
+        39.31,
+        48.57
+      ]
+    ]
+  },
+  "naval_bases": {
+    "_doc": "Major naval bases (approximate city-level coordinates, public information). Tags the containing or nearest coastal province with NAVAL_BASE. Not exhaustive.",
+    "confidence": "medium",
+    "bases": [
+      [
+        "Norfolk",
+        -76.33,
+        36.95
+      ],
+      [
+        "San Diego",
+        -117.13,
+        32.68
+      ],
+      [
+        "Pearl Harbor",
+        -157.95,
+        21.35
+      ],
+      [
+        "Kings Bay",
+        -81.55,
+        30.8
+      ],
+      [
+        "Bangor (Kitsap)",
+        -122.72,
+        47.73
+      ],
+      [
+        "Mayport",
+        -81.4,
+        30.39
+      ],
+      [
+        "Yokosuka",
+        139.67,
+        35.29
+      ],
+      [
+        "Sasebo",
+        129.72,
+        33.16
+      ],
+      [
+        "Kure",
+        132.55,
+        34.24
+      ],
+      [
+        "Maizuru",
+        135.39,
+        35.47
+      ],
+      [
+        "Severomorsk",
+        33.42,
+        69.07
+      ],
+      [
+        "Vladivostok",
+        131.88,
+        43.11
+      ],
+      [
+        "Vilyuchinsk",
+        158.4,
+        52.93
+      ],
+      [
+        "Sevastopol",
+        33.53,
+        44.62
+      ],
+      [
+        "Novorossiysk",
+        37.78,
+        44.72
+      ],
+      [
+        "Baltiysk",
+        19.92,
+        54.65
+      ],
+      [
+        "Kronstadt",
+        29.77,
+        59.99
+      ],
+      [
+        "Tartus",
+        35.87,
+        34.89
+      ],
+      [
+        "Qingdao",
+        120.38,
+        36.07
+      ],
+      [
+        "Zhoushan",
+        121.85,
+        29.93
+      ],
+      [
+        "Zhanjiang",
+        110.4,
+        21.2
+      ],
+      [
+        "Sanya (Yulin)",
+        109.55,
+        18.22
+      ],
+      [
+        "Portsmouth",
+        -1.11,
+        50.8
+      ],
+      [
+        "Devonport",
+        -4.18,
+        50.38
+      ],
+      [
+        "Faslane",
+        -4.82,
+        56.07
+      ],
+      [
+        "Toulon",
+        5.93,
+        43.12
+      ],
+      [
+        "Brest",
+        -4.49,
+        48.38
+      ],
+      [
+        "Kiel",
+        10.14,
+        54.33
+      ],
+      [
+        "Wilhelmshaven",
+        8.13,
+        53.52
+      ],
+      [
+        "Den Helder",
+        4.76,
+        52.96
+      ],
+      [
+        "Taranto",
+        17.24,
+        40.47
+      ],
+      [
+        "La Spezia",
+        9.82,
+        44.1
+      ],
+      [
+        "Rota",
+        -6.35,
+        36.62
+      ],
+      [
+        "Golcuk",
+        29.82,
+        40.72
+      ],
+      [
+        "Aksaz",
+        28.42,
+        36.95
+      ],
+      [
+        "Salamis",
+        23.53,
+        37.95
+      ],
+      [
+        "Mumbai",
+        72.83,
+        18.92
+      ],
+      [
+        "Visakhapatnam",
+        83.29,
+        17.69
+      ],
+      [
+        "Karwar",
+        74.12,
+        14.8
+      ],
+      [
+        "Karachi",
+        66.98,
+        24.84
+      ],
+      [
+        "Bandar Abbas",
+        56.2,
+        27.15
+      ],
+      [
+        "Haifa",
+        35.0,
+        32.82
+      ],
+      [
+        "Busan",
+        129.04,
+        35.1
+      ],
+      [
+        "Jinhae",
+        128.66,
+        35.14
+      ],
+      [
+        "Zuoying",
+        120.27,
+        22.69
+      ],
+      [
+        "Keelung",
+        121.74,
+        25.13
+      ],
+      [
+        "Sinpo",
+        128.18,
+        40.03
+      ],
+      [
+        "Nampo",
+        125.4,
+        38.72
+      ],
+      [
+        "Odesa",
+        30.73,
+        46.48
+      ],
+      [
+        "Halifax",
+        -63.58,
+        44.66
+      ],
+      [
+        "Esquimalt",
+        -123.43,
+        48.43
+      ],
+      [
+        "Fleet Base East (Sydney)",
+        151.21,
+        -33.86
+      ],
+      [
+        "HMAS Stirling",
+        115.68,
+        -32.23
+      ],
+      [
+        "Rio de Janeiro",
+        -43.17,
+        -22.9
+      ],
+      [
+        "Cam Ranh",
+        109.2,
+        11.9
+      ],
+      [
+        "Jeddah",
+        39.17,
+        21.5
+      ],
+      [
+        "Jubail",
+        49.66,
+        27.0
+      ],
+      [
+        "Alexandria",
+        29.9,
+        31.2
+      ],
+      [
+        "Karlskrona",
+        15.59,
+        56.16
+      ],
+      [
+        "Haakonsvern",
+        5.23,
+        60.34
+      ],
+      [
+        "Gdynia",
+        18.55,
+        54.53
+      ],
+      [
+        "Constanta",
+        28.65,
+        44.17
+      ],
+      [
+        "Varna",
+        27.95,
+        43.2
+      ],
+      [
+        "Surabaya",
+        112.73,
+        -7.2
+      ]
+    ]
+  },
+  "merge_exclusions": {
+    "_doc": "Over-fragmented countries are merged to Natural Earth 'region' (>60 admin-1 units averaging <3,000 km2). Excluded countries keep their units because their detail matters to the scenarios.",
+    "countries": [
+      "AZE"
+    ]
+  },
+  "not_modelled": [
+    "Golan Heights: Natural Earth places it inside Israel's Northern District; not split (owner should be Syria, controller Israel).",
+    "South Ossetia: inside Georgia's Shida Kartli in Natural Earth; not split (Russian-controlled since 2008).",
+    "Northern Cyprus, Somaliland, Western Sahara's Polisario zone: no military data for the de facto authorities.",
+    "Civil-war and insurgent territory (Syria 2021, Yemen, Myanmar, Sudan 2026, Libya, Gaza/West Bank): no non-state actors in the engine yet.",
+    "Russian-held areas outside the four main oblasts (parts of Kharkiv, Dnipropetrovsk, Sumy) are split only where they exceed the minimum province piece size."
+  ]
+}

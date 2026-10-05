@@ -143,5 +143,48 @@
     "notes": [
       "Applied last. Use to correct any value with a better source."
     ]
+  },
+  "natural_earth": {
+    "title": "Natural Earth 1:10m cultural and physical vectors v5.1.2",
+    "publisher": "Natural Earth / NACIS",
+    "via": "github.com/nvkelso/natural-earth-vector @ ca96624a56bd078437bca8184e78163e5039ad19 (sha256-pinned in tools/map/build_map.py)",
+    "url": "https://www.naturalearthdata.com/",
+    "confidence": "high",
+    "license": "Public domain",
+    "notes": [
+      "Admin-1 provinces, populated places (city populations, capitals), ports, airports, physical geography regions (terrain).",
+      "Natural Earth assigns Crimea to Russia (de facto); corrected to Ukrainian ownership with Russian control in data/curated/map_control.json."
+    ]
+  },
+  "gppd": {
+    "title": "Global Power Plant Database v1.3",
+    "publisher": "World Resources Institute",
+    "via": "github.com/wri/global-power-plant-database @ 7a91cfbb2a4e272597acbc00506d61fc1ec73b3d",
+    "url": "https://datasets.wri.org/dataset/globalpowerplantdatabase",
+    "confidence": "high",
+    "license": "CC BY 4.0",
+    "notes": [
+      "~35,000 plants with location and capacity (data to ~2020). Drives ENERGY tags and part of the industrial distribution."
+    ]
+  },
+  "deepstate": {
+    "title": "DeepStateMap.Live occupied territory of Ukraine, 1 January 2026",
+    "publisher": "DeepState UA (archived daily by github.com/cyterat/deepstate-map-data)",
+    "via": "github.com/cyterat/deepstate-map-data @ de86af14700ebd33103f472a076c50b51a36721b, data/deepstatemap_data_20260101.geojson (vendored as data/raw/map/deepstate_20260101.geojson)",
+    "url": "https://deepstatemap.live/",
+    "confidence": "high",
+    "license": "Archive repository is GPL-3.0; DeepStateMap's own terms apply to the underlying map. Confirm before commercial release.",
+    "notes": [
+      "Occupied area 116,219 km2 (~19% of Ukraine), consistent with public reporting. Splits Donetsk, Luhansk, Zaporizhzhia, Kherson and Kharkiv along the real front."
+    ]
+  },
+  "curated_control": {
+    "title": "De jure ownership, de facto control, naval bases (curated)",
+    "publisher": "Compiled for this project; each entry states its basis",
+    "via": "data/curated/map_control.json",
+    "confidence": "per entry",
+    "notes": [
+      "The 2015-2022 Donbas line of contact is approximated from front-line settlements (+/- ~10 km)."
+    ]
   }
 }

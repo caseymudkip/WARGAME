@@ -151,6 +151,10 @@ LEND_LEASE_MIN_RELATION = 0.5
 LEND_LEASE_MAX_ENEMY_RELATION = -0.2
 LEND_LEASE_SHARE = 0.15
 
+AGGRESSION_FRIEND_MIN = 0.3          # States at least this friendly to the victim react to the attack...
+AGGRESSION_VICTIM_SHIFT = 0.2        # ...by warming to the victim...
+AGGRESSION_ATTACKER_SHIFT = -0.3     # ...and turning against the attacker.
+
 OPPORTUNIST_MAX_RELATION = -0.5
 OPPORTUNIST_MIN_PROXIMITY = 0.6
 OPPORTUNIST_DAILY_CHANCE = 0.02
@@ -222,8 +226,26 @@ class War:
                  f"{attacker.name} declares war on {defender.name}: {goal.type.value}, escalation tier {int(tier)}.")
         if war.policy.alliances_trigger:
             war._trigger_defensive_pacts(world, now_hour)
+        if war.policy.lend_lease_allowed:
+            war._world_reacts_to_aggression(world, now_hour)
         war.review_external_support(world, now_hour)
         return war
+
+    def _world_reacts_to_aggression(self, world: World, now_hour: int) -> None:
+        """Third parties friendly to the victim harden: toward it, and against the attacker (cf. February 2022)."""
+        attacker, victim = self.goal.holder, self.goal.target
+        moved = []
+        for tag, country in world.countries.items():
+            if tag in self.participants:
+                continue
+            toward_victim = country.relations.get(victim, 0.0)
+            if toward_victim >= AGGRESSION_FRIEND_MIN and country.relations.get(attacker, 0.0) < toward_victim:
+                country.relations[victim] = clamp(toward_victim + AGGRESSION_VICTIM_SHIFT, -1.0, 1.0)
+                country.relations[attacker] = clamp(country.relations.get(attacker, 0.0) + AGGRESSION_ATTACKER_SHIFT, -1.0, 1.0)
+                moved.append(country.name)
+        if moved:
+            self._log(now_hour, "world_reaction",
+                      f"{len(moved)} states condemn the attack on {world.country(victim).name} and move to support it.")
 
     def _join(self, world: World, tag: str, side: Side, role: ParticipantRole,
               motivation: MotivationProfile, now_hour: int) -> None:

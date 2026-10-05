@@ -27,28 +27,33 @@ tools/data/    reproducible extraction and build scripts
 tests/         behaviour tests (fictional map) and dataset integrity tests
 ```
 
-## Usage sketch
+## Usage
 
 ```python
 from datetime import datetime
 from wargame.conflict import WarGoal
 from wargame.core.enums import EscalationTier, Motivation, WarGoalType
+from wargame.data.world_map import build_real_world
 from wargame.simulation import ScenarioConfig, Simulation
 
+real = build_real_world(2026)          # 3,604 real provinces, 145 countries, 1 Jan 2026 front lines
 scenario = ScenarioConfig(
-    name="Border crisis",
+    name="Russia-Ukraine, proxy war",
     start=datetime(2026, 1, 1),
-    war_goal=WarGoal(WarGoalType.BORDER_SKIRMISH, holder="ARD", target="BOR", province_ids=frozenset({1, 2})),
+    war_goal=WarGoal(WarGoalType.REGIME_CHANGE, holder="RUS", target="UKR"),
     escalation_tier=EscalationTier.PROXY_WAR,
-    nuclear_weapons_enabled=False,
-    attacker_motivation=Motivation.CAUTIOUS,
+    nuclear_weapons_enabled=True,
+    attacker_motivation=Motivation.AGGRESSIVE,
 )
-sim = Simulation(world, scenario)   # `world` built by a scenario loader (next task)
-while not sim.finished:
-    sim.run_days(1)
+sim = Simulation(real.world, scenario)
+sim.run_days(30)
 for event in sim.events():
-    print(event.hour // 24, event.message)
+    print(event.hour // 24, event.message)   # declaration, world reaction, lend-lease coalitions...
 ```
+
+Wars on the real map do not move yet: the combat system that shifts the front is the next task.
+
+Inspect a country's data with sources: `python -m wargame.data RUS UKR --year 2026`.
 
 ## Development
 

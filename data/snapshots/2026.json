@@ -3,7 +3,8 @@
  "as_of": "2026-01-01",
  "generated_by": "tools/data/build_dataset.py",
  "inputs": {
-  "curated/alliances.json": "96a0dd53cd56e1ef0b136ecfdcd50f3a5b71c653d0123f29e19d574cecf6af5a",
+  "curated/alliances.json": "97466b2277e46732993b1127427ce154ef662b2c9c643896c069da9612f3cbda",
+  "curated/map_control.json": "cf9ace3ede2323f8e92f43eec930c6171ac30d3d8743cb5b7d846962bacb1d6e",
   "curated/missile_defense.json": "b4ca7af8f71a9fead82a78f88d61988f00dbce301a4ba1ff9088efb128d1a160",
   "curated/nuclear.json": "30f5af7d5bb90be4162f2b8124ceadbddb67d1eba3a585572c8a4bea10c71362",
   "curated/overrides.json": "bddbff5d50cf166048537ccc893f6ad67678541b8102b4bd6d97450980d3880a",
@@ -435,6 +436,81 @@
    "HUN",
    "RUS",
    0.2
+  ],
+  [
+   "NLD",
+   "RUS",
+   -0.6
+  ],
+  [
+   "SWE",
+   "RUS",
+   -0.6
+  ],
+  [
+   "DNK",
+   "RUS",
+   -0.6
+  ],
+  [
+   "CAN",
+   "RUS",
+   -0.5
+  ],
+  [
+   "NOR",
+   "RUS",
+   -0.6
+  ],
+  [
+   "BEL",
+   "RUS",
+   -0.5
+  ],
+  [
+   "CZE",
+   "RUS",
+   -0.6
+  ],
+  [
+   "NOR",
+   "UKR",
+   0.7
+  ],
+  [
+   "BEL",
+   "UKR",
+   0.6
+  ],
+  [
+   "CZE",
+   "UKR",
+   0.6
+  ],
+  [
+   "PRK",
+   "UKR",
+   -0.5
+  ],
+  [
+   "IRN",
+   "UKR",
+   -0.4
+  ],
+  [
+   "BLR",
+   "UKR",
+   -0.6
+  ],
+  [
+   "JPN",
+   "UKR",
+   0.4
+  ],
+  [
+   "AUS",
+   "UKR",
+   0.4
   ]
  ],
  "countries": {

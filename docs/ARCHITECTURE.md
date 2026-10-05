@@ -10,7 +10,7 @@ core/        enums, math, modifiers, clock, escalation rule table   (no deps)
 world/       Province, World registry                               (core)
 nation/      Country + NationalSpirit, Logistics, OOB, Nuclear       (core, world)
 conflict/    War, WarGoal, PeaceTreaty                               (core, world, nation)
-data/        real-world snapshots -> Country objects                 (core, nation)
+data/        real-world snapshots + province map -> World            (core, world, nation)
 simulation   tick loop, ScenarioConfig                               (everything)
 ```
 
@@ -149,7 +149,19 @@ for.
 6. **Real-world data** lives in `data/` with per-value provenance. See
    [`data/README.md`](../data/README.md) for sources, cross-checks, upstream
    errors found and fixed, and known gaps.
-7. **Performance budget** (open). A simulated year is 8,760 ticks. Daily
+7. **Aggression changes opinion.** When a war is declared (Tier 2+), third
+   states friendly to the victim (relation ≥ 0.3) warm further toward it and
+   turn against the attacker, as Western opinion did after 24 February 2022.
+   With the real data this produces the historical coalitions: a 2026
+   Russia–Ukraine proxy war draws 18 Western suppliers to Ukraine and Belarus,
+   Iran and North Korea to Russia.
+8. **Real geography.** `data/map/world_map.json` holds 3,604 provinces with
+   real adjacency, sea crossings, terrain, cities, ports, airfields, power
+   plants and de facto control at each start date (including the real
+   1 January 2026 front in Ukraine). `wargame.data.world_map.build_real_world`
+   combines it with a snapshot into a World; a daily tick of a real war costs
+   about 4 ms.
+9. **Performance budget** (open). A simulated year is 8,760 ticks. Daily
    systems are fine in Python. Hourly combat over a global map of thousands of
    provinces is not. Everything is keyed by plain IDs so hot loops can later
    move to NumPy arrays or a native core.
@@ -168,10 +180,10 @@ for.
 
 ## Suggested next tasks
 
-1. Global province map from Natural Earth admin-1 boundaries (public domain, on GitHub):
-   adjacency, terrain, capitals, cities, ports and airfields, so real snapshots can run.
-2. Hourly combat and movement: terrain, supply effectiveness, quality exponent, frontlines.
-3. Strategic AI: theatre planning from `strategic_value`, branch superiority
-   (invade vs blockade vs strike), `offensive_halted` consolidation.
-4. Naval and air: write `blockade_interdiction`, consume sorties, conventional strikes on infrastructure.
-5. Occupation and partisans; post-war treaty enforcement.
+1. Hourly combat and movement: frontlines on the real province graph (terrain, supply effectiveness,
+   quality exponent), so wars on the real map actually move.
+2. Strategic AI: theatre planning from `strategic_value`, branch superiority
+   (invade vs blockade vs strike), `offensive_halted` consolidation, amphibious use of `sea_links`.
+3. Naval and air: write `blockade_interdiction`, consume sorties, conventional strikes on infrastructure.
+4. Occupation and partisans; post-war treaty enforcement.
+5. Data: land-cover terrain, drones, per-system equipment quality, non-state actors.

@@ -180,7 +180,7 @@ def test_nuclear_use_in_a_proxy_war_brings_committed_patrons_in():
     world = build_world()
     world.country("ARD").nuclear = arsenal()
     world.country("CAL").relations.update({"BOR": 0.8, "ARD": -0.6})  # Committed patron.
-    world.country("DRV").relations.update({"BOR": 0.55, "ARD": -0.3})  # Supplies arms, won't fight.
+    world.country("DRV").relations.update({"BOR": 0.35, "ARD": -0.3})  # After the aggression response: supplies arms, won't fight.
     war = declare(world, EscalationTier.PROXY_WAR)
     assert {f.supporter for f in war.external_support} == {"CAL", "DRV"}
 

@@ -62,7 +62,8 @@ class Province:
     population: int = 0
     industrial_output: float = 0.0     # Abstract production units per day.
     tags: frozenset[ProvinceTag] = frozenset()
-    neighbors: tuple[int, ...] = ()
+    neighbors: tuple[int, ...] = ()                 # Land borders.
+    sea_links: tuple[tuple[int, int], ...] = ()     # (province id, crossing length in km).
     coastal: bool = False
     damage: float = 0.0                # 0..1 from bombing/fighting; degrades output.
     extra: dict[str, float] = field(default_factory=dict)  # Scenario-specific data hooks.
