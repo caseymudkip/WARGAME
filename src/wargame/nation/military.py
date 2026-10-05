@@ -24,10 +24,11 @@ class EquipmentStock:
     readiness: float = 0.75  # 0..1 fraction actually operational.
     unit_cost: float = 1.0   # For equipment-loss accounting in the cost/reward ledger.
     tonnage: float = 0.0     # Per unit; naval only.
+    combat_weight: float = 1.0  # Combat value of one unit relative to one main battle tank.
 
     @property
     def effective_strength(self) -> float:
-        return self.quantity * self.readiness * math.pow(self.quality, QUALITY_EXPONENT)
+        return self.quantity * self.readiness * math.pow(self.quality, QUALITY_EXPONENT) * self.combat_weight
 
 
 @dataclass

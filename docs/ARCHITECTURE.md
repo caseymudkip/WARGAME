@@ -10,6 +10,7 @@ core/        enums, math, modifiers, clock, escalation rule table   (no deps)
 world/       Province, World registry                               (core)
 nation/      Country + NationalSpirit, Logistics, OOB, Nuclear       (core, world)
 conflict/    War, WarGoal, PeaceTreaty                               (core, world, nation)
+data/        real-world snapshots -> Country objects                 (core, nation)
 simulation   tick loop, ScenarioConfig                               (everything)
 ```
 
@@ -96,38 +97,62 @@ player's motivation preset, so an "epic/aggressive" attacker grabs extra
 provinces at the table and a "realistic/cautious" one takes only what it came
 for.
 
-## GDD review: gaps, tensions, open questions
+## Design decisions (GDD review, resolved)
 
-These need a design decision before or during the next tasks:
-
-1. **"Maximum realism" vs "Epic/Aggressive".** Resolved here by treating
-   motivation as actor risk appetite (casualty tolerance, ambition, morale
-   bonus). It never changes world physics. Confirm that's the intent.
-2. **Tier 2 "risks MAD": from whom?** In a proxy war no foreign power fights.
-   Currently MAD only comes from the belligerents' own arsenals, plus
-   extended deterrence in Tier 3. Decide whether nuclear use can *ratchet* a
-   Tier 2 war into Tier 3 (suggest a scenario flag, default off), or whether
-   tiers are absolute.
-3. **Morale effect of being nuked.** It could cause a rally or a collapse.
-   Currently: −0.10 war support, −0.15 stability on the victim. This needs a
-   ruling, ideally per-regime.
-4. **Government in exile.** A fully occupied nation always capitulates. HoI4
-   lets a nation with fighting allies keep going in exile. Probably wanted
-   for Tier 3.
-5. **Coalition war goals.** Tier 3 joiners currently fight for the primary's
-   goal. Opportunists should probably bring their own claim (their own
-   `WarGoal`) and get a say in the peace.
-6. **Real-world data.** Pillar 2 asks for "highly accurate real-world"
-   OOBs. This needs (a) a schema with provenance on every number (source,
-   as-of date, confidence), (b) separate 2021 and 2026 snapshots, since
-   several major militaries changed drastically in between, and (c) a
-   licensing check: some authoritative OOB references are commercial and
-   copyrighted, so we can't ship them verbatim. All test data here is
-   fictional.
-7. **Performance budget.** A simulated year is 8,760 ticks. Daily systems are
-   fine in Python. Hourly combat over a global map of thousands of provinces
-   is not. Everything here is keyed by plain IDs so hot loops can later move
-   to NumPy arrays or a native core without changing the model.
+1. **"Maximum realism" vs "Epic/Aggressive"** (confirmed). Motivation is actor
+   risk appetite (casualty tolerance, ambition, morale bonus). It never changes
+   world physics.
+2. **Nuclear use in a proxy war ratchets the tier.** Any launch in Tier 2
+   promotes the war to Tier 3 (`EscalationPolicy.nuclear_use_escalates_to`).
+   Patrons committed to the victim (relation ≥ 0.6) intervene
+   *conventionally*; whether they then go nuclear is decided by the ordinary
+   hesitation model, and MAD normally says no. Before launching, a Tier 2
+   belligerent weighs a `patron_intervention` term proportional to the enemy's
+   backers' military power. Basis: in 2022 the US warned Russia privately of
+   "catastrophic consequences" for nuclear use in Ukraine (Sullivan); the
+   response publicly sketched by Petraeus was a NATO conventional campaign
+   against Russian forces in Ukraine and the Black Sea Fleet, "not nuclear for
+   nuclear". CNN (March 2024) reported the US "prepared rigorously" for this
+   contingency in late 2022.
+3. **Nuclear victims collapse, unless they can strike back.** Resilience =
+   0.65 × retaliation capability + 0.35 × size relative to the attacker.
+   Below 0.5 the nation suffers a large, slowly fading capitulation shock and a
+   stability hit that can break even a last-stand nation. Two strikes break the
+   most patriotic small state (Japan 1945, where Hasegawa weighs the Soviet
+   entry as heavily as the bombs). At or above 0.5 the nation is devastated but
+   rallies for revenge (Pearl Harbor, 9/11).
+   **Compellence:** a much stronger nation (power ratio 1.5 → 6) may "seal the
+   deal" against a smaller, non-nuclear enemy once a war has dragged past 60
+   days with conventional pressure failing. In a vacuum this is a real option.
+   Sagan & Valentino (2017) found ~60% of Americans approved a nuclear strike
+   killing 2M Iranian civilians to avoid 20,000 US deaths, so domestic restraint
+   alone is weak. Diplomatic fallout makes it rare in Tier 2 and absent in
+   Tier 3. Use stays sparing: each prior strike adds hesitation, coercive
+   strikes are spaced 72h apart unless answered (Hiroshima → Nagasaki: 3 days),
+   and nobody re-strikes a ruin. No-first-use pledges hold until the enemy goes
+   nuclear. Calibration: unstable small nations capitulate within two days of
+   one strike; patriotic ones after 2–3 strikes.
+4. **Governments in exile (Free France pattern).** When an existential war
+   topples the government (capitulation, or the capital falls to a
+   regime-change war) but morale in free territory holds (0.7 × patriotism +
+   0.3 × war support ≥ 0.55, free territory ≥ 5% of national value), a
+   "Free <name>" state forms. It owns the free provinces and takes the loyal
+   share of the forces and the deterrent. The old government signs a separate
+   surrender (`War.settlements`; e.g. becomes a puppet) and occupied land stays
+   occupied. **The attacking nation decides** whether to pursue (needs resolve
+   ≥ 0.35, a 1.5x power edge, and a goal that covers the free territory) or to
+   accept a ceasefire that leaves a rump state. Limited wars never produce
+   exiles: losing a border war is a treaty, not the end of the state.
+5. **Opportunists bring their own claims.** A Tier 3 opportunist claims the
+   victim's most valuable border provinces (up to 3). It digs in once it holds
+   them and receives them at the peace table if its side wins.
+6. **Real-world data** lives in `data/` with per-value provenance. See
+   [`data/README.md`](../data/README.md) for sources, cross-checks, upstream
+   errors found and fixed, and known gaps.
+7. **Performance budget** (open). A simulated year is 8,760 ticks. Daily
+   systems are fine in Python. Hourly combat over a global map of thousands of
+   provinces is not. Everything is keyed by plain IDs so hot loops can later
+   move to NumPy arrays or a native core.
 
 ## Deliberately stubbed (data recorded, not yet consumed)
 
@@ -138,10 +163,13 @@ These need a design decision before or during the next tasks:
 - `WarGoal.requires_occupation`, `WarParticipant.offensive_halted`: for the strategic AI
   (blockade instead of invading, pausing offensives).
 - Lend-lease does not yet drain the supporter's own stockpile.
+- Governments in exile hosted abroad (Poland 1939–45 style, no free territory) are not modelled;
+  only the free-territory variant is.
 
 ## Suggested next tasks
 
-1. Data schema and scenario loader (JSON, with provenance), plus 2021/2026 snapshots.
+1. Global province map from Natural Earth admin-1 boundaries (public domain, on GitHub):
+   adjacency, terrain, capitals, cities, ports and airfields, so real snapshots can run.
 2. Hourly combat and movement: terrain, supply effectiveness, quality exponent, frontlines.
 3. Strategic AI: theatre planning from `strategic_value`, branch superiority
    (invade vs blockade vs strike), `offensive_halted` consolidation.

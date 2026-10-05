@@ -57,7 +57,8 @@ def _split_oob(oob: OrderOfBattle, share: float, manpower_share: float) -> Order
     for key, e in oob.equipment.items():
         moved = int(e.quantity * share)
         e.quantity -= moved
-        detached[key] = EquipmentStock(e.name, e.branch, moved, e.quality, e.readiness, e.unit_cost, e.tonnage)
+        detached[key] = EquipmentStock(e.name, e.branch, moved, e.quality, e.readiness, e.unit_cost, e.tonnage,
+                                       e.combat_weight)
     active = int(oob.active_personnel * share)
     oob.active_personnel -= active
     return OrderOfBattle(

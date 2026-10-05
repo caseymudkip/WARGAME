@@ -1,0 +1,51 @@
+{
+  "_doc": "Nuclear forces per snapshot. stockpile = warheads available to the military (deployed + stored), excluding retired warheads awaiting dismantlement; this is what the engine uses. null = not published / not established.",
+  "doctrines": {
+    "USA": {"doctrine": "flexible_response", "delivery": ["strategic", "tactical"], "second_strike": true,
+            "rationale": "No no-first-use pledge; 2022 Nuclear Posture Review: use only in extreme circumstances to defend vital interests. Triad incl. SSBNs; B61 gravity bombs and air-launched cruise missiles."},
+    "RUS": {"doctrine": "escalate_to_deescalate", "delivery": ["strategic", "theater", "tactical", "hypersonic"], "second_strike": true,
+            "rationale": "2020 Basic Principles and the November 2024 revision lowered the stated threshold (conventional attack threatening sovereignty, attacks by non-nuclear states backed by nuclear states). Large non-strategic arsenal (Iskander, Kinzhal), Avangard HGV, Oreshnik IRBM."},
+    "CHN": {"doctrine": "no_first_use", "delivery": ["strategic", "theater"], "second_strike": true,
+            "rationale": "Unconditional no-first-use pledge in defence white papers. Road-mobile DF-41/DF-31, DF-26 IRBM, JL-3 SLBM."},
+    "GBR": {"doctrine": "assured_retaliation", "delivery": ["strategic"], "second_strike": true,
+            "rationale": "Minimum deterrent, single Trident SLBM system, deliberate ambiguity on first use."},
+    "FRA": {"doctrine": "flexible_response", "delivery": ["strategic", "tactical"], "second_strike": true,
+            "rationale": "Strict sufficiency with a 'final warning' (ultime avertissement) pre-strategic strike capability via ASMP-A air-launched missiles; M51 SLBMs."},
+    "IND": {"doctrine": "no_first_use", "delivery": ["theater", "strategic"], "second_strike": false,
+            "rationale": "2003 doctrine: no first use (with a chemical/biological caveat), massive retaliation. Agni missiles; SSBN force still nascent, so not counted as an assured second strike."},
+    "PAK": {"doctrine": "escalate_to_deescalate", "delivery": ["tactical", "theater"], "second_strike": false,
+            "rationale": "'Full spectrum deterrence', first use explicitly not ruled out, short-range Nasr for battlefield use."},
+    "ISR": {"doctrine": "assured_retaliation", "delivery": ["theater", "strategic"], "second_strike": true,
+            "rationale": "Undeclared arsenal; widely assessed as last-resort. Jericho missiles; Dolphin-class submarines reportedly provide a sea-based leg."},
+    "PRK": {"doctrine": "escalate_to_deescalate", "delivery": ["tactical", "theater", "strategic"], "second_strike": false,
+            "rationale": "September 2022 nuclear forces law permits pre-emptive use. Hwasong-17/18 ICBMs, tactical Hwasong-11 family."}
+  },
+  "2021": {
+    "_source": "sipri_yb2021",
+    "_check": "stockpiles sum to SIPRI's ~9,620 (North Korea taken at the midpoint of 40-50)",
+    "USA": {"stockpile": 3800, "deployed": 1800, "total_inventory": 5550, "confidence": "high"},
+    "RUS": {"stockpile": 4495, "deployed": 1625, "total_inventory": 6255, "confidence": "high"},
+    "CHN": {"stockpile": 350, "deployed": null, "total_inventory": 350, "confidence": "high"},
+    "FRA": {"stockpile": 290, "deployed": 280, "total_inventory": 290, "confidence": "medium"},
+    "GBR": {"stockpile": 225, "deployed": 120, "total_inventory": 225, "confidence": "medium"},
+    "IND": {"stockpile": 156, "deployed": 0, "total_inventory": 156, "confidence": "high"},
+    "PAK": {"stockpile": 165, "deployed": 0, "total_inventory": 165, "confidence": "high"},
+    "ISR": {"stockpile": 90, "deployed": 0, "total_inventory": 90, "confidence": "high"},
+    "PRK": {"stockpile": 45, "deployed": 0, "total_inventory": 45, "confidence": "medium", "note": "SIPRI range 40-50"}
+  },
+  "2026": {
+    "_source": "sipri_yb2026",
+    "_check": "stockpiles sum exactly to SIPRI's published 9,745",
+    "USA": {"stockpile": 3700, "deployed": 1770, "total_inventory": null, "confidence": "high",
+            "note": "Secondary coverage reports the total inventory inconsistently (5,042 / 5,177); stockpile and deployed figures agree across sources."},
+    "RUS": {"stockpile": 4400, "deployed": 1796, "total_inventory": 5420, "confidence": "high"},
+    "CHN": {"stockpile": 620, "deployed": null, "total_inventory": 620, "confidence": "high"},
+    "FRA": {"stockpile": 290, "deployed": 280, "total_inventory": 290, "confidence": "medium"},
+    "GBR": {"stockpile": 225, "deployed": 120, "total_inventory": 225, "confidence": "medium"},
+    "IND": {"stockpile": 190, "deployed": 12, "total_inventory": 190, "confidence": "high",
+            "note": "First time SIPRI classified Indian warheads as deployed."},
+    "PAK": {"stockpile": 170, "deployed": 0, "total_inventory": 170, "confidence": "high"},
+    "ISR": {"stockpile": 90, "deployed": 0, "total_inventory": 90, "confidence": "high"},
+    "PRK": {"stockpile": 60, "deployed": 0, "total_inventory": 60, "confidence": "medium", "note": "'possibly assembled around 60'"}
+  }
+}

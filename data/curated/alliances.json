@@ -1,0 +1,63 @@
+{
+  "_doc": "Treaty-based defensive pacts (fire automatically in Tier 3) and geopolitical leanings (drive Tier 2 lend-lease and Tier 3 opportunism). Pacts are legal obligations; relations are curated judgements on a -1..1 scale, applied symmetrically. Relations not listed default to 0 (neutral); allies in a pact default to +0.8.",
+  "_source": "curated_alliances",
+  "pacts": {
+    "2021": {
+      "NATO": {"members": ["ALB", "BEL", "BGR", "CAN", "HRV", "CZE", "DNK", "EST", "FRA", "DEU", "GRC", "HUN", "ISL", "ITA", "LVA", "LTU", "LUX", "MNE", "NLD", "MKD", "NOR", "POL", "PRT", "ROU", "SVK", "SVN", "ESP", "TUR", "GBR", "USA"],
+               "basis": "North Atlantic Treaty, Article 5 (30 members after North Macedonia, March 2020)"},
+      "CSTO": {"members": ["RUS", "BLR", "ARM", "KAZ", "KGZ", "TJK"], "basis": "Collective Security Treaty, Article 4"},
+      "US-JPN": {"members": ["USA", "JPN"], "basis": "1960 Treaty of Mutual Cooperation and Security"},
+      "US-KOR": {"members": ["USA", "KOR"], "basis": "1953 Mutual Defense Treaty"},
+      "US-PHL": {"members": ["USA", "PHL"], "basis": "1951 Mutual Defense Treaty"},
+      "ANZUS": {"members": ["USA", "AUS"], "basis": "1951 ANZUS Treaty (US obligations to New Zealand suspended since 1986)"},
+      "CHN-PRK": {"members": ["CHN", "PRK"], "basis": "1961 Sino-North Korean Treaty of Friendship, Cooperation and Mutual Assistance"}
+    },
+    "2026": {
+      "NATO": {"members": ["ALB", "BEL", "BGR", "CAN", "HRV", "CZE", "DNK", "EST", "FIN", "FRA", "DEU", "GRC", "HUN", "ISL", "ITA", "LVA", "LTU", "LUX", "MNE", "NLD", "MKD", "NOR", "POL", "PRT", "ROU", "SVK", "SVN", "ESP", "SWE", "TUR", "GBR", "USA"],
+               "basis": "North Atlantic Treaty, Article 5 (Finland joined April 2023, Sweden March 2024)"},
+      "CSTO": {"members": ["RUS", "BLR", "KAZ", "KGZ", "TJK"], "basis": "Collective Security Treaty; Armenia froze its participation in February 2024"},
+      "US-JPN": {"members": ["USA", "JPN"], "basis": "1960 Treaty of Mutual Cooperation and Security"},
+      "US-KOR": {"members": ["USA", "KOR"], "basis": "1953 Mutual Defense Treaty"},
+      "US-PHL": {"members": ["USA", "PHL"], "basis": "1951 Mutual Defense Treaty"},
+      "ANZUS": {"members": ["USA", "AUS"], "basis": "1951 ANZUS Treaty"},
+      "CHN-PRK": {"members": ["CHN", "PRK"], "basis": "1961 Sino-North Korean treaty"},
+      "RUS-PRK": {"members": ["RUS", "PRK"], "basis": "June 2024 Comprehensive Strategic Partnership Treaty, Article 4 mutual assistance (in force December 2024)"},
+      "SAU-PAK": {"members": ["SAU", "PAK"], "basis": "September 2025 Strategic Mutual Defence Agreement"},
+      "TUR-AZE": {"members": ["TUR", "AZE"], "basis": "June 2021 Shusha Declaration on allied relations (mutual assistance clause)"}
+    }
+  },
+  "relations": {
+    "2021": [
+      ["IND", "PAK", -0.8], ["ISR", "IRN", -0.9], ["KOR", "PRK", -0.8], ["ARM", "AZE", -0.8], ["GRC", "TUR", -0.3],
+      ["USA", "IRN", -0.8], ["USA", "PRK", -0.8], ["CHN", "TWN", -0.8], ["CHN", "IND", -0.5], ["SAU", "IRN", -0.6],
+      ["RUS", "UKR", -0.7], ["USA", "RUS", -0.4], ["USA", "CHN", -0.5], ["JPN", "CHN", -0.4], ["JPN", "PRK", -0.7],
+      ["MAR", "DZA", -0.6], ["EGY", "ETH", -0.4], ["USA", "VEN", -0.6], ["ISR", "SYR", -0.8], ["SAU", "YEM", -0.7],
+      ["RUS", "CHN", 0.5], ["RUS", "BLR", 0.9], ["RUS", "IRN", 0.4], ["RUS", "PRK", 0.3], ["RUS", "SYR", 0.8],
+      ["CHN", "PAK", 0.8], ["CHN", "PRK", 0.6], ["IRN", "SYR", 0.8], ["USA", "ISR", 0.8], ["USA", "TWN", 0.6],
+      ["USA", "UKR", 0.4], ["GBR", "UKR", 0.4], ["POL", "UKR", 0.4], ["IND", "RUS", 0.5], ["IND", "USA", 0.4],
+      ["TUR", "AZE", 0.9], ["SAU", "PAK", 0.6], ["SAU", "USA", 0.6], ["ARE", "USA", 0.6], ["EGY", "USA", 0.5],
+      ["ETH", "ERI", 0.3], ["ARM", "RUS", 0.6], ["SRB", "RUS", 0.5], ["VEN", "RUS", 0.5], ["CUB", "RUS", 0.5]
+    ],
+    "2026": [
+      ["IND", "PAK", -0.9], ["ISR", "IRN", -1.0], ["KOR", "PRK", -0.8], ["ARM", "AZE", -0.4], ["GRC", "TUR", -0.3],
+      ["USA", "IRN", -0.9], ["USA", "PRK", -0.8], ["CHN", "TWN", -0.8], ["CHN", "IND", -0.4], ["SAU", "IRN", -0.2],
+      ["RUS", "UKR", -1.0], ["USA", "RUS", -0.5], ["USA", "CHN", -0.6], ["JPN", "CHN", -0.5], ["JPN", "PRK", -0.7],
+      ["MAR", "DZA", -0.6], ["EGY", "ETH", -0.5], ["USA", "VEN", -0.9], ["ETH", "ERI", -0.5], ["SAU", "YEM", -0.5],
+      ["POL", "RUS", -0.8], ["GBR", "RUS", -0.7], ["DEU", "RUS", -0.6], ["FRA", "RUS", -0.6], ["FIN", "RUS", -0.7],
+      ["EST", "RUS", -0.8], ["LVA", "RUS", -0.8], ["LTU", "RUS", -0.8],
+      ["RUS", "CHN", 0.7], ["RUS", "BLR", 0.9], ["RUS", "IRN", 0.6], ["RUS", "PRK", 0.8], ["RUS", "SYR", 0.0],
+      ["CHN", "PAK", 0.8], ["CHN", "PRK", 0.6], ["IRN", "SYR", -0.3], ["USA", "ISR", 0.9], ["USA", "TWN", 0.6],
+      ["USA", "UKR", 0.6], ["GBR", "UKR", 0.8], ["POL", "UKR", 0.7], ["DEU", "UKR", 0.7], ["FRA", "UKR", 0.7],
+      ["NLD", "UKR", 0.7], ["SWE", "UKR", 0.7], ["DNK", "UKR", 0.7], ["FIN", "UKR", 0.7], ["CAN", "UKR", 0.7],
+      ["EST", "UKR", 0.8], ["LVA", "UKR", 0.8], ["LTU", "UKR", 0.8], ["IND", "RUS", 0.5], ["IND", "USA", 0.4],
+      ["TUR", "AZE", 0.9], ["SAU", "PAK", 0.8], ["SAU", "USA", 0.6], ["ARE", "USA", 0.6], ["EGY", "USA", 0.5],
+      ["ARM", "RUS", 0.0], ["SRB", "RUS", 0.4], ["VEN", "RUS", 0.5], ["CUB", "RUS", 0.5], ["HUN", "RUS", 0.2]
+    ]
+  },
+  "notes": {
+    "SYR": "Assad government fell December 2024; 2026 relations reflect the transitional government.",
+    "ARM-AZE": "Peace agreement initialled August 2025; hostility reduced but unresolved.",
+    "SAU-IRN": "Relations restored under China-brokered March 2023 agreement.",
+    "ISR-IRN": "Direct exchanges of fire in April and October 2024 and the June 2025 war."
+  }
+}

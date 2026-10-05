@@ -1,0 +1,33 @@
+{
+  "_doc": "Share answering YES to 'If there were a war that involved [your country], would you be willing to fight for your country?' (Gallup International EoY 2023, 45 countries). The engine uses it as `patriotism`. Countries without their own value fall back to the published regional aggregate, then to the global figure; the snapshot records which.",
+  "_source": "gallup_eoy2023",
+  "countries": {
+    "ARM": {"pct": 96, "confidence": "medium", "evidence": "top-5 'most willing' list in the GIA release"},
+    "SAU": {"pct": 94, "confidence": "medium", "evidence": "top-5 'most willing' list in the GIA release"},
+    "AZE": {"pct": 88, "confidence": "medium", "evidence": "top-5 'most willing' list in the GIA release"},
+    "PAK": {"pct": 86, "confidence": "medium", "evidence": "GIA release top-5; Gallup Pakistan: '86% of all Pakistanis would be willing to fight'"},
+    "GEO": {"pct": 83, "confidence": "medium", "evidence": "top-5 'most willing' list in the GIA release"},
+    "AFG": {"pct": 82, "confidence": "low", "evidence": "single press summary"},
+    "IND": {"pct": 76, "confidence": "medium", "evidence": "GIA release text: 'India (76%)'"},
+    "UKR": {"pct": 62, "confidence": "low", "evidence": "single press summary"},
+    "USA": {"pct": 41, "confidence": "medium", "evidence": "GIA release text: 'USA (41%)'"},
+    "CAN": {"pct": 34, "confidence": "medium", "evidence": "GIA release text: 'Canada (34%)'"},
+    "RUS": {"pct": 32, "confidence": "medium", "evidence": "press summary; consistent with Newsweek (2024) 'Russians increasingly reluctant to fight for their country' reporting this survey"},
+    "DEU": {"pct": 23, "confidence": "medium", "evidence": "press summary; GIA release lists Germany among least willing (57% no)"},
+    "ITA": {"pct": 14, "confidence": "medium", "evidence": "press summary; GIA release: Italy 78% would not fight"},
+    "JPN": {"pct": 9, "confidence": "medium", "evidence": "press summary; consistent with Japan's 11% in the 2015 WIN/Gallup survey"}
+  },
+  "regional_aggregates": {
+    "EU": {"pct": 32, "evidence": "GIA release text: 'citizens of EU (32% willing to fight)'",
+           "members": ["AUT", "BEL", "BGR", "HRV", "CYP", "CZE", "DNK", "EST", "FIN", "FRA", "DEU", "GRC", "HUN", "IRL", "ITA", "LVA", "LTU", "LUX", "MLT", "NLD", "POL", "PRT", "ROU", "SVK", "SVN", "ESP", "SWE"]},
+    "WEST_ASIA": {"pct": 77, "evidence": "GIA release text: 'people in West Asia (77%)'",
+                  "members": ["ARM", "AZE", "GEO", "TUR", "CYP"]},
+    "MIDDLE_EAST": {"pct": 73, "evidence": "GIA release text: 'the Middle East (73%)'",
+                    "members": ["SAU", "ARE", "QAT", "KWT", "BHR", "OMN", "YEM", "IRQ", "IRN", "SYR", "JOR", "LBN", "ISR", "PSE", "EGY"]}
+  },
+  "global": {"pct": 50, "evidence": "GIA release text: 'One in two adults around the world declare that they would fight for their country'"},
+  "excluded": {
+    "_why": "Returned by search summaries labelled as the 2023 survey but matching the 2015 WIN/Gallup survey exactly, or contradicting the 2023 top-5 list. Not used until verified against the primary PDF.",
+    "FRA": 29, "ISR": 66, "TUR": 73, "FIN": 74, "VNM": 89, "GBR": 33, "POL": 45, "BRA": 48, "NGA": 30, "IDN": 60, "PHL": 48, "KOR": 46
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "gfp2026": {
+    "title": "Global Firepower 2026 Military Strength Ranking (145 countries)",
+    "publisher": "GlobalFirepower.com",
+    "as_of": "2026 edition (published January 2026)",
+    "via": "github.com/nupurmadaan04/Unified-Military-Analytics @ b3d04fb5e514f1182957b37f55bc70037a8ebf80, data/military_cleaned.csv (scraped July 2026)",
+    "url": "https://www.globalfirepower.com/countries-listing.php",
+    "confidence": "medium",
+    "license": "GFP content is (c) GlobalFirePower.com; the scrape repository states no license. Factual counts with attribution; confirm terms before commercial release.",
+    "notes": [
+      "Equipment counts are total inventory and can include equipment in storage or of doubtful serviceability.",
+      "Aircraft sub-categories overlap (e.g. multirole jets counted as fighter and attack); never sum them.",
+      "Naval tonnage of 0 means not reported, not zero tonnage.",
+      "Power index values were cross-checked against published 2026 rankings (US 0.0741, Russia 0.0791, China 0.0919)."
+    ]
+  },
+  "gfp2022": {
+    "title": "Global Firepower 2022 Military Strength Ranking (140 countries)",
+    "publisher": "GlobalFirePower.com",
+    "as_of": "2022 edition (published January 2022, data compiled during 2021)",
+    "via": "github.com/Toluayomi/Global-Firepower @ 6a1bc754ed3f2e2e1b7464a48b9b9aaca7cecf93, GLOBAL FIREPOWER 2022 X D'CHALLENGER.xlsx",
+    "url": "https://www.globalfirepower.com/",
+    "confidence": "medium",
+    "license": "As gfp2026.",
+    "notes": [
+      "Used for the 2021 snapshot: it is the last edition compiled before the February 2022 invasion of Ukraine.",
+      "The 'Fighters/Interceptors' column is corrupted in this copy (identical to total aircraft for every country) and is discarded.",
+      "Afghanistan already reflects the August 2021 collapse of the Afghan National Army."
+    ]
+  },
+  "vdem_v16": {
+    "title": "V-Dem Country-Year Dataset v16",
+    "publisher": "Varieties of Democracy Institute, University of Gothenburg",
+    "as_of": "March 2026 release, data through 2025",
+    "via": "github.com/vdeminstitute/vdemdata @ f4dd26922e658442524dfd954bf14f7ebe622d5d, data/vdem.RData",
+    "url": "https://v-dem.net/data/the-v-dem-dataset/",
+    "confidence": "high",
+    "license": "CC BY-SA 4.0 (cite Coppedge et al., V-Dem Dataset v16)",
+    "notes": [
+      "Year 2020 is used for the 2021 snapshot and 2025 for the 2026 snapshot (state of the country at scenario start)."
+    ]
+  },
+  "sipri_milex": {
+    "title": "SIPRI Military Expenditure Database",
+    "publisher": "Stockholm International Peace Research Institute",
+    "as_of": "1949-2020 release, constant 2019 USD",
+    "via": "github.com/owid/owid-datasets @ 6155d4ca1ea14ef30e753010a25521eeb416e8a2 (archived 2025-04-14)",
+    "url": "https://www.sipri.org/databases/milex",
+    "confidence": "high",
+    "license": "SIPRI data free to use with attribution; OWID packaging CC BY 4.0",
+    "notes": [
+      "Market-exchange-rate figures. Systematically lower than Global Firepower's budget estimates for Russia and China."
+    ]
+  },
+  "sipri_yb2021": {
+    "title": "SIPRI Yearbook 2021, chapter 10: World nuclear forces (January 2021)",
+    "publisher": "Stockholm International Peace Research Institute",
+    "as_of": "January 2021",
+    "url": "https://www.sipri.org/media/press-release/2021/global-nuclear-arsenals-grow-states-continue-modernize-new-sipri-yearbook-out-now",
+    "confidence": "high",
+    "notes": [
+      "Global total 13,080 warheads, 3,825 deployed.",
+      "US: 1,800 deployed, 2,000 stored, 5,550 total. Russia: 1,625 deployed, 2,870 stored, 6,255 total (Table 10.1)."
+    ]
+  },
+  "sipri_yb2026": {
+    "title": "SIPRI Yearbook 2026, chapter 8: World nuclear forces (January 2026)",
+    "publisher": "Stockholm International Peace Research Institute",
+    "as_of": "January 2026",
+    "url": "https://www.sipri.org/media/press-release/2026/increasing-focus-nuclear-weapons-amid-heightened-escalation-risks-new-sipri-yearbook-out-now",
+    "confidence": "high",
+    "notes": [
+      "Global inventory 12,187; military stockpiles 9,745; deployed 4,012.",
+      "US 1,770 deployed + 1,930 stored. Russia 1,796 deployed + 2,604 stored (+1,020 retired, 5,420 total).",
+      "China ~620, India ~190 (12 deployed, first time), Pakistan ~170, North Korea possibly ~60 assembled.",
+      "Per-country stockpiles in data/curated/nuclear.json sum exactly to the published 9,745."
+    ]
+  },
+  "gallup_eoy2023": {
+    "title": "Gallup International Association, End of Year Survey 2023: 'If there were a war that involved [your country], would you be willing to fight for your country?'",
+    "publisher": "Gallup International Association",
+    "as_of": "Fieldwork October-December 2023, 45 countries, n=46,138, published 2024",
+    "url": "https://www.gallup-international.com/survey-results-and-news/survey-result/fewer-people-are-willing-to-fight-for-their-country-compared-to-ten-years-ago",
+    "confidence": "medium",
+    "license": "Published press results",
+    "notes": [
+      "The primary PDF was not reachable from the build environment; values were collected from press coverage of the release. Per-country confidence is recorded in data/curated/willingness_to_fight.json.",
+      "Used for both snapshots: no comparable all-country survey exists for 2021 (WVS wave 7 is per-country microdata)."
+    ]
+  },
+  "curated_bmd": {
+    "title": "Ballistic missile defence deployments (curated)",
+    "publisher": "Compiled for this project from official announcements and press reporting; each entry cites its source",
+    "as_of": "January 2021 and January 2026",
+    "confidence": "low",
+    "notes": [
+      "Interception probabilities are model estimates informed by published test records, not measured combat performance.",
+      "Battery and interceptor counts are estimates where governments do not publish them."
+    ]
+  },
+  "curated_doctrine": {
+    "title": "Nuclear doctrine and delivery characterisation (curated)",
+    "publisher": "Compiled for this project from national declaratory policy",
+    "confidence": "medium",
+    "notes": [
+      "Mapping real doctrines onto four engine doctrine types is a judgement call; rationale per state in data/curated/nuclear.json."
+    ]
+  },
+  "model": {
+    "title": "Derived by the WARGAME loader",
+    "publisher": "This repository (src/wargame/data/loader.py)",
+    "confidence": "derived",
+    "notes": [
+      "Values computed from sourced inputs by documented formulas (e.g. stability from V-Dem state-capacity indicators, equipment quality from spending per soldier)."
+    ]
+  },
+  "curated_alliances": {
+    "title": "Defensive pacts and geopolitical alignment (curated)",
+    "publisher": "Compiled for this project; pacts from treaty texts, relations as documented judgement",
+    "as_of": "January 2021 and January 2026",
+    "confidence": "medium",
+    "notes": [
+      "Pact membership is factual. Relation strengths are curated judgements on a -1..1 scale; each listed pair can be challenged and tuned."
+    ]
+  }
+}

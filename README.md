@@ -5,10 +5,12 @@ You set up the scenario: belligerents, war goal, escalation tier, nuclear
 toggle and motivation. Then the engine runs the war on its own while you watch
 at the speed you choose.
 
-This repository currently contains the **simulation engine foundation**: data
-model and daily logic loops in pure Python (3.11+, no runtime dependencies).
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the design, the GDD
-pillar map and open design questions.
+This repository currently contains the **simulation engine foundation** (data
+model and daily logic loops in pure Python 3.11+, no runtime dependencies) and
+**real-world data for 140–145 countries** at two start dates, every number
+with its source. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the
+design and resolved GDD decisions, and [`data/README.md`](data/README.md) for
+sources, cross-checks and known gaps.
 
 ## Layout
 
@@ -16,10 +18,13 @@ pillar map and open design questions.
 src/wargame/
   core/        enums, clock (fixed 1h tick), modifiers, escalation tier rule table
   world/       Province (terrain, infrastructure, strategic tags), World registry
-  nation/      Country, NationalSpirit, LogisticsStockpile, OrderOfBattle, NuclearPosture/BMD
-  conflict/    War, WarGoal, PeaceTreaty
+  nation/      Country, NationalSpirit, LogisticsStockpile, OrderOfBattle, NuclearPosture/BMD, exile
+  conflict/    War (escalation, exile pursuit, claims), WarGoal, PeaceTreaty
+  data/        snapshot loader, real data -> Country (python -m wargame.data RUS UKR)
   simulation.py  ScenarioConfig + Simulation tick loop
-tests/         behaviour tests on a small fictional map
+data/          sources, raw extracts, curated research, built 2021/2026 snapshots
+tools/data/    reproducible extraction and build scripts
+tests/         behaviour tests (fictional map) and dataset integrity tests
 ```
 
 ## Usage sketch
